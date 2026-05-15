@@ -61,7 +61,6 @@ ProofClean/
 │       ├── schemas/
 │       ├── services/
 │       └── utils/
-├── backend-spring-archive/
 ├── uploads/
 │   ├── original/
 │   └── masked/
