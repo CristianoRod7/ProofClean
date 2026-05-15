@@ -1,0 +1,18 @@
+# frontend
+frontend/node_modules/
+frontend/dist/
+
+# backend
+backend/build/
+backend/.gradle/
+backend/data/
+
+# uploads content
+uploads/original/*
+!uploads/original/.gitkeep
+uploads/masked/*
+!uploads/masked/.gitkeep
+
+# misc
+.DS_Store
+*.log

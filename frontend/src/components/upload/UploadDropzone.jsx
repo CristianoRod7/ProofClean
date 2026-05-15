@@ -1,0 +1,1 @@
+export default function UploadDropzone({onFile}){ return <label className="dropzone"><input type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" hidden onChange={(e)=>onFile(e.target.files?.[0])}/><h3>파일을 선택하거나 드래그하세요</h3><p className="muted">jpg, jpeg, png, webp, pdf / MVP는 이미지 처리 우선 지원</p></label>; }
