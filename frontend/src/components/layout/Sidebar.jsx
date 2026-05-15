@@ -1,0 +1,2 @@
+import { NavLink } from 'react-router-dom';
+export default function Sidebar(){ return <aside className="sidebar"><div className="logo"><span className="logo-mark">✓</span><span>ProofClean</span></div><nav className="nav"><NavLink to="/dashboard">대시보드</NavLink><NavLink to="/analyses/new">새 분석 시작</NavLink><NavLink to="/history">분석 기록</NavLink></nav><p className="muted" style={{marginTop:'auto',color:'#94a3b8'}}>탐지 후보와 노출 가능성을 확인하고 최종 판단은 사용자가 진행합니다.</p></aside>; }

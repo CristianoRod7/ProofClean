@@ -1,0 +1,1 @@
+export default function Modal({open,title,children,onClose}){ if(!open)return null; return <div style={{position:'fixed',inset:0,background:'rgba(15,23,42,.45)',display:'grid',placeItems:'center',zIndex:50}}><div className="card" style={{width:'min(520px,92vw)'}}><h3>{title}</h3>{children}<button className="btn btn-muted" onClick={onClose}>닫기</button></div></div>; }
