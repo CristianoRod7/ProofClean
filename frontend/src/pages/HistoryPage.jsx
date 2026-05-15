@@ -1,2 +1,18 @@
-import MainLayout from '../components/layout/MainLayout.jsx';import AnalysisHistoryTable from '../components/dashboard/AnalysisHistoryTable.jsx';import useAnalysis from '../hooks/useAnalysis.js';
-export default function HistoryPage(){ const {analyses}=useAnalysis(); return <MainLayout><div className="page grid"><h1>분석 기록</h1><div className="card"><input className="input" placeholder="검색 및 필터는 2차 기능으로 확장 예정"/></div><AnalysisHistoryTable analyses={analyses}/></div></MainLayout>; }
+import ErrorAlert from '../components/common/ErrorAlert.jsx';
+import MainLayout from '../components/layout/MainLayout.jsx';
+import AnalysisHistoryTable from '../components/dashboard/AnalysisHistoryTable.jsx';
+import useAnalysis from '../hooks/useAnalysis.js';
+
+export default function HistoryPage() {
+  const { analyses, error } = useAnalysis();
+  return (
+    <MainLayout>
+      <div className="page grid">
+        <h1>분석 기록</h1>
+        <ErrorAlert message={error} />
+        <div className="card"><input className="input" placeholder="검색 및 필터는 2차 기능으로 확장 예정" /></div>
+        <AnalysisHistoryTable analyses={analyses} />
+      </div>
+    </MainLayout>
+  );
+}
