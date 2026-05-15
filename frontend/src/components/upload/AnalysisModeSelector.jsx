@@ -1,0 +1,2 @@
+const modes=[['SNS','SNS 업로드'],['SECOND_HAND','중고거래'],['ASSIGNMENT','과제 제출'],['COMMUNITY','커뮤니티'],['ETC','기타']];
+export default function AnalysisModeSelector({value,onChange}){ return <div className="grid grid-3">{modes.map(([id,label])=><button key={id} type="button" className="card" onClick={()=>onChange(id)} style={{borderColor:value===id?'#2563eb':'#e2e8f0',textAlign:'left'}}><b>{label}</b><p className="muted">업로드 전 노출 가능성 후보를 점검합니다.</p></button>)}</div>; }

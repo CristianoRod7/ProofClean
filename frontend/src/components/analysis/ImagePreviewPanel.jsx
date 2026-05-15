@@ -1,0 +1,1 @@
+export default function ImagePreviewPanel({src,findings=[]}){ return <div className="preview">{src ? <img src={src} alt="원본 미리보기"/> : <p className="muted" style={{padding:24}}>미리보기 파일이 없습니다.</p>}{findings.map(f=><span key={f.id} className="detect-box" style={{left:`${f.x*100}%`,top:`${f.y*100}%`,width:`${f.width*100}%`,height:`${f.height*100}%`}} />)}</div>; }
