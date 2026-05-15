@@ -1,0 +1,1 @@
+export default function RiskScenarioCard({scenario}){ return <div className="card"><span className="badge badge-yellow">{scenario.riskLevel}</span><h3>{scenario.title}</h3><p>{scenario.scenarioText}</p></div>; }

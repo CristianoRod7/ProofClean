@@ -1,0 +1,10 @@
+import api from './api.js';
+export const getAnalyses = async () => (await api.get('/analyses')).data;
+export const createAnalysis = async (payload) => (await api.post('/analyses', payload)).data;
+export const getAnalysis = async (id) => (await api.get(`/analyses/${id}`)).data;
+export const uploadFile = async (id, file) => { const form = new FormData(); form.append('file', file); return (await api.post(`/analyses/${id}/files`, form)).data; };
+export const runAnalysis = async (id) => (await api.post(`/analyses/${id}/run`)).data;
+export const maskAnalysis = async (id) => (await api.post(`/analyses/${id}/mask`)).data;
+export const getFindings = async (id) => (await api.get(`/analyses/${id}/findings`)).data;
+export const getScenarios = async (id) => (await api.get(`/analyses/${id}/scenarios`)).data;
+export const getRecommendations = async (id) => (await api.get(`/analyses/${id}/recommendations`)).data;

@@ -1,0 +1,1 @@
+export default function FilePreview({file,preview}){ if(!file)return null; return <div className="card"><b>{file.name}</b><p className="muted">{Math.round(file.size/1024)} KB</p>{preview && <img src={preview} alt="업로드 미리보기" style={{maxWidth:'100%',borderRadius:16}}/>}</div>; }
