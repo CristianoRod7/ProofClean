@@ -1,0 +1,1 @@
+export default function DetectionBadge({severity}){ const color=severity==='CRITICAL'||severity==='HIGH'?'red':severity==='MEDIUM'?'yellow':'green'; return <span className={`badge badge-${color}`}>{severity} · 확인 필요</span>; }
