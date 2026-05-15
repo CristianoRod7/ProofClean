@@ -1,0 +1,1 @@
+export default function AnalysisSummary({analysis}){ return <div className="card"><h2>{analysis.title}</h2><p className="muted">{analysis.purpose} · {analysis.status}</p><p>{analysis.summary || '탐지 후보와 노출 가능성 결과를 확인하세요.'}</p></div>; }

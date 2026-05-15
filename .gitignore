@@ -1,0 +1,26 @@
+# frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# python backend
+backend/venv/
+backend/__pycache__/
+backend/.pytest_cache/
+backend/proofclean.db
+backend/**/*.pyc
+backend/**/__pycache__/
+
+# archived spring build outputs
+backend-spring-archive/build/
+backend-spring-archive/.gradle/
+
+# uploads content
+uploads/original/*
+!uploads/original/.gitkeep
+uploads/masked/*
+!uploads/masked/.gitkeep
+
+# misc
+.DS_Store
+*.log
