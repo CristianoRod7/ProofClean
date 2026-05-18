@@ -1,0 +1,2 @@
+import { fileSize } from '../../utils/fileUtils.js';
+export default function FilePreview({ file, preview }) { if (!file && !preview) return null; return <div className="card"><div className="between"><div><h3>{file?.name || 'proofclean-sample-image.png'}</h3><p className="muted">{file ? fileSize(file.size) : '샘플 이미지'}</p></div><span className="badge badge-green">미리보기 준비 완료</span></div>{preview && <img className="file-preview-image" src={preview} alt="업로드 미리보기" />}</div>; }

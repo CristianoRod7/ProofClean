@@ -1,0 +1,3 @@
+import { useState } from 'react';
+import { CheckCircle2 } from 'lucide-react';
+export default function RecommendationList({ items = [] }) { const [done, setDone] = useState({}); return <div className="card"><h3>권장 조치</h3><div className="stack">{items.map((item) => <button key={item.id} className="row" onClick={() => setDone((prev) => ({ ...prev, [item.id]: !prev[item.id] }))} style={{ border: 0, background: done[item.id] ? '#dcfce7' : '#f8fafc', borderRadius: 15, padding: 13, textAlign: 'left' }}><CheckCircle2 size={20} color={done[item.id] ? '#22c55e' : '#94a3b8'} /><span style={{ textDecoration: done[item.id] ? 'line-through' : 'none' }}>{item.text || item.description}</span></button>)}</div></div>; }
