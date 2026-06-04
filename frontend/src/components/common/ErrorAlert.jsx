@@ -1,1 +1,1 @@
-export default function ErrorAlert({message}){ if(!message)return null; return <div className="card" style={{borderColor:'#fecaca',color:'#991b1b',background:'#fff1f2'}}>{message}</div>; }
+export default function ErrorAlert({ message }) { return message ? <div className="card card-compact" style={{ borderColor: '#fecaca', background: '#fff1f2', color: '#991b1b' }}>{message}</div> : null; }

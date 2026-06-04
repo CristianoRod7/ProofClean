@@ -1,2 +1,2 @@
 import { Link } from 'react-router-dom';
-export default function NotFoundPage(){ return <main className="auth-wrap"><div className="card"><h1>페이지를 찾을 수 없습니다</h1><Link className="btn btn-primary" to="/">홈으로</Link></div></main>; }
+export default function NotFoundPage() { return <main className="auth-card" style={{ minHeight: '100vh' }}><div className="card" style={{ textAlign: 'center', maxWidth: 520 }}><span className="badge badge-blue">404</span><h1>페이지를 찾을 수 없습니다</h1><p className="muted">요청한 화면이 없거나 주소가 변경되었습니다.</p><Link className="btn btn-primary" to="/dashboard">대시보드로 돌아가기</Link></div></main>; }

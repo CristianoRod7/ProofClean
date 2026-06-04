@@ -1,3 +1,4 @@
-import api from './api.js';
-export const login = async (payload) => (await api.post('/api/auth/login', payload)).data;
-export const register = async (payload) => (await api.post('/api/auth/register', payload)).data;
+import { login, register } from './mockAuth.js';
+export const loginApi = async (payload) => login(payload.email, payload.password);
+export const registerApi = async (payload) => register(payload.name, payload.email, payload.password);
+export { login, register };

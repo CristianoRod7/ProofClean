@@ -1,1 +1,3 @@
-export default function AnalysisSummary({analysis}){ return <div className="card"><h2>{analysis.title}</h2><p className="muted">{analysis.purpose} · {analysis.status}</p><p>{analysis.summary || '탐지 후보와 노출 가능성 결과를 확인하세요.'}</p></div>; }
+import { purposeMeta } from '../../data/demoAnalyses.js';
+import { formatDate } from '../../utils/formatDate.js';
+export default function AnalysisSummary({ analysis }) { const meta = purposeMeta[analysis.purpose]; return <div className="card"><div className="between"><div><span className="badge badge-blue">{meta?.label || analysis.purpose}</span><h1 style={{ margin: '10px 0 6px' }}>{analysis.title}</h1><p className="muted">{formatDate(analysis.createdAt)} · {analysis.status}</p></div><span className="badge badge-yellow">탐지 후보 · 확인 필요</span></div></div>; }

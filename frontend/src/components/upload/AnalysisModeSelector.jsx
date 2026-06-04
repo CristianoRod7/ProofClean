@@ -1,2 +1,9 @@
-const modes=[['SNS','SNS 업로드'],['SECOND_HAND','중고거래'],['ASSIGNMENT','과제 제출'],['COMMUNITY','커뮤니티'],['ETC','기타']];
-export default function AnalysisModeSelector({value,onChange}){ return <div className="grid grid-3">{modes.map(([id,label])=><button key={id} type="button" className="card" onClick={()=>onChange(id)} style={{borderColor:value===id?'#2563eb':'#e2e8f0',textAlign:'left'}}><b>{label}</b><p className="muted">업로드 전 노출 가능성 후보를 점검합니다.</p></button>)}</div>; }
+import { Camera, FileQuestion, GraduationCap, MessagesSquare, Package } from 'lucide-react';
+import { purposeMeta } from '../../data/demoAnalyses.js';
+
+const icons = { SNS: Camera, SECOND_HAND: Package, ASSIGNMENT: GraduationCap, COMMUNITY: MessagesSquare, ETC: FileQuestion };
+const modes = ['SNS', 'SECOND_HAND', 'ASSIGNMENT', 'COMMUNITY', 'ETC'];
+
+export default function AnalysisModeSelector({ value, onChange }) {
+  return <div className="grid grid-3">{modes.map((mode) => { const Icon = icons[mode]; const meta = purposeMeta[mode]; return <button key={mode} type="button" onClick={() => onChange(mode)} className={`card mode-card ${value === mode ? 'selected' : ''}`}><div className="stat-icon"><Icon size={20} /></div><h3>{meta.label}</h3><p className="muted">{meta.description}</p></button>; })}</div>;
+}

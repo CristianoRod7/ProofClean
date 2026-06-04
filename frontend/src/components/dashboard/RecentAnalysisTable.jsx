@@ -1,2 +1,4 @@
-import { Link } from 'react-router-dom';import { formatDate } from '../../utils/formatDate.js';
-export default function RecentAnalysisTable({analyses=[]}){ return <div className="card"><h3>최근 분석</h3><table className="table"><tbody>{analyses.map(a=><tr key={a.id}><td>{a.title}</td><td>{a.purpose}</td><td>{a.riskScore}</td><td>{a.status}</td><td>{formatDate(a.createdAt)}</td><td><Link to={`/analyses/${a.id}`}>상세보기</Link></td></tr>)}</tbody></table></div>; }
+import { Link } from 'react-router-dom';
+import { formatDate } from '../../utils/formatDate.js';
+import { getRiskBadgeColor } from '../../utils/riskUtils.js';
+export default function RecentAnalysisTable({ analyses = [] }) { return <div className="card"><div className="between"><h3>최근 분석</h3><span className="badge badge-dark">{analyses.length}건</span></div><table className="table"><thead><tr><th>제목</th><th>목적</th><th>위험도</th><th>상태</th><th>생성일</th><th /></tr></thead><tbody>{analyses.map((a) => <tr key={a.id}><td><b>{a.title}</b></td><td>{a.purpose}</td><td><span className={`badge badge-${getRiskBadgeColor(a.riskLevel || a.riskScore)}`}>{a.riskScore}</span></td><td>{a.status}</td><td>{formatDate(a.createdAt)}</td><td><Link className="btn btn-muted" to={`/analyses/${a.id}/result`}>상세보기</Link></td></tr>)}</tbody></table></div>; }
