@@ -1,3 +1,34 @@
 import { useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
-export default function RecommendationList({ items = [] }) { const [done, setDone] = useState({}); return <div className="card"><h3>권장 조치</h3><div className="stack">{items.map((item) => <button key={item.id} className="row" onClick={() => setDone((prev) => ({ ...prev, [item.id]: !prev[item.id] }))} style={{ border: 0, background: done[item.id] ? '#dcfce7' : '#f8fafc', borderRadius: 15, padding: 13, textAlign: 'left' }}><CheckCircle2 size={20} color={done[item.id] ? '#22c55e' : '#94a3b8'} /><span style={{ textDecoration: done[item.id] ? 'line-through' : 'none' }}>{item.text || item.description}</span></button>)}</div></div>; }
+import { CheckCircle2, Circle } from 'lucide-react';
+
+export default function RecommendationList({ items = [] }) {
+  const [completed, setCompleted] = useState(() => new Set(items.filter((item) => item.completed).map((item) => item.id)));
+  const toggle = (id) => {
+    setCompleted((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  return (
+    <div className="recommendation-list">
+      <div className="section-head compact">
+        <div>
+          <span className="eyebrow">Checklist</span>
+          <h2>권장 조치</h2>
+        </div>
+        <span className="badge badge-green">{completed.size}/{items.length} 완료</span>
+      </div>
+      {items.map((item) => {
+        const done = completed.has(item.id);
+        return (
+          <button className={`recommendation-item ${done ? 'done' : ''}`} key={item.id} onClick={() => toggle(item.id)} type="button">
+            {done ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+            <span>{item.text}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}

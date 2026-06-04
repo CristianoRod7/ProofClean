@@ -3,11 +3,46 @@ import { recommendationsByPurpose } from './demoRecommendations.js';
 import { scenariosByPurpose } from './demoScenarios.js';
 
 export const purposeMeta = {
-  SNS: { label: 'SNS 업로드', icon: 'Camera', description: '얼굴, 위치 단서, 메타데이터 후보를 점검합니다.' },
-  SECOND_HAND: { label: '중고거래', icon: 'Package', description: '송장, 연락처, 주소 후보를 중점적으로 확인합니다.' },
-  ASSIGNMENT: { label: '과제 제출', icon: 'GraduationCap', description: '학번, 이메일, 저장소명, 문서 정보를 확인합니다.' },
-  COMMUNITY: { label: '커뮤니티', icon: 'MessagesSquare', description: '닉네임, 이메일, 지역 단서 후보를 확인합니다.' },
-  ETC: { label: '기타', icon: 'FileQuestion', description: '화면 속 텍스트와 연락처 후보를 넓게 점검합니다.' },
+  SNS: {
+    label: 'SNS 업로드',
+    shortLabel: 'SNS',
+    icon: 'Camera',
+    description: '얼굴, 위치 단서, 알림 텍스트, 메타데이터 후보를 점검합니다.',
+    examples: ['얼굴/인물', '간판·위치 단서', '계정명/알림'],
+    placeholder: 'sns',
+  },
+  SECOND_HAND: {
+    label: '중고거래',
+    shortLabel: '거래',
+    icon: 'Package',
+    description: '송장, 연락처, 주소, 거래 지역 후보를 중점적으로 확인합니다.',
+    examples: ['택배 송장', '전화번호', '주소·거래 장소'],
+    placeholder: 'invoice',
+  },
+  ASSIGNMENT: {
+    label: '과제 제출',
+    shortLabel: '과제',
+    icon: 'GraduationCap',
+    description: '학번, 이메일, 저장소명, 문서 정보를 확인합니다.',
+    examples: ['학번', '학교 이메일', '프로젝트 경로'],
+    placeholder: 'assignment',
+  },
+  COMMUNITY: {
+    label: '커뮤니티',
+    shortLabel: '커뮤니티',
+    icon: 'MessagesSquare',
+    description: '닉네임, 이메일, 지역 단서 후보를 확인합니다.',
+    examples: ['닉네임', '이메일', '지역명'],
+    placeholder: 'community',
+  },
+  ETC: {
+    label: '기타',
+    shortLabel: '기타',
+    icon: 'FileQuestion',
+    description: '화면 속 텍스트와 연락처 후보를 넓게 점검합니다.',
+    examples: ['텍스트 후보', '이메일', '문서 정보'],
+    placeholder: 'document',
+  },
 };
 
 export const purposeScores = {
@@ -71,7 +106,7 @@ export const demoAnalyses = [
     createdAt: '2026-05-15T10:30:00.000Z',
     updatedAt: '2026-05-15T10:34:00.000Z',
     fileName: 'sns-capture-sample.png',
-    filePreviewUrl: SAMPLE_IMAGE,
+    filePreviewUrl: '',
     maskedPreviewUrl: '',
     ...buildMockResult('SNS'),
   },
@@ -83,7 +118,7 @@ export const demoAnalyses = [
     createdAt: '2026-05-15T11:00:00.000Z',
     updatedAt: '2026-05-15T11:05:00.000Z',
     fileName: 'assignment-screen.png',
-    filePreviewUrl: SAMPLE_IMAGE,
+    filePreviewUrl: '',
     maskedPreviewUrl: '',
     ...buildMockResult('ASSIGNMENT'),
   },
