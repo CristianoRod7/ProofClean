@@ -6,7 +6,7 @@ AI 기반 업로드 전 개인정보 노출 위험 분석 및 자동 비식별�
 
 ProofClean은 사용자가 SNS, 커뮤니티, 중고거래, 과제 제출 등에 사진이나 캡처를 올리기 전에 파일 안의 개인정보 후보, 위치 단서, 노출 가능성을 점검하고 안전본을 확인할 수 있도록 돕는 웹 서비스 MVP입니다.
 
-이번 버전은 **백엔드 없이도 시연 가능한 React/Vite 프론트엔드 단독 MVP**입니다. 인증, 분석 생성, 샘플 업로드, 위험도 산출, 탐지 후보 표시, 마스킹 안전본 비교, 기록 조회는 모두 브라우저 `localStorage`와 mock 데이터를 기반으로 동작합니다.
+이번 버전은 기존 프로젝트의 `frontend/` 스캐폴드와 충돌하지 않도록 `proofclean-demo/frontend/`에 분리한 **백엔드 없이도 시연 가능한 React/Vite 프론트엔드 단독 MVP**입니다. 인증, 분석 생성, 샘플 업로드, 위험도 산출, 탐지 후보 표시, 마스킹 안전본 비교, 기록 조회는 모두 브라우저 `localStorage`와 mock 데이터를 기반으로 동작합니다.
 
 > ProofClean의 결과는 “확정 판정”이 아니라 “탐지 후보”와 “노출 가능성” 안내입니다. 최종 확인은 사용자가 직접 진행하는 human-in-the-loop 구조를 따릅니다.
 
@@ -36,7 +36,7 @@ ProofClean은 사용자가 SNS, 커뮤니티, 중고거래, 과제 제출 등에
 
 ```text
 ProofClean/
-├── frontend/
+├── proofclean-demo/frontend/
 │   ├── index.html
 │   ├── package.json
 │   ├── vite.config.js
@@ -50,14 +50,13 @@ ProofClean/
 │       ├── services/
 │       ├── styles/
 │       └── utils/
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
 ## 로컬 실행 방법
 
 ```bash
-cd frontend
+cd proofclean-demo/frontend
 npm install
 npm run dev
 ```
@@ -71,7 +70,7 @@ http://localhost:5173
 ## 빌드 방법
 
 ```bash
-cd frontend
+cd proofclean-demo/frontend
 npm run build
 ```
 
