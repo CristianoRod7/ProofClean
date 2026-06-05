@@ -19,7 +19,7 @@ export default function Header() {
         </Link>
         <nav className="header-nav brand-nav" aria-label="브랜드 메뉴">
           <a href="/#scan">Scan</a>
-          <a href="/#ecosystem">Risk</a>
+          <a href="/#flow">Risk</a>
           <a href="/#clean">Clean</a>
           <a href="/#compare">Compare</a>
           <Link to="/dashboard">Dashboard</Link>
