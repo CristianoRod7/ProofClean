@@ -1,6 +1,8 @@
+import { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Eye, FileWarning, Fingerprint, Gauge, GitCompare, LockKeyhole, MapPin, ScanSearch, ShieldCheck, Sparkles } from 'lucide-react';
 import Header from '../components/layout/Header.jsx';
+import SplashIntro from '../components/intro/SplashIntro.jsx';
 import Card from '../components/common/Card.jsx';
 import ImagePreviewPanel from '../components/analysis/ImagePreviewPanel.jsx';
 import useAuth from '../hooks/useAuth.js';
@@ -21,6 +23,13 @@ const features = [
 ];
 
 export default function LandingPage() {
+  const [showIntro, setShowIntro] = useState(() => {
+    try {
+      return sessionStorage.getItem('proofclean_intro_seen') !== 'true';
+    } catch {
+      return true;
+    }
+  });
   const auth = useAuth();
   const navigate = useNavigate();
   const startDemo = async () => {
@@ -28,9 +37,18 @@ export default function LandingPage() {
     navigate('/dashboard');
   };
   const mock = buildMockResult('SECOND_HAND');
+  const finishIntro = useCallback(() => {
+    try {
+      sessionStorage.setItem('proofclean_intro_seen', 'true');
+    } catch {
+      // The intro can still finish when storage is unavailable.
+    }
+    setShowIntro(false);
+  }, []);
 
   return (
     <>
+      {showIntro && <SplashIntro onFinish={finishIntro} duration={2100} />}
       <Header />
       <main>
         <section className="hero">

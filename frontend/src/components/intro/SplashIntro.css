@@ -1,0 +1,231 @@
+.splash-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #0f172a;
+  background:
+    linear-gradient(rgba(255, 255, 255, .48), rgba(248, 250, 252, .74)),
+    radial-gradient(circle at 25% 22%, rgba(37, 99, 235, .16), transparent 33%),
+    radial-gradient(circle at 78% 72%, rgba(20, 184, 166, .17), transparent 32%),
+    #f8fafc;
+  opacity: 1;
+  isolation: isolate;
+  animation: introSurfaceIn 260ms ease-out both;
+}
+
+.splash-intro--exiting {
+  pointer-events: none;
+  animation: introExit 360ms cubic-bezier(.4, 0, .2, 1) forwards;
+}
+
+.splash-intro__ambient {
+  position: absolute;
+  width: min(52vw, 680px);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  filter: blur(80px);
+  opacity: .34;
+  animation: subtlePulse 1.9s ease-in-out infinite alternate;
+}
+
+.splash-intro__ambient--blue { top: -28%; left: -14%; background: #60a5fa; }
+.splash-intro__ambient--mint { right: -16%; bottom: -34%; background: #5eead4; animation-delay: 280ms; }
+
+.splash-intro__content {
+  position: relative;
+  z-index: 2;
+  width: min(92vw, 820px);
+  display: grid;
+  justify-items: center;
+}
+
+.splash-intro__mark {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 22px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb, #06b6d4 56%, #14b8a6);
+  box-shadow: 0 18px 45px rgba(37, 99, 235, .24);
+  opacity: 0;
+  transform: translateY(10px) scale(.9);
+  animation: markReveal 520ms cubic-bezier(.2, .8, .2, 1) 120ms forwards;
+}
+
+.splash-intro__logo-wrap {
+  position: relative;
+  padding: 12px 28px 18px;
+  overflow: hidden;
+}
+
+.splash-intro__logo {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  font-size: clamp(42px, 7vw, 92px);
+  font-weight: 900;
+  line-height: .98;
+  letter-spacing: -.065em;
+  opacity: 0;
+  transform: translateY(12px);
+  filter: blur(5px);
+  animation: logoReveal 700ms cubic-bezier(.16, 1, .3, 1) 180ms forwards;
+}
+
+.splash-intro__logo i {
+  width: clamp(10px, 1.2vw, 16px);
+  height: clamp(10px, 1.2vw, 16px);
+  margin: 0 clamp(8px, 1vw, 13px) 0 clamp(11px, 1.2vw, 16px);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #06b6d4, #14b8a6);
+  box-shadow: 0 0 0 7px rgba(6, 182, 212, .1), 0 0 28px rgba(20, 184, 166, .56);
+  animation: subtlePulse 750ms ease-in-out 720ms 2 alternate;
+}
+
+.splash-intro__scan {
+  position: absolute;
+  z-index: 4;
+  left: -45%;
+  top: 48%;
+  width: 54%;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #06b6d4 30%, #5eead4 58%, #14b8a6 76%, transparent);
+  box-shadow: 0 0 10px #22d3ee, 0 0 26px rgba(20, 184, 166, .72);
+  opacity: 0;
+  transform: translateX(0) rotate(-3deg) scaleX(.7);
+  animation: scanSweep 950ms cubic-bezier(.18, .72, .2, 1) 590ms forwards;
+}
+
+.splash-intro__scan::after {
+  content: '';
+  position: absolute;
+  inset: -13px 15% -13px;
+  background: rgba(34, 211, 238, .16);
+  filter: blur(10px);
+}
+
+.splash-intro__clean-flash {
+  position: absolute;
+  z-index: 1;
+  inset: 10px 22px;
+  background: linear-gradient(90deg, transparent, rgba(6, 182, 212, .12), rgba(20, 184, 166, .17), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: cleanFlash 560ms ease-out 1.02s forwards;
+}
+
+.splash-intro__status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #64748b;
+  opacity: 0;
+  transform: translateY(7px);
+  animation: subtitleFade 520ms ease-out 1.08s forwards;
+}
+
+.splash-intro__status p {
+  margin: 0;
+  font-size: clamp(13px, 1.5vw, 16px);
+  font-weight: 750;
+  letter-spacing: .025em;
+}
+
+.splash-intro__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #14b8a6;
+  box-shadow: 0 0 14px rgba(20, 184, 166, .72);
+  animation: subtlePulse 600ms ease-in-out infinite alternate;
+}
+
+.splash-intro__progress {
+  width: min(260px, 58vw);
+  height: 2px;
+  margin-top: 22px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dbe4ef;
+  opacity: 0;
+  animation: subtitleFade 320ms ease-out 1.15s forwards;
+}
+
+.splash-intro__progress i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #06b6d4, #14b8a6);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: introProgress 800ms cubic-bezier(.2, .75, .25, 1) 1.16s forwards;
+}
+
+.splash-intro__caption {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+  z-index: 2;
+  margin: 0;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .22em;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  opacity: 0;
+  animation: subtitleFade 500ms ease-out 1.25s forwards;
+}
+
+@keyframes introSurfaceIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes markReveal { to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes logoReveal { to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+@keyframes scanSweep {
+  0% { opacity: 0; transform: translateX(0) rotate(-3deg) scaleX(.72); }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(270%) rotate(-3deg) scaleX(1); }
+}
+@keyframes cleanFlash { 0% { opacity: 0; transform: scaleX(0); } 40% { opacity: 1; } 100% { opacity: 0; transform: scaleX(1); } }
+@keyframes subtitleFade { to { opacity: 1; transform: translateY(0); } }
+@keyframes introProgress { to { transform: scaleX(1); } }
+@keyframes introExit { to { opacity: 0; visibility: hidden; transform: scale(1.012); } }
+@keyframes subtlePulse { to { opacity: .72; transform: scale(1.045); } }
+
+@media (max-width: 520px) {
+  .splash-intro__logo-wrap { padding-inline: 12px; }
+  .splash-intro__logo { letter-spacing: -.055em; }
+  .splash-intro__caption { bottom: 24px; letter-spacing: .14em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-intro,
+  .splash-intro--exiting,
+  .splash-intro__mark,
+  .splash-intro__logo,
+  .splash-intro__status,
+  .splash-intro__progress,
+  .splash-intro__caption,
+  .splash-intro__progress i {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+  }
+
+  .splash-intro__scan,
+  .splash-intro__clean-flash,
+  .splash-intro__ambient {
+    display: none;
+  }
+}
