@@ -1,3 +1,24 @@
+import { CalendarDays, Clock3, ShieldCheck } from 'lucide-react';
 import { purposeMeta } from '../../data/demoAnalyses.js';
 import { formatDate } from '../../utils/formatDate.js';
-export default function AnalysisSummary({ analysis }) { const meta = purposeMeta[analysis.purpose]; return <div className="card"><div className="between"><div><span className="badge badge-blue">{meta?.label || analysis.purpose}</span><h1 style={{ margin: '10px 0 6px' }}>{analysis.title}</h1><p className="muted">{formatDate(analysis.createdAt)} · {analysis.status}</p></div><span className="badge badge-yellow">탐지 후보 · 확인 필요</span></div></div>; }
+import Badge from '../common/Badge.jsx';
+
+export default function AnalysisSummary({ analysis }) {
+  const meta = purposeMeta[analysis.purpose];
+  return (
+    <section className="analysis-summary card">
+      <div>
+        <div className="row">
+          <Badge color="blue">{meta?.label || analysis.purpose}</Badge>
+          <Badge color={analysis.status === 'MASKED' ? 'green' : 'yellow'}><ShieldCheck size={14} /> {analysis.status}</Badge>
+        </div>
+        <h1>{analysis.title}</h1>
+        <p className="muted">{meta?.description}</p>
+      </div>
+      <div className="summary-meta">
+        <span><CalendarDays size={16} /> {formatDate(analysis.createdAt)}</span>
+        <span><Clock3 size={16} /> Human-in-the-loop 확인 필요</span>
+      </div>
+    </section>
+  );
+}

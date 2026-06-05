@@ -1,3 +1,7 @@
-export default function Card({ className = '', children, ...props }) {
-  return <div className={`card ${className}`} {...props}>{children}</div>;
+export default function Card({ className = '', interactive = false, children, ...props }) {
+  return (
+    <div className={`card ${interactive ? 'card-interactive' : ''} ${className}`.trim()} {...props}>
+      {children}
+    </div>
+  );
 }

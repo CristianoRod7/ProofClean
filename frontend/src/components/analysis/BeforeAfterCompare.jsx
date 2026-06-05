@@ -1,2 +1,28 @@
 import ImagePreviewPanel from './ImagePreviewPanel.jsx';
-export default function BeforeAfterCompare({ analysis }) { return <div className="compare-grid"><div className="card"><div className="between"><h3>원본</h3><span className="badge badge-blue">Original</span></div><ImagePreviewPanel src={analysis.filePreviewUrl} findings={analysis.findings} /></div><div className="card"><div className="between"><h3>안전본</h3><span className="badge badge-green">자동 마스킹 완료</span></div><ImagePreviewPanel src={analysis.maskedPreviewUrl || analysis.filePreviewUrl} findings={analysis.findings} masked /></div></div>; }
+
+export default function BeforeAfterCompare({ analysis }) {
+  return (
+    <div className="compare-stage">
+      <div className="compare-card original">
+        <div className="compare-label">원본</div>
+        <ImagePreviewPanel
+          src={analysis.filePreviewUrl}
+          purpose={analysis.purpose}
+          findings={analysis.findings}
+          showLegend={false}
+        />
+      </div>
+      <div className="compare-divider"><span>VS</span></div>
+      <div className="compare-card safe">
+        <div className="compare-label safe-label">안전본</div>
+        <ImagePreviewPanel
+          src={analysis.maskedPreviewUrl || analysis.filePreviewUrl}
+          purpose={analysis.purpose}
+          findings={analysis.findings}
+          masked
+          showLegend={false}
+        />
+      </div>
+    </div>
+  );
+}

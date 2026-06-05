@@ -1,4 +1,19 @@
-import { AlertTriangle } from 'lucide-react';
+import { Route, ShieldQuestion } from 'lucide-react';
 import Badge from '../common/Badge.jsx';
-import { getRiskBadgeColor } from '../../utils/riskUtils.js';
-export default function RiskScenarioCard({ scenario }) { return <div className="card card-compact"><div className="between"><div className="row"><AlertTriangle size={18} color="#f59e0b" /><b>{scenario.title}</b></div><Badge color={getRiskBadgeColor(scenario.riskLevel)}>{scenario.riskLevel}</Badge></div><p className="muted" style={{ lineHeight: 1.65 }}>{scenario.text}</p></div>; }
+import { getRiskBadgeColor, getRiskLabel } from '../../utils/riskUtils.js';
+
+export default function RiskScenarioCard({ scenario }) {
+  return (
+    <article className="scenario-card">
+      <div className="scenario-icon"><Route size={19} /></div>
+      <div>
+        <div className="between scenario-head">
+          <h3>{scenario.title}</h3>
+          <Badge color={getRiskBadgeColor(scenario.level)}>{getRiskLabel(scenario.level)}</Badge>
+        </div>
+        <p>{scenario.description}</p>
+        <small><ShieldQuestion size={14} /> 가능성 기반 안내이며 최종 판단은 사용자가 직접 확인합니다.</small>
+      </div>
+    </article>
+  );
+}
