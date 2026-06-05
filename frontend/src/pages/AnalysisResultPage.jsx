@@ -34,6 +34,7 @@ export default function AnalysisResultPage() {
   return (
     <MainLayout>
       <div className="page-wide result-page">
+        <div className="report-kicker"><span>Exposure Report</span><b>LIVE ANALYSIS / {analysis.riskScore}</b></div>
         <AnalysisSummary analysis={analysis} />
         <div className="result-notice" role="note">
           <span><Info size={19} /></span>

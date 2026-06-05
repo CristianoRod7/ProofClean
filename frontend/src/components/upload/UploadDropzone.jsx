@@ -12,7 +12,7 @@ export default function UploadDropzone({ onFile }) {
 
   return (
     <label
-      className={`dropzone ${dragging ? 'dragging' : ''}`}
+      className={`dropzone brand-dropzone ${dragging ? 'dragging' : ''}`}
       onDragOver={(event) => { event.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
       onDrop={handleDrop}

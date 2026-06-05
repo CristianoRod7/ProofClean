@@ -43,11 +43,11 @@ export default function DashboardPage() {
       <div className="dashboard-page page-wide">
         <section className="dashboard-hero">
           <div>
-            <span className="badge badge-cyan">Security dashboard</span>
-            <h1>안녕하세요, {user?.name || 'Demo User'}님</h1>
-            <p>오늘도 업로드 전 노출 가능성을 점검해보세요. 모든 결과는 브라우저 localStorage 기반 mock 데이터로 유지됩니다.</p>
+            <span className="badge badge-cyan">Privacy Command Center</span>
+            <h1>Privacy Command Center</h1>
+            <p>{user?.name || 'Demo User'}님의 업로드 전 노출 위험과 안전본 상태를 한곳에서 관리합니다.</p>
           </div>
-          <Link className="btn btn-primary btn-lg" to="/analyses/new"><Plus size={19} /> 새 분석 시작</Link>
+          <Link className="btn btn-primary btn-lg" to="/analyses/new"><Plus size={19} /> New Privacy Scan</Link>
         </section>
         <DashboardStats analyses={analyses} />
         <div className="grid grid-2 dashboard-main-grid">

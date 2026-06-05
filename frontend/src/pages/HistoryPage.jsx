@@ -26,7 +26,7 @@ export default function HistoryPage() {
       <div className="page-wide history-page">
         <section className="page-hero compact">
           <span className="badge badge-cyan">History</span>
-          <h1>분석 기록</h1>
+          <h1>Scan History</h1>
           <p>localStorage에 저장된 분석 기록을 검색하고 목적/위험도별로 필터링합니다.</p>
         </section>
         <section className="history-filters card">

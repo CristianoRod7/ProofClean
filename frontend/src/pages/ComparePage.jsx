@@ -31,7 +31,7 @@ export default function ComparePage() {
         <section className="page-hero compact compare-hero">
           <div>
             <span className="badge badge-green">자동 마스킹 완료</span>
-            <h1>원본/안전본 비교</h1>
+            <h1>Original vs Safe Preview</h1>
             <p>오른쪽 안전본은 detection finding 좌표를 기반으로 검은 마스킹 박스를 overlay한 mock preview입니다.</p>
           </div>
           <div className="row"><DownloadButton onClick={download} /><Link className="btn btn-muted" to={`/analyses/${id}/result`}><ArrowLeft size={18} /> 결과로 돌아가기</Link></div>

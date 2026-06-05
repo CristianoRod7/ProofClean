@@ -11,27 +11,29 @@ export default function Header() {
   };
 
   return (
-    <header className="header">
+    <header className="header brand-header">
       <div className="page header-inner">
-        <Link className="logo" to="/">
-          <span className="logo-mark"><ShieldCheck size={20} /></span>
+        <Link className="logo brand-logo" to="/">
+          <span className="logo-mark"><ShieldCheck size={19} /></span>
           <span>ProofClean</span>
         </Link>
-        <nav className="header-nav">
-          <a href="/#features">기능</a>
-          <a href="/#flow">분석 흐름</a>
-          <a href="/#principles">보안 원칙</a>
+        <nav className="header-nav brand-nav" aria-label="브랜드 메뉴">
+          <a href="/#scan">Scan</a>
+          <a href="/#ecosystem">Risk</a>
+          <a href="/#clean">Clean</a>
+          <a href="/#compare">Compare</a>
+          <Link to="/dashboard">Dashboard</Link>
         </nav>
         <div className="header-actions">
           {auth.isAuthenticated ? (
             <>
-              <Link className="btn btn-muted" to="/dashboard">대시보드</Link>
-              <button className="btn btn-ghost" onClick={auth.logout}>로그아웃</button>
+              <Link className="btn btn-muted" to="/dashboard">Dashboard</Link>
+              <button className="btn btn-ghost" onClick={auth.logout}>Logout</button>
             </>
           ) : (
             <>
-              <Link className="btn btn-muted" to="/login">로그인</Link>
-              <button className="btn btn-primary" onClick={startDemo}>데모 시작 <ArrowRight size={17} /></button>
+              <Link className="btn btn-ghost" to="/login">Login</Link>
+              <button className="btn btn-primary brand-header-cta" onClick={startDemo}>Start Demo <ArrowRight size={17} /></button>
             </>
           )}
         </div>

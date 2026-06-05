@@ -28,8 +28,8 @@ export default function NewAnalysisPage() {
       <form className="page new-analysis-page" onSubmit={submit}>
         <section className="page-hero compact">
           <span className="badge badge-cyan"><FilePlus2 size={14} /> New analysis</span>
-          <h1>새 업로드 전 점검을 시작합니다</h1>
-          <p>분석 목적에 따라 탐지 후보 예시와 mock 결과가 달라집니다.</p>
+          <h1>Choose your upload context</h1>
+          <p>공유할 채널과 상황을 선택하면 ProofClean이 확인할 흔적의 맥락을 구성합니다.</p>
         </section>
         <ErrorAlert message={error} />
         <section className="card form-card">

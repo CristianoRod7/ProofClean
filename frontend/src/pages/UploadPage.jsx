@@ -52,8 +52,9 @@ export default function UploadPage() {
     <MainLayout>
       <div className="page upload-page">
         <section className="page-hero compact">
-          <span className="badge badge-blue">파일 업로드</span>
-          <h1>{analysis.title}</h1>
+          <span className="badge badge-blue">Secure intake</span>
+          <h1>Drop a file. Find hidden traces.</h1>
+          <h2 className="upload-project-title">{analysis.title}</h2>
           <p>분석 결과는 탐지 후보입니다. 최종 확인은 사용자가 직접 진행합니다.</p>
         </section>
         {loading ? <LoadingAnalysisScreen /> : (
