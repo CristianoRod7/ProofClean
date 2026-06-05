@@ -1,43 +1,20 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowDown, ArrowRight, Check, GraduationCap, Package, ScanLine, ShieldCheck, Users, View } from 'lucide-react';
+import { ArrowDownRight, ArrowRight, CheckCircle2 } from 'lucide-react';
 import Header from '../components/layout/Header.jsx';
 import SplashIntro from '../components/intro/SplashIntro.jsx';
+import ScanVisual from '../components/visuals/ScanVisual.jsx';
+import RiskVisual from '../components/visuals/RiskVisual.jsx';
+import CleanVisual from '../components/visuals/CleanVisual.jsx';
+import ContextVisual from '../components/visuals/ContextVisual.jsx';
 import useAuth from '../hooks/useAuth.js';
 
-const flow = [
-  { number: '01', title: 'Scan', copy: '이미지와 캡처 속 숨은 노출 후보를 찾습니다.' },
-  { number: '02', title: 'Risk', copy: '공유 맥락에 맞춰 노출 가능성을 정리합니다.' },
-  { number: '03', title: 'Clean', copy: '확인이 필요한 영역을 안전하게 가립니다.' },
-  { number: '04', title: 'Compare', copy: '원본과 안전본을 나란히 검토합니다.' },
-];
 const contexts = [
-  { title: 'Social', candidates: '얼굴 · 위치 · 계정명', icon: View },
-  { title: 'Marketplace', candidates: '송장 · 연락처 · 주소', icon: Package },
-  { title: 'Assignment', candidates: '학번 · 이메일 · 경로', icon: GraduationCap },
-  { title: 'Community', candidates: '닉네임 · 지역 · 문서', icon: Users },
+  { type: 'SNS', title: 'SNS Upload', meta: '얼굴 · 위치 · 계정명' },
+  { type: 'MARKETPLACE', title: 'Marketplace', meta: '송장 · 연락처 · 주소' },
+  { type: 'ASSIGNMENT', title: 'Assignment', meta: '학번 · 이메일 · 경로' },
+  { type: 'COMMUNITY', title: 'Community', meta: '닉네임 · 지역 · 문서' },
 ];
-
-function MinimalScanPreview() {
-  return (
-    <div className="minimal-scan" aria-label="ProofClean 개인정보 탐지 예시">
-      <div className="minimal-scan__top"><span>LIVE SCAN</span><i>READY</i></div>
-      <div className="minimal-document">
-        <div className="document-heading" />
-        <div className="document-line wide" />
-        <div className="document-line" />
-        <div className="document-line short" />
-        <div className="document-block" />
-        <span className="minimal-detection detection-a" />
-        <span className="minimal-detection detection-b" />
-        <span className="minimal-detection detection-c" />
-        <div className="minimal-scan-line" />
-      </div>
-      <div className="minimal-risk"><small>EXPOSURE RISK</small><b>87</b></div>
-      <div className="minimal-safe"><ShieldCheck size={15} /> Safe preview ready</div>
-    </div>
-  );
-}
 
 export default function LandingPage() {
   const [showIntro, setShowIntro] = useState(() => {
@@ -52,54 +29,29 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="brand-shell brand-page">
+    <div className="board-site">
       {showIntro && <SplashIntro onFinish={finishIntro} duration={2050} />}
       <Header />
-      <main>
-        <section className="minimal-hero" id="scan">
-          <div className="page minimal-hero__grid">
-            <div className="minimal-hero__copy">
-              <span className="brand-eyebrow"><ScanLine size={14} /> Privacy Protection OS</span>
-              <h1>Upload Clean.<br /><span>Share Safe.</span></h1>
-              <p className="brand-subtitle">Scan hidden traces before you share. Review exposure risks and create a safer preview.</p>
-              <p className="minimal-korean">공유 전, 이미지와 캡처 속 노출 가능성을 먼저 확인하세요.</p>
-              <div className="minimal-actions">
-                <button className="primary-action" onClick={startDemo}>Start Demo <ArrowRight size={18} /></button>
-                <a className="quiet-action" href="#flow">View Scan Flow <ArrowDown size={17} /></a>
-              </div>
-              <div className="minimal-trust">{['No backend required', 'Human-in-the-loop', 'Local demo data'].map((item) => <span key={item}><Check size={13} />{item}</span>)}</div>
-            </div>
-            <MinimalScanPreview />
-          </div>
+      <main className="board-home page">
+        <section className="board-hero">
+          <div><span className="board-kicker"><i /> Local privacy scanner ready.</span><h1>Upload Clean.<br />Share Safe.</h1></div>
+          <div className="board-hero-side"><p>Scan hidden traces before you share.</p><div className="board-actions"><button className="board-button board-button-primary" onClick={startDemo}>Start Demo <ArrowRight size={16} /></button><a className="board-button" href="#scan-board">View Scan Flow <ArrowDownRight size={16} /></a></div></div>
         </section>
 
-        <section className="brand-section minimal-flow" id="flow">
-          <div className="page">
-            <div className="minimal-section-heading"><span className="mono-label">THE SYSTEM</span><h2>Scan. Risk.<br />Clean. Compare.</h2><p>공유 전에 필요한 네 가지 움직임만 남겼습니다.</p></div>
-            <div className="minimal-flow-grid">
-              {flow.map((item) => <article key={item.number}><span>{item.number}</span><h3>{item.title}</h3><p>{item.copy}</p></article>)}
-            </div>
-          </div>
+        <section className="showcase-grid showcase-grid-main" id="scan-board" aria-label="ProofClean scan board">
+          <article className="showcase-card feature-card feature-scan"><div className="card-label"><span>01 / SCAN</span><em>LIVE</em></div><h2>Hidden trace detection.</h2><ScanVisual /><footer><span>Candidates</span><b>04</b></footer></article>
+          <article className="showcase-card feature-card feature-risk"><div className="card-label"><span>02 / RISK</span><em>REVIEW</em></div><h2>Exposure, made visible.</h2><RiskVisual /><footer><span>Risk status</span><b>High review</b></footer></article>
+          <article className="showcase-card feature-card feature-clean"><div className="card-label"><span>03 / CLEAN</span><em>READY</em></div><h2>Safer preview, one step away.</h2><CleanVisual /><footer><span>Masking</span><b>Safe preview ready</b></footer></article>
         </section>
 
-        <section className="brand-section minimal-context" id="clean">
-          <div className="page">
-            <div className="minimal-section-heading"><span className="mono-label">SHARE WITH CONTEXT</span><h2>One privacy layer.<br />Every upload context.</h2></div>
-            <div className="minimal-context-grid">
-              {contexts.map(({ title, candidates, icon: Icon }) => <article key={title}><Icon size={21} /><h3>{title}</h3><p>{candidates}</p></article>)}
-            </div>
-          </div>
+        <section className="board-section-head"><div><span>04 / CONTEXTS</span><h2>Built for every upload.</h2></div><p><CheckCircle2 size={15} /> Human review stays in control.</p></section>
+        <section className="showcase-grid context-showcase-grid">
+          {contexts.map((item) => <button className="showcase-card context-showcase-card" key={item.type} onClick={startDemo}><div className="card-label"><span>CONTEXT</span><em>{item.type === 'MARKETPLACE' ? 'MARKET' : item.type}</em></div><ContextVisual type={item.type} /><footer><div><h3>{item.title}</h3><p>{item.meta}</p></div><ArrowRight size={17} /></footer></button>)}
         </section>
 
-        <section className="brand-section minimal-principle" id="compare">
-          <div className="page"><span className="mono-label">REVIEW, NOT BLIND TRUST</span><h2>The Privacy OS<br />for safer sharing.</h2><p>탐지는 신호입니다. 최종 공유 여부는 사용자가 직접 결정합니다.</p></div>
-        </section>
-
-        <section className="brand-section minimal-final">
-          <div className="page"><div><span className="mono-label">READY WHEN YOU ARE</span><h2>Try a privacy scan<br />in 30 seconds.</h2></div><button className="primary-action" onClick={startDemo}>Start Demo <ArrowRight size={19} /></button></div>
-        </section>
+        <section className="board-final"><div><span>READY WHEN YOU ARE</span><h2>Try a privacy scan in 30 seconds.</h2></div><button className="board-button board-button-light" onClick={startDemo}>Start Demo <ArrowRight size={17} /></button></section>
       </main>
-      <footer className="minimal-footer"><div className="page"><b>ProofClean</b><span>Upload Clean. Share Safe.</span><span>© 2026</span></div></footer>
+      <footer className="board-footer page"><b>ProofClean</b><span>Privacy Scan Gallery · Local mock workspace</span><span>© 2026</span></footer>
     </div>
   );
 }

@@ -25,14 +25,14 @@ export default function NewAnalysisPage() {
 
   return (
     <MainLayout>
-      <form className="page new-analysis-page" onSubmit={submit}>
-        <section className="page-hero compact">
-          <span className="badge badge-cyan"><FilePlus2 size={14} /> New analysis</span>
+      <form className="page-wide board-page new-analysis-page" onSubmit={submit}>
+        <section className="board-page-header">
+          <span><FilePlus2 size={14} /> NEW SCAN / CONTEXT</span>
           <h1>Choose your upload context</h1>
           <p>공유할 채널과 상황을 선택하면 ProofClean이 확인할 흔적의 맥락을 구성합니다.</p>
         </section>
         <ErrorAlert message={error} />
-        <section className="card form-card">
+        <section className="showcase-card board-form-card">
           <label className="field-label">분석 제목</label>
           <input className="input input-xl" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="예: SNS 업로드 전 사진 점검" />
         </section>
@@ -40,7 +40,7 @@ export default function NewAnalysisPage() {
           <div className="section-head compact"><div><span className="eyebrow">Purpose</span><h2>분석 목적 선택</h2></div><span className="badge badge-dark">선택 필수</span></div>
           <AnalysisModeSelector value={purpose} onChange={setPurpose} />
         </section>
-        <div className="sticky-cta card">
+        <div className="board-sticky-cta">
           <div><b>다음 단계: 파일 업로드</b><p className="muted">샘플 이미지로도 전체 분석 흐름을 시연할 수 있습니다.</p></div>
           <button className="btn btn-primary btn-lg" type="submit">다음 단계로 <ArrowRight size={18} /></button>
         </div>

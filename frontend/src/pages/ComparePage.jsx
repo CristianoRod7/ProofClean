@@ -27,17 +27,17 @@ export default function ComparePage() {
 
   return (
     <MainLayout>
-      <div className="page-wide compare-page">
-        <section className="page-hero compact compare-hero">
+      <div className="page-wide board-page compare-page">
+        <section className="board-page-header compare-hero">
           <div>
-            <span className="badge badge-green">자동 마스킹 완료</span>
+            <span>COMPARE BOARD / MASKING COMPLETE</span>
             <h1>Original vs Safe Preview</h1>
             <p>오른쪽 안전본은 detection finding 좌표를 기반으로 검은 마스킹 박스를 overlay한 mock preview입니다.</p>
           </div>
           <div className="row"><DownloadButton onClick={download} /><Link className="btn btn-muted" to={`/analyses/${id}/result`}><ArrowLeft size={18} /> 결과로 돌아가기</Link></div>
         </section>
         <BeforeAfterCompare analysis={analysis} />
-        <div className="compare-lower-grid">
+        <div className="compare-lower-grid board-compare-lower">
           <Card>
             <div className="section-head compact"><div><span className="eyebrow">Masked items</span><h2>마스킹된 항목</h2></div></div>
             <DetectionList findings={analysis.findings} activeId={activeId} onSelect={setActiveId} />

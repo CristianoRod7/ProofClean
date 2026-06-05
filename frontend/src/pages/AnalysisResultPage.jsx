@@ -33,15 +33,15 @@ export default function AnalysisResultPage() {
 
   return (
     <MainLayout>
-      <div className="page-wide result-page">
-        <div className="report-kicker"><span>Exposure Report</span><b>LIVE ANALYSIS / {analysis.riskScore}</b></div>
+      <div className="page-wide board-page result-page">
+        <div className="report-kicker board-report-kicker"><span>Exposure Report</span><b>LIVE ANALYSIS / {analysis.riskScore}</b></div>
         <AnalysisSummary analysis={analysis} />
         <div className="result-notice" role="note">
           <span><Info size={19} /></span>
           <div><b>분석 결과는 탐지 후보입니다.</b><p>개인정보 확정 판정이 아니며, 업로드 전 최종 확인은 사용자가 직접 해야 합니다.</p></div>
         </div>
-        <div className="result-grid">
-          <Card className="image-analysis-card">
+        <div className="result-grid board-result-grid">
+          <Card className="image-analysis-card showcase-card">
             <div className="section-head compact">
               <div>
                 <span className="eyebrow">Visual detection map</span>
@@ -77,7 +77,7 @@ export default function AnalysisResultPage() {
             </Card>
           </aside>
         </div>
-        <div className="result-lower-grid">
+        <div className="result-lower-grid board-result-lower">
           <section className="card">
             <div className="section-head compact"><div><span className="eyebrow">Detection candidates</span><h2>탐지 후보</h2></div><span className="badge badge-dark">{analysis.findings.length}개</span></div>
             <DetectionList findings={analysis.findings} activeId={activeId} onSelect={setActiveId} />

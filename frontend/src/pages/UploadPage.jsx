@@ -50,15 +50,15 @@ export default function UploadPage() {
 
   return (
     <MainLayout>
-      <div className="page upload-page">
-        <section className="page-hero compact">
-          <span className="badge badge-blue">Secure intake</span>
+      <div className="page-wide board-page upload-page">
+        <section className="board-page-header">
+          <span>SCAN STATION / SECURE INTAKE</span>
           <h1>Drop a file. Find hidden traces.</h1>
           <h2 className="upload-project-title">{analysis.title}</h2>
           <p>분석 결과는 탐지 후보입니다. 최종 확인은 사용자가 직접 진행합니다.</p>
         </section>
         {loading ? <LoadingAnalysisScreen /> : (
-          <div className="upload-grid">
+          <div className="upload-grid board-upload-grid">
             <div className="stack">
               <ErrorAlert message={error} />
               <UploadDropzone onFile={onFile} />
@@ -68,7 +68,7 @@ export default function UploadPage() {
               </div>
               <FilePreview file={file} preview={preview || analysis.filePreviewUrl} purpose={analysis.purpose} />
             </div>
-            <aside className="stack">
+            <aside className="stack board-guide-stack">
               <Card className="guide-card">
                 <ShieldQuestion size={28} />
                 <h3>분석 결과는 탐지 후보입니다</h3>
