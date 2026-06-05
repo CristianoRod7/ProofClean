@@ -24,7 +24,7 @@ export default function RecentAnalysisTable({ analyses = [] }) {
           <tbody>
             {analyses.slice(0, 6).map((analysis) => (
               <tr key={analysis.id}>
-                <td><b>{analysis.title}</b><small>{analysis.fileName || '샘플/업로드 대기'}</small></td>
+                <td className="title-cell"><b>{analysis.title}</b><small>{analysis.fileName || '샘플/업로드 대기'}</small></td>
                 <td>{purposeMeta[analysis.purpose]?.label || analysis.purpose}</td>
                 <td><span className={`badge badge-${getRiskBadgeColor(analysis.riskLevel || analysis.riskScore)}`}>{analysis.riskScore} · {getRiskLabel(analysis.riskLevel || analysis.riskScore)}</span></td>
                 <td><span className="status-pill">{analysis.status}</span></td>

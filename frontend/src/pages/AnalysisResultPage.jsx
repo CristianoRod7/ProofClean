@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { ArrowLeft, GitCompare, WandSparkles } from 'lucide-react';
+import { ArrowLeft, GitCompare, Info, WandSparkles } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
 import AnalysisSummary from '../components/analysis/AnalysisSummary.jsx';
 import RiskScoreCard from '../components/analysis/RiskScoreCard.jsx';
@@ -35,6 +35,10 @@ export default function AnalysisResultPage() {
     <MainLayout>
       <div className="page-wide result-page">
         <AnalysisSummary analysis={analysis} />
+        <div className="result-notice" role="note">
+          <span><Info size={19} /></span>
+          <div><b>분석 결과는 탐지 후보입니다.</b><p>개인정보 확정 판정이 아니며, 업로드 전 최종 확인은 사용자가 직접 해야 합니다.</p></div>
+        </div>
         <div className="result-grid">
           <Card className="image-analysis-card">
             <div className="section-head compact">

@@ -57,7 +57,7 @@ export default function LandingPage() {
           <div className="page hero-grid">
             <div className="hero-copy">
               <span className="badge badge-cyan"><Sparkles size={14} /> AI 기반 업로드 전 개인정보 노출 가능성 점검</span>
-              <h1>올리기 전에,<br />먼저 검사하세요</h1>
+              <h1><span>올리기 전에,</span><span>먼저 검사하세요</span></h1>
               <p className="lead">사진과 문서 속 개인정보 노출 가능성을 분석하고 안전본을 생성합니다. 발표장에서 바로 보여줄 수 있는 보안 SaaS형 mock flow입니다.</p>
               <div className="hero-actions">
                 <button className="btn btn-primary btn-lg" onClick={startDemo}>데모 시작하기 <ArrowRight size={19} /></button>
@@ -92,9 +92,11 @@ export default function LandingPage() {
 
         <section className="section" id="features">
           <div className="page">
-            <div className="section-head">
-              <span className="eyebrow">Problem cases</span>
-              <h2>사용자가 놓치기 쉬운 노출 후보</h2>
+            <div className="section-head landing-section-head">
+              <div>
+                <span className="eyebrow">Problem cases</span>
+                <h2>사용자가 놓치기 쉬운 노출 후보</h2>
+              </div>
               <p className="muted">회색 박스가 아니라, 서비스가 실제로 확인해주는 대상이 무엇인지 한눈에 보여줍니다.</p>
             </div>
             <div className="grid grid-4">
