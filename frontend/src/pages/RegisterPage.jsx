@@ -27,7 +27,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <AuthLayout title="회원가입" subtitle="브라우저 localStorage에 저장되는 mock 계정을 생성합니다.">
+    <AuthLayout title="개인정보 점검 작업 공간 만들기" subtitle="이 브라우저에 저장되는 시연용 계정을 생성합니다.">
       <form className="form auth-form" onSubmit={submit}>
         <ErrorAlert message={error} />
         <label>이름<input className="input" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></label>

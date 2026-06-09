@@ -45,7 +45,7 @@ export default function ComparePage() {
           <Card className="download-guide">
             <Info size={28} />
             <h2>다운로드 안내</h2>
-            <p>현재 프론트엔드 MVP에서는 브라우저 mock 데이터로 비교 화면을 구성합니다. 실제 파일 다운로드는 백엔드 연동 후 활성화됩니다.</p>
+            <p>현재 시제품에서는 브라우저에 저장된 데모 데이터로 비교 화면을 구성합니다. 실제 파일 다운로드는 백엔드 연동 후 활성화됩니다.</p>
             <button className="btn btn-primary" onClick={download}>다운로드 동작 확인</button>
           </Card>
         </div>

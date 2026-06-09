@@ -95,7 +95,7 @@ export default function BrandPillars() {
           />
           <div className="brand-scan-line" aria-hidden="true" />
           <div className="visual-chip visual-chip-score"><Eye size={14} /> {active.id === 'risk' ? 'RISK 87' : '4 TRACES'}</div>
-          <div className="visual-chip visual-chip-safe"><ShieldCheck size={14} /> {active.id === 'scan' ? 'SCANNING' : 'SAFE PREVIEW'}</div>
+          <div className="visual-chip visual-chip-safe"><ShieldCheck size={14} /> {active.id === 'scan' ? '스캔 중' : '안전본 미리보기'}</div>
         </div>
       </div>
     </div>

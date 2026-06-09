@@ -4,9 +4,9 @@ import Sidebar from './Sidebar.jsx';
 
 export default function MainLayout({ children }) {
   return (
-    <div className="app-shell">
+    <div className="app-shell app-layout">
       <Sidebar />
-      <div className="app-content">
+      <div className="app-content main-content">
         <header className="mobile-appbar">
           <Link className="logo" to="/dashboard"><span className="logo-mark"><ShieldCheck size={18} /></span><span>ProofClean</span></Link>
           <nav aria-label="모바일 주요 메뉴">
@@ -15,7 +15,7 @@ export default function MainLayout({ children }) {
             <NavLink to="/history" aria-label="분석 기록"><History size={19} /></NavLink>
           </nav>
         </header>
-        <main className="main safe-area">{children}</main>
+        <main className="main safe-area"><div className="page-shell">{children}</div></main>
       </div>
     </div>
   );

@@ -77,12 +77,12 @@ export default function UploadPage() {
               <Card className="guide-card">
                 <FileType2 size={28} />
                 <h3>지원 형식</h3>
-                <p>jpg, jpeg, png, webp, pdf를 지원합니다. 프론트엔드 MVP에서는 이미지 미리보기와 대체 화면를 우선 표시합니다.</p>
+                <p>jpg, jpeg, png, webp, pdf를 지원합니다. 현재 시제품에서는 이미지 미리보기와 대체 화면을 우선 표시합니다.</p>
               </Card>
               <Card className="guide-card warning">
                 <AlertCircle size={28} />
                 <h3>백엔드 API 의존 없음</h3>
-                <p>현재 분석과 마스킹은 로컬 저장소 기반 데모 흐름로 동작합니다.</p>
+                <p>현재 분석과 마스킹은 로컬 저장소 기반 데모 흐름으로 동작합니다.</p>
               </Card>
             </aside>
           </div>

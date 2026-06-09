@@ -8,12 +8,12 @@ export default function AuthLayout({ title, subtitle, children }) {
         <div>
           <span className="badge badge-cyan">업로드 전 개인정보 점검</span>
           <h1>업로드 전 개인정보 노출 가능성을 점검하세요</h1>
-          <p>발표용 MVP에서도 실제 서비스처럼 분석 흐름, 위험도 점수, 마스킹 비교를 확인할 수 있습니다.</p>
+          <p>발표용 시제품에서도 실제 서비스처럼 분석 흐름, 위험도 점수, 마스킹 비교를 확인할 수 있습니다.</p>
         </div>
         <div className="auth-mini-grid">
           <div><ScanLine size={18} /><b>탐지 후보</b><span>송장·전화번호·위치 단서</span></div>
           <div><FileCheck2 size={18} /><b>안전본</b><span>마스킹 비교 미리보기</span></div>
-          <div><LockKeyhole size={18} /><b>localStorage</b><span>백엔드 없는 데모 흐름</span></div>
+          <div><LockKeyhole size={18} /><b>로컬 저장</b><span>백엔드 없는 데모 흐름</span></div>
         </div>
       </section>
       <section className="auth-card">
