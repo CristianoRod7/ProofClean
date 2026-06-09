@@ -86,7 +86,7 @@ export default function BrandPillars() {
           </div>
         </div>
         <div className={`pillar-visual pillar-visual--${active.id}`}>
-          <div className="visual-topline"><span>LIVE PRIVACY SCAN</span><b><i /> SYSTEM READY</b></div>
+          <div className="visual-topline"><span>개인정보 실시간 점검</span><b><i /> 시스템 준비 완료</b></div>
           <ImagePreviewPanel
             purpose="SECOND_HAND"
             findings={mock.findings}
@@ -95,7 +95,7 @@ export default function BrandPillars() {
           />
           <div className="brand-scan-line" aria-hidden="true" />
           <div className="visual-chip visual-chip-score"><Eye size={14} /> {active.id === 'risk' ? 'RISK 87' : '4 TRACES'}</div>
-          <div className="visual-chip visual-chip-safe"><ShieldCheck size={14} /> {active.id === 'scan' ? 'SCANNING' : 'SAFE PREVIEW'}</div>
+          <div className="visual-chip visual-chip-safe"><ShieldCheck size={14} /> {active.id === 'scan' ? '스캔 중' : '안전본 미리보기'}</div>
         </div>
       </div>
     </div>

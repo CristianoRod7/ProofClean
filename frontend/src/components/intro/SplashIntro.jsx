@@ -27,7 +27,7 @@ export default function SplashIntro({ onFinish, duration = 2050 }) {
           <div className="splash-intro__scan" aria-hidden="true" />
           <div className="splash-intro__clean-reveal" aria-hidden="true" />
         </div>
-        <p className="splash-intro__status"><i aria-hidden="true" />Scanning hidden traces...</p>
+        <p className="splash-intro__status"><i aria-hidden="true" />숨은 노출 단서를 확인하는 중...</p>
       </div>
     </div>
   );

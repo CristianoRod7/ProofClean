@@ -13,9 +13,9 @@ export default function DashboardPage() {
   return (
     <MainLayout>
       <div className="page-wide board-page dashboard-page">
-        <section className="board-page-header"><div><span>LOCAL WORKSPACE / {user?.name || 'DEMO USER'}</span><h1>Privacy Command Board</h1><p>Your local scan workspace.</p></div><Link className="board-button board-button-primary" to="/analyses/new"><Plus size={17} /> New Scan</Link></section>
+        <section className="board-page-header"><div><span>로컬 작업 공간 / {user?.name || '데모 사용자'}</span><h1>개인정보 점검 대시보드</h1><p>최근 분석 기록과 안전본 생성 현황을 확인하세요.</p></div><Link className="board-button board-button-primary" to="/analyses/new"><Plus size={17} /> 새 분석</Link></section>
         <DashboardStats analyses={analyses} />
-        <section className="board-section-head compact-board-head"><div><span>QUICK START</span><h2>Choose a scan context.</h2></div></section>
+        <section className="board-section-head compact-board-head"><div><span>빠른 시작</span><h2>점검할 업로드 상황을 선택하세요.</h2></div></section>
         <QuickActionCard />
         <RecentAnalysisTable analyses={analyses} />
       </div>

@@ -30,22 +30,22 @@ export default function ComparePage() {
       <div className="page-wide board-page compare-page">
         <section className="board-page-header compare-hero">
           <div>
-            <span>COMPARE BOARD / MASKING COMPLETE</span>
-            <h1>Original vs Safe Preview</h1>
-            <p>오른쪽 안전본은 detection finding 좌표를 기반으로 검은 마스킹 박스를 overlay한 mock preview입니다.</p>
+            <span>비교 화면 / 마스킹 완료</span>
+            <h1>원본 / 안전본 비교</h1>
+            <p>오른쪽 안전본은 detection finding 좌표를 기반으로 검은 마스킹 박스를 overlay한 데모 미리보기입니다.</p>
           </div>
           <div className="row"><DownloadButton onClick={download} /><Link className="btn btn-muted" to={`/analyses/${id}/result`}><ArrowLeft size={18} /> 결과로 돌아가기</Link></div>
         </section>
         <BeforeAfterCompare analysis={analysis} />
         <div className="compare-lower-grid board-compare-lower">
           <Card>
-            <div className="section-head compact"><div><span className="eyebrow">Masked items</span><h2>마스킹된 항목</h2></div></div>
+            <div className="section-head compact"><div><span className="eyebrow">마스킹 항목</span><h2>마스킹된 항목</h2></div></div>
             <DetectionList findings={analysis.findings} activeId={activeId} onSelect={setActiveId} />
           </Card>
           <Card className="download-guide">
             <Info size={28} />
             <h2>다운로드 안내</h2>
-            <p>현재 프론트엔드 MVP에서는 브라우저 mock 데이터로 비교 화면을 구성합니다. 실제 파일 다운로드는 백엔드 연동 후 활성화됩니다.</p>
+            <p>현재 시제품에서는 브라우저에 저장된 데모 데이터로 비교 화면을 구성합니다. 실제 파일 다운로드는 백엔드 연동 후 활성화됩니다.</p>
             <button className="btn btn-primary" onClick={download}>다운로드 동작 확인</button>
           </Card>
         </div>

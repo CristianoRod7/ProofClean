@@ -2,7 +2,7 @@ import { getItem, removeItem, setItem } from './storage.js';
 
 export const AUTH_USER_KEY = 'proofclean_user';
 export const AUTH_TOKEN_KEY = 'proofclean_token';
-export const MOCK_USER = { id: 'demo-user', email: 'demo@proofclean.com', name: 'Demo User' };
+export const MOCK_USER = { id: 'demo-user', email: 'demo@proofclean.com', name: '데모 사용자' };
 const USERS_KEY = 'proofclean_mock_users';
 
 function persistSession(user) {

@@ -27,8 +27,8 @@ export default function NewAnalysisPage() {
     <MainLayout>
       <form className="page-wide board-page new-analysis-page" onSubmit={submit}>
         <section className="board-page-header">
-          <span><FilePlus2 size={14} /> NEW SCAN / CONTEXT</span>
-          <h1>Choose your upload context</h1>
+          <span><FilePlus2 size={14} /> 새 분석 / 업로드 상황</span>
+          <h1>업로드 상황을 선택하세요</h1>
           <p>공유할 채널과 상황을 선택하면 ProofClean이 확인할 흔적의 맥락을 구성합니다.</p>
         </section>
         <ErrorAlert message={error} />
@@ -37,7 +37,7 @@ export default function NewAnalysisPage() {
           <input className="input input-xl" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="예: SNS 업로드 전 사진 점검" />
         </section>
         <section>
-          <div className="section-head compact"><div><span className="eyebrow">Purpose</span><h2>분석 목적 선택</h2></div><span className="badge badge-dark">선택 필수</span></div>
+          <div className="section-head compact"><div><span className="eyebrow">분석 목적</span><h2>분석 목적 선택</h2></div><span className="badge badge-dark">선택 필수</span></div>
           <AnalysisModeSelector value={purpose} onChange={setPurpose} />
         </section>
         <div className="board-sticky-cta">

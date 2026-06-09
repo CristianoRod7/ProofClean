@@ -52,8 +52,8 @@ export default function UploadPage() {
     <MainLayout>
       <div className="page-wide board-page upload-page">
         <section className="board-page-header">
-          <span>SCAN STATION / SECURE INTAKE</span>
-          <h1>Drop a file. Find hidden traces.</h1>
+          <span>안전한 파일 점검</span>
+          <h1>파일을 올리고 숨은 노출 단서를 확인하세요</h1>
           <h2 className="upload-project-title">{analysis.title}</h2>
           <p>분석 결과는 탐지 후보입니다. 최종 확인은 사용자가 직접 진행합니다.</p>
         </section>
@@ -63,7 +63,7 @@ export default function UploadPage() {
               <ErrorAlert message={error} />
               <UploadDropzone onFile={onFile} />
               <div className="row upload-actions">
-                <button className="btn btn-secondary" onClick={sample} type="button"><PlayCircle size={18} /> 샘플 이미지로 시연하기</button>
+                <button className="btn btn-secondary" onClick={sample} type="button"><PlayCircle size={18} /> 샘플로 시연하기</button>
                 <button className="btn btn-primary" onClick={start} disabled={!preview && !analysis.filePreviewUrl} type="button">분석 시작</button>
               </div>
               <FilePreview file={file} preview={preview || analysis.filePreviewUrl} purpose={analysis.purpose} />
@@ -77,12 +77,12 @@ export default function UploadPage() {
               <Card className="guide-card">
                 <FileType2 size={28} />
                 <h3>지원 형식</h3>
-                <p>jpg, jpeg, png, webp, pdf를 지원합니다. 프론트엔드 MVP에서는 이미지 preview와 placeholder를 우선 표시합니다.</p>
+                <p>jpg, jpeg, png, webp, pdf를 지원합니다. 현재 시제품에서는 이미지 미리보기와 대체 화면을 우선 표시합니다.</p>
               </Card>
               <Card className="guide-card warning">
                 <AlertCircle size={28} />
                 <h3>백엔드 API 의존 없음</h3>
-                <p>현재 분석과 마스킹은 localStorage mock flow로 동작합니다.</p>
+                <p>현재 분석과 마스킹은 로컬 저장소 기반 데모 흐름으로 동작합니다.</p>
               </Card>
             </aside>
           </div>

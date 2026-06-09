@@ -18,9 +18,9 @@ export default function LoadingAnalysisScreen() {
         <Brain size={44} />
         <Radar className="orbit-radar" size={24} />
       </div>
-      <span className="badge badge-cyan">Mock Analysis Running</span>
+      <span className="badge badge-cyan">분석 진행 중</span>
       <h1>업로드 전 노출 가능성을 분석하는 중입니다</h1>
-      <p className="muted">백엔드 API 없이 localStorage 기반 시연 결과를 생성하고 있습니다.</p>
+      <p className="muted">백엔드 API 없이 로컬 데모 결과를 생성하고 있습니다.</p>
       <ProgressBar value={progress} label="분석 진행률" />
       <div className="loading-steps">
         {steps.map((step, index) => (

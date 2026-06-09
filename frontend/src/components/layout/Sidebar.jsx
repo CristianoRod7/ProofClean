@@ -11,8 +11,8 @@ export default function Sidebar() {
         <span>ProofClean</span>
       </div>
       <div className="operator-card">
-        <span className="eyebrow">Secure workspace</span>
-        <h3>{user?.name || 'Demo User'}</h3>
+        <span className="eyebrow">안전한 작업 공간</span>
+        <h3>{user?.name || '데모 사용자'}</h3>
         <p>업로드 전 개인정보 노출 가능성 점검</p>
       </div>
       <nav className="nav">

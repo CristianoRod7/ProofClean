@@ -19,3 +19,7 @@ export function getRiskBadgeColor(levelOrScore = 0) {
   const level = typeof levelOrScore === 'number' ? getRiskLevel(levelOrScore) : levelOrScore;
   return level === 'CRITICAL' ? 'red' : level === 'HIGH' ? 'orange' : level === 'MEDIUM' ? 'yellow' : 'green';
 }
+
+export function getStatusLabel(status = '') {
+  return ({ CREATED: '생성됨', UPLOADED: '업로드 완료', ANALYZING: '분석 중', ANALYZED: '분석 완료', MASKED: '안전본 생성 완료' })[status] || status || '확인 필요';
+}

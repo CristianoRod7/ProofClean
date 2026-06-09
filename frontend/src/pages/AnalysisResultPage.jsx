@@ -34,7 +34,7 @@ export default function AnalysisResultPage() {
   return (
     <MainLayout>
       <div className="page-wide board-page result-page">
-        <div className="report-kicker board-report-kicker"><span>Exposure Report</span><b>LIVE ANALYSIS / {analysis.riskScore}</b></div>
+        <div className="report-kicker board-report-kicker"><span>노출 가능성 분석 결과</span><b>노출 가능성 / {analysis.riskScore}</b></div>
         <AnalysisSummary analysis={analysis} />
         <div className="result-notice" role="note">
           <span><Info size={19} /></span>
@@ -44,7 +44,7 @@ export default function AnalysisResultPage() {
           <Card className="image-analysis-card showcase-card">
             <div className="section-head compact">
               <div>
-                <span className="eyebrow">Visual detection map</span>
+                <span className="eyebrow">탐지 위치</span>
                 <h2>원본 이미지 미리보기</h2>
               </div>
               <span className="badge badge-yellow">박스 클릭 가능</span>
@@ -66,9 +66,9 @@ export default function AnalysisResultPage() {
           <aside className="stack result-aside">
             <RiskScoreCard score={analysis.riskScore} level={analysis.riskLevel} findingsCount={analysis.findings.length} />
             <Card className="cta-card">
-              <span className="eyebrow">Next action</span>
+              <span className="eyebrow">다음 단계</span>
               <h2>안전본을 생성하고 비교하세요</h2>
-              <p className="muted">탐지 후보 좌표를 기준으로 검은 마스킹 박스를 올린 안전본 preview를 만듭니다.</p>
+              <p className="muted">탐지 후보 좌표를 기준으로 검은 마스킹 박스를 올린 안전본 미리보기를 만듭니다.</p>
               <div className="stack">
                 <button className="btn btn-primary btn-block" onClick={createMask}><WandSparkles size={18} /> 안전본 생성</button>
                 <Link className="btn btn-secondary btn-block" to={`/analyses/${id}/compare`}><GitCompare size={18} /> 원본/안전본 비교</Link>
@@ -79,12 +79,12 @@ export default function AnalysisResultPage() {
         </div>
         <div className="result-lower-grid board-result-lower">
           <section className="card">
-            <div className="section-head compact"><div><span className="eyebrow">Detection candidates</span><h2>탐지 후보</h2></div><span className="badge badge-dark">{analysis.findings.length}개</span></div>
+            <div className="section-head compact"><div><span className="eyebrow">탐지 후보</span><h2>탐지 후보</h2></div><span className="badge badge-dark">{analysis.findings.length}개</span></div>
             <DetectionList findings={analysis.findings} activeId={activeId} onSelect={setActiveId} />
           </section>
           <section className="stack">
             <Card>
-              <div className="section-head compact"><div><span className="eyebrow">Risk scenarios</span><h2>위험 시나리오</h2></div></div>
+              <div className="section-head compact"><div><span className="eyebrow">위험 시나리오</span><h2>위험 시나리오</h2></div></div>
               <div className="scenario-list">{analysis.scenarios.map((scenario) => <RiskScenarioCard key={scenario.id} scenario={scenario} />)}</div>
             </Card>
             <Card><RecommendationList items={analysis.recommendations} /></Card>

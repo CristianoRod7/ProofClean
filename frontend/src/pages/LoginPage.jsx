@@ -27,7 +27,7 @@ export default function LoginPage() {
   };
 
   return (
-    <AuthLayout title="로그인" subtitle="데모 계정으로 바로 시작하거나 mock 계정으로 로그인하세요.">
+    <AuthLayout title="작업 공간에 로그인하세요" subtitle="데모 계정으로 바로 시작하거나 저장된 계정으로 로그인하세요.">
       <form className="form auth-form" onSubmit={submit}>
         <ErrorAlert message={error} />
         <label>이메일<input className="input" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} /></label>

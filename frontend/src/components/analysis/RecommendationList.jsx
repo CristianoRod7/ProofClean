@@ -15,7 +15,7 @@ export default function RecommendationList({ items = [] }) {
     <div className="recommendation-list">
       <div className="section-head compact">
         <div>
-          <span className="eyebrow">Checklist</span>
+          <span className="eyebrow">확인 목록</span>
           <h2>권장 조치</h2>
         </div>
         <span className="badge badge-green">{completed.size}/{items.length} 완료</span>
