@@ -71,8 +71,8 @@ export default function NewAnalysisPage() {
             />
           </section>
         </ScrollReveal>
-        <ScrollReveal className="flow-reveal" delay={110}>
-          <section className="analysis-mode-section" aria-labelledby="analysis-mode-heading">
+        <section className="analysis-mode-section" aria-labelledby="analysis-mode-heading">
+          <ScrollReveal className="flow-reveal" delay={110}>
             <div className="analysis-section-heading">
               <span className="eyebrow">분석 목적</span>
               <div>
@@ -81,23 +81,23 @@ export default function NewAnalysisPage() {
               </div>
               <span className="badge badge-dark">선택 필수</span>
             </div>
-            <div className="analysis-mode-workspace">
-              <AnalysisModeSelector
-                value={selectedMode}
-                onChange={(mode) => {
-                  setSelectedMode(mode);
-                  setHoveredMode(null);
-                  if (!titleEdited) setTitle(defaultTitles[mode]);
-                }}
-                onHover={setHoveredMode}
-                previewLocked={Boolean(selectedMode)}
-              />
-              <div className="mode-preview-column">
-                <ModePreviewPanel mode={previewMode} locked={Boolean(selectedMode)} />
-              </div>
+          </ScrollReveal>
+          <div className="analysis-mode-workspace">
+            <AnalysisModeSelector
+              value={selectedMode}
+              onChange={(mode) => {
+                setSelectedMode(mode);
+                setHoveredMode(null);
+                if (!titleEdited) setTitle(defaultTitles[mode]);
+              }}
+              onHover={setHoveredMode}
+              previewLocked={Boolean(selectedMode)}
+            />
+            <div className="mode-preview-column">
+              <ModePreviewPanel mode={previewMode} locked={Boolean(selectedMode)} />
             </div>
-          </section>
-        </ScrollReveal>
+          </div>
+        </section>
         <ScrollReveal className="flow-reveal" delay={130}>
           <div className={`board-sticky-cta interactive-flow-card ${selectedMode ? 'is-ready' : 'is-waiting'}`}>
             <div className="analysis-action-copy" key={selectedMode || 'empty'}>

@@ -1,16 +1,24 @@
+import { useEffect, useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { purposeMeta } from '../../data/demoAnalyses.js';
-import ContextVisual from '../visuals/ContextVisual.jsx';
+import ModeVisual from '../analysis/ModeVisuals.jsx';
 
 const modes = ['SNS', 'SECOND_HAND', 'ASSIGNMENT', 'COMMUNITY', 'ETC'];
 
 export default function AnalysisModeSelector({ value, onChange, onHover, previewLocked = false }) {
+  const [entering, setEntering] = useState(true);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setEntering(false), 720);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   const preview = (mode) => {
     if (!previewLocked) onHover?.(mode);
   };
 
   return (
-    <div className="context-picker-grid">
+    <div className={`context-picker-grid ${entering ? 'is-entering' : 'is-settled'}`}>
       {modes.map((mode, index) => {
         const meta = purposeMeta[mode];
         const selected = value === mode;
@@ -32,7 +40,7 @@ export default function AnalysisModeSelector({ value, onChange, onHover, preview
               <span>업로드 상황</span>
               {selected ? <span className="selected-mode-mark"><CheckCircle2 size={17} /> 선택됨</span> : <em>{meta.shortLabel}</em>}
             </div>
-            <ContextVisual type={mode} />
+            <ModeVisual mode={mode} />
             <div className="picker-copy">
               <h3>{meta.label}</h3>
               <p>{meta.description}</p>
