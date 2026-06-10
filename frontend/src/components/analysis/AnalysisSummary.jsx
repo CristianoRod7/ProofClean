@@ -13,7 +13,7 @@ export default function AnalysisSummary({ analysis }) {
           <Badge color="blue">{meta?.label || analysis.purpose}</Badge>
           <Badge color={analysis.status === 'MASKED' ? 'green' : 'yellow'}><ShieldCheck size={14} /> {getStatusLabel(analysis.status)}</Badge>
         </div>
-        <h1>{analysis.title}</h1>
+        <h2>{analysis.title}</h2>
         <p className="muted">{meta?.description}</p>
       </div>
       <div className="summary-meta">

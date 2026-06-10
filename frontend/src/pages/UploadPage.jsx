@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AlertCircle, FileType2, PlayCircle, ShieldQuestion } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
-import PageHero from '../components/layout/PageHero.jsx';
+import AnalysisFlowHeader from '../components/analysis/AnalysisFlowHeader.jsx';
 import ScrollReveal from '../components/common/ScrollReveal.jsx';
 import AnalysisProgress from '../components/analysis/AnalysisProgress.jsx';
 import UploadDropzone from '../components/upload/UploadDropzone.jsx';
@@ -12,6 +12,7 @@ import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import Card from '../components/common/Card.jsx';
 import { getAnalysisById, runMockAnalysis, uploadMockFile, useSampleImage } from '../services/mockAnalysis.js';
 import { isSupportedFile } from '../utils/fileUtils.js';
+import { purposeMeta } from '../data/demoAnalyses.js';
 
 export default function UploadPage() {
   const { id } = useParams();
@@ -56,15 +57,13 @@ export default function UploadPage() {
     <MainLayout>
       <div className="page-wide board-page upload-page">
         <ScrollReveal className="flow-reveal" amount={0.05}>
-          <PageHero
+          <AnalysisFlowHeader
             className="upload-page-hero"
-            eyebrow="새 분석 / 파일 업로드"
+            eyebrow="새 분석 · 2단계"
             title="점검할 파일을 업로드하세요."
             description="선택한 상황에 맞춰 이미지와 캡처 속 노출 후보를 확인합니다."
-          >
-            <span>분석 제목</span>
-            <strong>{analysis.title}</strong>
-          </PageHero>
+            meta={<><span>{purposeMeta[analysis.purpose]?.label || '일반 파일'}</span><strong>{analysis.title}</strong></>}
+          />
         </ScrollReveal>
         <ScrollReveal className="flow-reveal" delay={60}><AnalysisProgress current={2} /></ScrollReveal>
         {loading ? <LoadingAnalysisScreen /> : (

@@ -4,6 +4,7 @@ import { ArrowLeft, GitCompare, Info, WandSparkles } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
 import ScrollReveal from '../components/common/ScrollReveal.jsx';
 import AnalysisProgress from '../components/analysis/AnalysisProgress.jsx';
+import AnalysisFlowHeader from '../components/analysis/AnalysisFlowHeader.jsx';
 import AnalysisSummary from '../components/analysis/AnalysisSummary.jsx';
 import RiskScoreCard from '../components/analysis/RiskScoreCard.jsx';
 import DetectionList from '../components/analysis/DetectionList.jsx';
@@ -37,10 +38,15 @@ export default function AnalysisResultPage() {
     <MainLayout>
       <div className="page-wide board-page result-page">
         <ScrollReveal className="flow-reveal" amount={0.05}>
-          <div className="report-kicker board-report-kicker"><span>노출 가능성 분석 결과</span><b>노출 가능성 / {analysis.riskScore}</b></div>
-          <AnalysisSummary analysis={analysis} />
+          <AnalysisFlowHeader
+            eyebrow="분석 결과 · 3단계"
+            title="노출 가능성 분석 결과입니다."
+            description="탐지 후보와 위험도 점수를 확인하고, 공유 전 필요한 조치를 선택하세요."
+            meta={<><span>현재 위험도</span><strong>{analysis.riskScore}점 · 사용자 최종 확인 필요</strong></>}
+          />
         </ScrollReveal>
-        <ScrollReveal className="flow-reveal" delay={50}><AnalysisProgress current={3} /></ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={40}><AnalysisProgress current={3} /></ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={55}><AnalysisSummary analysis={analysis} /></ScrollReveal>
         <ScrollReveal className="flow-reveal" delay={70}>
         <div className="result-notice" role="note">
           <span><Info size={19} /></span>

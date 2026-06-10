@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
-import PageHero from '../components/layout/PageHero.jsx';
+import AnalysisFlowHeader from '../components/analysis/AnalysisFlowHeader.jsx';
 import ScrollReveal from '../components/common/ScrollReveal.jsx';
 import AnalysisProgress from '../components/analysis/AnalysisProgress.jsx';
 import ModePreviewPanel from '../components/analysis/ModePreviewPanel.jsx';
@@ -13,7 +13,8 @@ import { purposeMeta } from '../data/demoAnalyses.js';
 
 export default function NewAnalysisPage() {
   const navigate = useNavigate();
-  const [title, setTitle] = useState('중고거래 게시글 사진 점검');
+  const [title, setTitle] = useState('');
+  const [titleEdited, setTitleEdited] = useState(false);
   const [selectedMode, setSelectedMode] = useState(null);
   const [hoveredMode, setHoveredMode] = useState(null);
   const previewMode = selectedMode || hoveredMode || 'SECOND_HAND';
@@ -38,8 +39,8 @@ export default function NewAnalysisPage() {
     <MainLayout>
       <form className="page-wide board-page new-analysis-page" onSubmit={submit}>
         <ScrollReveal className="flow-reveal" amount={0.05}>
-          <PageHero
-            eyebrow="새 분석 / 업로드 상황"
+          <AnalysisFlowHeader
+            eyebrow="새 분석 · 1단계"
             title="어떤 상황의 파일인가요?"
             description="공유 목적에 따라 얼굴, 위치, 송장, 학번처럼 확인해야 할 단서가 달라집니다."
           />
@@ -49,7 +50,16 @@ export default function NewAnalysisPage() {
         <ScrollReveal className="flow-reveal" delay={90}>
           <section className="analysis-title-row interactive-flow-card" aria-labelledby="analysis-title-label">
             <label className="field-label" id="analysis-title-label" htmlFor="analysis-title">분석 제목</label>
-            <input id="analysis-title" className="input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="예: SNS 업로드 전 사진 점검" />
+            <input
+              id="analysis-title"
+              className="input"
+              value={title}
+              onChange={(event) => {
+                setTitle(event.target.value);
+                setTitleEdited(true);
+              }}
+              placeholder="상황을 선택하면 기본 제목이 입력됩니다."
+            />
           </section>
         </ScrollReveal>
         <ScrollReveal className="flow-reveal" delay={110}>
@@ -68,6 +78,13 @@ export default function NewAnalysisPage() {
                 onChange={(mode) => {
                   setSelectedMode(mode);
                   setHoveredMode(null);
+                  if (!titleEdited) setTitle({
+                    SNS: 'SNS 사진 점검',
+                    SECOND_HAND: '중고거래 게시글 사진 점검',
+                    ASSIGNMENT: '과제 캡처 점검',
+                    COMMUNITY: '커뮤니티 게시글 점검',
+                    ETC: '기타 파일 점검',
+                  }[mode]);
                 }}
                 onHover={setHoveredMode}
                 previewLocked={Boolean(selectedMode)}

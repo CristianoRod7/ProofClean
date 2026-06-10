@@ -6,7 +6,13 @@ export default function VisualFrame({ label, className = '', children }) {
         <b>PRIVACY PREVIEW</b>
         <em>● READY</em>
       </div>
-      <div className="product-preview-canvas">{children}</div>
+      <div className="product-preview-canvas">
+        {children}
+        <div className="product-preview-status" aria-hidden="true">
+          <span>후보 영역</span>
+          <b>자동 점검 준비</b>
+        </div>
+      </div>
     </div>
   );
 }

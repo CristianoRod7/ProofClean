@@ -19,8 +19,8 @@ export default function UploadDropzone({ onFile }) {
     >
       <input type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" hidden onChange={(event) => onFile(event.target.files?.[0])} />
       <div className="dropzone-orb"><UploadCloud size={44} /></div>
-      <h2>파일을 드래그하거나 클릭해서 업로드</h2>
-      <p>jpg, jpeg, png, webp, pdf 지원 · 샘플 이미지로도 전체 흐름을 시연할 수 있습니다.</p>
+      <h2>파일을 여기에 끌어오거나 선택하세요.</h2>
+      <p>JPG, PNG, WEBP 캡처 이미지를 기준으로 시연합니다. PDF는 대체 미리보기를 제공합니다.</p>
       <div className="dropzone-hints"><span><FileImage size={16} /> 이미지 미리보기</span><span><MousePointerClick size={16} /> 탐지 박스 오버레이</span></div>
     </label>
   );

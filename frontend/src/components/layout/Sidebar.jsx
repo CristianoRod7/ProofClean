@@ -15,16 +15,18 @@ export default function Sidebar() {
         <h3>{user?.name || '데모 사용자'}</h3>
         <p>업로드 전 개인정보 노출 가능성 점검</p>
       </div>
-      <nav className="nav">
+      <nav className="nav sidebar-nav">
         <NavLink to="/dashboard"><BarChart3 size={18} />대시보드</NavLink>
         <NavLink to="/analyses/new"><PlusCircle size={18} />새 분석 시작</NavLink>
         <NavLink to="/history"><History size={18} />분석 기록</NavLink>
       </nav>
-      <div className="sidebar-note">
-        <Sparkles size={18} />
-        <p>모든 결과는 확정 판정이 아닌 탐지 후보와 노출 가능성 안내입니다.</p>
+      <div className="sidebar-footer">
+        <div className="sidebar-note">
+          <Sparkles size={18} />
+          <p>모든 결과는 확정 판정이 아닌 탐지 후보와 노출 가능성 안내입니다.</p>
+        </div>
+        <button className="btn btn-muted btn-block" onClick={logout}>로그아웃</button>
       </div>
-      <button className="btn btn-muted btn-block" onClick={logout}>로그아웃</button>
     </aside>
   );
 }

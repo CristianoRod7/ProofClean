@@ -4,6 +4,7 @@ import { ArrowLeft, Info } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
 import ScrollReveal from '../components/common/ScrollReveal.jsx';
 import AnalysisProgress from '../components/analysis/AnalysisProgress.jsx';
+import AnalysisFlowHeader from '../components/analysis/AnalysisFlowHeader.jsx';
 import BeforeAfterCompare from '../components/analysis/BeforeAfterCompare.jsx';
 import DetectionList from '../components/analysis/DetectionList.jsx';
 import DownloadButton from '../components/common/DownloadButton.jsx';
@@ -31,14 +32,14 @@ export default function ComparePage() {
     <MainLayout>
       <div className="page-wide board-page compare-page">
         <ScrollReveal className="flow-reveal" amount={0.05}>
-        <section className="board-page-header compare-hero">
-          <div>
-            <span>비교 화면 / 마스킹 완료</span>
-            <h1>원본 / 안전본 비교</h1>
-            <p>오른쪽 안전본은 detection finding 좌표를 기반으로 검은 마스킹 박스를 overlay한 데모 미리보기입니다.</p>
-          </div>
-          <div className="row"><DownloadButton onClick={download} /><Link className="btn btn-muted" to={`/analyses/${id}/result`}><ArrowLeft size={18} /> 결과로 돌아가기</Link></div>
-        </section>
+          <AnalysisFlowHeader
+            className="compare-hero"
+            eyebrow="안전본 비교 · 4단계"
+            title="원본과 안전본을 비교하세요."
+            description="마스킹된 안전본을 확인한 뒤 공유 가능 여부를 최종 판단하세요."
+            meta={<><span>마스킹 상태</span><strong>{analysis.findings.length}개 후보 영역 적용</strong></>}
+            actions={<><DownloadButton onClick={download} /><Link className="btn btn-muted" to={`/analyses/${id}/result`}><ArrowLeft size={18} /> 결과로 돌아가기</Link></>}
+          />
         </ScrollReveal>
         <ScrollReveal className="flow-reveal" delay={50}><AnalysisProgress current={4} /></ScrollReveal>
         <ScrollReveal className="flow-reveal" delay={80}><BeforeAfterCompare analysis={analysis} /></ScrollReveal>
@@ -48,11 +49,15 @@ export default function ComparePage() {
             <div className="section-head compact"><div><span className="eyebrow">마스킹 항목</span><h2>마스킹된 항목</h2></div></div>
             <DetectionList findings={analysis.findings} activeId={activeId} onSelect={setActiveId} />
           </Card>
-          <Card className="download-guide">
+          <Card className="download-guide compare-checklist-card">
             <Info size={28} />
-            <h2>다운로드 안내</h2>
-            <p>현재 시제품에서는 브라우저에 저장된 데모 데이터로 비교 화면을 구성합니다. 실제 파일 다운로드는 백엔드 연동 후 활성화됩니다.</p>
-            <button className="btn btn-primary" onClick={download}>다운로드 동작 확인</button>
+            <h2>공유 전 체크리스트</h2>
+            <ul className="compare-checklist">
+              <li><span>1</span>주소·연락처 후보가 가려졌는지 확인</li>
+              <li><span>2</span>원본과 안전본의 문맥이 유지되는지 확인</li>
+              <li><span>3</span>최종 공유 여부를 사용자가 직접 판단</li>
+            </ul>
+            <button className="btn btn-primary" onClick={download}>안전본 다운로드 확인</button>
           </Card>
         </div>
         </ScrollReveal>
