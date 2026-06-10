@@ -1,8 +1,10 @@
 import { ShieldCheck, ScanLine, FileCheck2, LockKeyhole } from 'lucide-react';
+import PageTransition from './PageTransition.jsx';
 
 export default function AuthLayout({ title, subtitle, children }) {
   return (
-    <div className="auth-wrap">
+    <PageTransition className="auth-page-transition">
+      <div className="auth-wrap">
       <section className="auth-brand">
         <div className="logo auth-logo"><span className="logo-mark"><ShieldCheck size={20} /></span>ProofClean</div>
         <div>
@@ -24,6 +26,7 @@ export default function AuthLayout({ title, subtitle, children }) {
           {children}
         </div>
       </section>
-    </div>
+      </div>
+    </PageTransition>
   );
 }

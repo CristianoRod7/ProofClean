@@ -10,7 +10,7 @@ const steps = [
 
 export default function UsageSteps() {
   return (
-    <section className="onboarding-section" id="dashboard-usage" aria-labelledby="usage-title">
+    <section className="onboarding-section usage-guide-section" id="dashboard-usage" aria-labelledby="usage-title">
       <div className="onboarding-section-head">
         <span>사용 방법</span>
         <div><h2 id="usage-title">ProofClean 사용 방법</h2><p>자동 확정 판정이 아니라, 사용자가 놓친 부분을 다시 확인할 수 있도록 돕는 5단계 흐름입니다.</p></div>

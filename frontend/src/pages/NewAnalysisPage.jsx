@@ -28,8 +28,8 @@ export default function NewAnalysisPage() {
       <form className="page-wide board-page new-analysis-page" onSubmit={submit}>
         <section className="board-page-header">
           <span><FilePlus2 size={14} /> 새 분석 / 업로드 상황</span>
-          <h1>업로드 상황을 선택하세요</h1>
-          <p>공유할 채널과 상황을 선택하면 ProofClean이 확인할 흔적의 맥락을 구성합니다.</p>
+          <h1>어떤 상황의 파일인가요?</h1>
+          <p>공유 목적에 따라 얼굴, 위치, 송장, 학번처럼 확인해야 할 단서가 달라집니다.</p>
         </section>
         <ErrorAlert message={error} />
         <section className="showcase-card board-form-card">

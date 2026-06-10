@@ -1,6 +1,7 @@
 import { Link, NavLink } from 'react-router-dom';
 import { BarChart3, History, PlusCircle, ShieldCheck } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
+import PageTransition from './PageTransition.jsx';
 
 export default function MainLayout({ children }) {
   return (
@@ -15,7 +16,7 @@ export default function MainLayout({ children }) {
             <NavLink to="/history" aria-label="분석 기록"><History size={19} /></NavLink>
           </nav>
         </header>
-        <main className="main safe-area"><div className="page-shell">{children}</div></main>
+        <main className="main safe-area"><div className="page-shell"><PageTransition>{children}</PageTransition></div></main>
       </div>
     </div>
   );
