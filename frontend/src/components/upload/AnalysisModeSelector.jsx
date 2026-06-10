@@ -4,7 +4,11 @@ import ContextVisual from '../visuals/ContextVisual.jsx';
 
 const modes = ['SNS', 'SECOND_HAND', 'ASSIGNMENT', 'COMMUNITY', 'ETC'];
 
-export default function AnalysisModeSelector({ value, onChange, onHover }) {
+export default function AnalysisModeSelector({ value, onChange, onHover, previewLocked = false }) {
+  const preview = (mode) => {
+    if (!previewLocked) onHover?.(mode);
+  };
+
   return (
     <div className="context-picker-grid">
       {modes.map((mode, index) => {
@@ -16,17 +20,17 @@ export default function AnalysisModeSelector({ value, onChange, onHover }) {
             key={mode}
             type="button"
             aria-pressed={selected}
-            onMouseEnter={() => onHover?.(mode)}
-            onMouseLeave={() => onHover?.(null)}
-            onFocus={() => onHover?.(mode)}
-            onBlur={() => onHover?.(null)}
+            onMouseEnter={() => preview(mode)}
+            onMouseLeave={() => preview(null)}
+            onFocus={() => preview(mode)}
+            onBlur={() => preview(null)}
             onClick={() => onChange(mode)}
             style={{ '--card-index': index }}
             className={`showcase-card context-picker-card ${selected ? 'selected' : ''}`}
           >
             <div className="card-label">
               <span>업로드 상황</span>
-              {selected ? <span className="selected-mode-mark"><CheckCircle2 size={18} /> 선택됨</span> : <em>{meta.shortLabel}</em>}
+              {selected ? <span className="selected-mode-mark"><CheckCircle2 size={17} /> 선택됨</span> : <em>{meta.shortLabel}</em>}
             </div>
             <ContextVisual type={mode} />
             <div className="picker-copy">

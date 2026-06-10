@@ -16,7 +16,7 @@ export default function NewAnalysisPage() {
   const [title, setTitle] = useState('중고거래 게시글 사진 점검');
   const [selectedMode, setSelectedMode] = useState(null);
   const [hoveredMode, setHoveredMode] = useState(null);
-  const previewMode = hoveredMode || selectedMode || 'SECOND_HAND';
+  const previewMode = selectedMode || hoveredMode || 'SECOND_HAND';
   const [error, setError] = useState('');
 
   const submit = (event) => {
@@ -65,8 +65,12 @@ export default function NewAnalysisPage() {
             <div className="analysis-mode-workspace">
               <AnalysisModeSelector
                 value={selectedMode}
-                onChange={setSelectedMode}
+                onChange={(mode) => {
+                  setSelectedMode(mode);
+                  setHoveredMode(null);
+                }}
                 onHover={setHoveredMode}
+                previewLocked={Boolean(selectedMode)}
               />
               <ModePreviewPanel key={previewMode} mode={previewMode} />
             </div>
