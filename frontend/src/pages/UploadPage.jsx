@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AlertCircle, FileType2, PlayCircle, ShieldQuestion } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
+import PageHero from '../components/layout/PageHero.jsx';
 import UploadDropzone from '../components/upload/UploadDropzone.jsx';
 import FilePreview from '../components/upload/FilePreview.jsx';
 import LoadingAnalysisScreen from '../components/upload/LoadingAnalysisScreen.jsx';
@@ -51,12 +52,15 @@ export default function UploadPage() {
   return (
     <MainLayout>
       <div className="page-wide board-page upload-page">
-        <section className="board-page-header">
-          <span>안전한 파일 점검</span>
-          <h1>파일을 올리고 숨은 노출 단서를 확인하세요</h1>
-          <h2 className="upload-project-title">{analysis.title}</h2>
-          <p>분석 결과는 탐지 후보입니다. 최종 확인은 사용자가 직접 진행합니다.</p>
-        </section>
+        <PageHero
+          className="upload-page-hero"
+          eyebrow="새 분석 / 파일 업로드"
+          title="점검할 파일을 업로드하세요."
+          description="선택한 상황에 맞춰 이미지와 캡처 속 노출 후보를 확인합니다."
+        >
+          <span>분석 제목</span>
+          <strong>{analysis.title}</strong>
+        </PageHero>
         {loading ? <LoadingAnalysisScreen /> : (
           <div className="upload-grid board-upload-grid">
             <div className="stack">
