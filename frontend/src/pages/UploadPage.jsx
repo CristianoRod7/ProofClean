@@ -6,6 +6,7 @@ import AnalysisFlowHeader from '../components/analysis/AnalysisFlowHeader.jsx';
 import ScrollReveal from '../components/common/ScrollReveal.jsx';
 import AnalysisProgress from '../components/analysis/AnalysisProgress.jsx';
 import UploadDropzone from '../components/upload/UploadDropzone.jsx';
+import UploadContextSummary from '../components/upload/UploadContextSummary.jsx';
 import FilePreview from '../components/upload/FilePreview.jsx';
 import LoadingAnalysisScreen from '../components/upload/LoadingAnalysisScreen.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
@@ -66,6 +67,9 @@ export default function UploadPage() {
           />
         </ScrollReveal>
         <ScrollReveal className="flow-reveal" delay={60}><AnalysisProgress current={2} /></ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={80}>
+          <UploadContextSummary purpose={analysis.purpose} title={analysis.title} />
+        </ScrollReveal>
         {loading ? <LoadingAnalysisScreen /> : (
           <ScrollReveal className="flow-reveal" delay={100}>
           <div className="upload-grid board-upload-grid">

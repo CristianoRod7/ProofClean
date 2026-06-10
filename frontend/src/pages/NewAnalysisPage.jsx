@@ -11,13 +11,22 @@ import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import { createAnalysis } from '../services/mockAnalysis.js';
 import { purposeMeta } from '../data/demoAnalyses.js';
 
+const DEFAULT_MODE = 'SECOND_HAND';
+const defaultTitles = {
+  SNS: 'SNS 사진 점검',
+  SECOND_HAND: '중고거래 게시글 사진 점검',
+  ASSIGNMENT: '과제 캡처 점검',
+  COMMUNITY: '커뮤니티 게시글 점검',
+  ETC: '기타 파일 점검',
+};
+
 export default function NewAnalysisPage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [titleEdited, setTitleEdited] = useState(false);
   const [selectedMode, setSelectedMode] = useState(null);
   const [hoveredMode, setHoveredMode] = useState(null);
-  const previewMode = selectedMode || hoveredMode || 'SECOND_HAND';
+  const previewMode = selectedMode || hoveredMode || DEFAULT_MODE;
   const [error, setError] = useState('');
 
   const submit = (event) => {
@@ -78,18 +87,14 @@ export default function NewAnalysisPage() {
                 onChange={(mode) => {
                   setSelectedMode(mode);
                   setHoveredMode(null);
-                  if (!titleEdited) setTitle({
-                    SNS: 'SNS 사진 점검',
-                    SECOND_HAND: '중고거래 게시글 사진 점검',
-                    ASSIGNMENT: '과제 캡처 점검',
-                    COMMUNITY: '커뮤니티 게시글 점검',
-                    ETC: '기타 파일 점검',
-                  }[mode]);
+                  if (!titleEdited) setTitle(defaultTitles[mode]);
                 }}
                 onHover={setHoveredMode}
                 previewLocked={Boolean(selectedMode)}
               />
-              <ModePreviewPanel key={previewMode} mode={previewMode} />
+              <div className="mode-preview-column">
+                <ModePreviewPanel mode={previewMode} locked={Boolean(selectedMode)} />
+              </div>
             </div>
           </section>
         </ScrollReveal>

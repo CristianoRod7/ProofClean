@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ShieldAlert, Sparkles } from 'lucide-react';
+import { Info, ShieldAlert } from 'lucide-react';
 import { getRiskColor, getRiskLabel } from '../../utils/riskUtils.js';
 import Badge from '../common/Badge.jsx';
 
@@ -39,7 +39,7 @@ export default function RiskScoreCard({ score = 0, level = 'LOW', findingsCount 
       </div>
       <div className="risk-meter"><i style={{ width: `${displayScore}%`, background: color }} /></div>
       <div className="risk-insight">
-        <Sparkles size={18} />
+        <Info size={18} />
         <span>탐지 후보 {findingsCount}개 · 개인정보 확정이 아닌 노출 가능성 기준의 참고 점수입니다.</span>
       </div>
     </section>
