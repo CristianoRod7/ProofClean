@@ -20,10 +20,10 @@ export default function RecommendationList({ items = [] }) {
         </div>
         <span className="badge badge-green">{completed.size}/{items.length} 완료</span>
       </div>
-      {items.map((item) => {
+      {items.map((item, index) => {
         const done = completed.has(item.id);
         return (
-          <button className={`recommendation-item ${done ? 'done' : ''}`} key={item.id} onClick={() => toggle(item.id)} type="button">
+          <button className={`recommendation-item ${done ? 'done' : ''}`} style={{ '--item-index': index }} key={item.id} onClick={() => toggle(item.id)} type="button">
             {done ? <CheckCircle2 size={20} /> : <Circle size={20} />}
             <span>{item.text}</span>
           </button>

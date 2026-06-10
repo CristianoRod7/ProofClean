@@ -2,6 +2,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { ArrowLeft, GitCompare, Info, WandSparkles } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
+import ScrollReveal from '../components/common/ScrollReveal.jsx';
+import AnalysisProgress from '../components/analysis/AnalysisProgress.jsx';
 import AnalysisSummary from '../components/analysis/AnalysisSummary.jsx';
 import RiskScoreCard from '../components/analysis/RiskScoreCard.jsx';
 import DetectionList from '../components/analysis/DetectionList.jsx';
@@ -34,12 +36,18 @@ export default function AnalysisResultPage() {
   return (
     <MainLayout>
       <div className="page-wide board-page result-page">
-        <div className="report-kicker board-report-kicker"><span>노출 가능성 분석 결과</span><b>노출 가능성 / {analysis.riskScore}</b></div>
-        <AnalysisSummary analysis={analysis} />
+        <ScrollReveal className="flow-reveal" amount={0.05}>
+          <div className="report-kicker board-report-kicker"><span>노출 가능성 분석 결과</span><b>노출 가능성 / {analysis.riskScore}</b></div>
+          <AnalysisSummary analysis={analysis} />
+        </ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={50}><AnalysisProgress current={3} /></ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={70}>
         <div className="result-notice" role="note">
           <span><Info size={19} /></span>
           <div><b>분석 결과는 탐지 후보입니다.</b><p>개인정보 확정 판정이 아니며, 업로드 전 최종 확인은 사용자가 직접 해야 합니다.</p></div>
         </div>
+        </ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={90}>
         <div className="result-grid board-result-grid">
           <Card className="image-analysis-card showcase-card">
             <div className="section-head compact">
@@ -77,6 +85,8 @@ export default function AnalysisResultPage() {
             </Card>
           </aside>
         </div>
+        </ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={110}>
         <div className="result-lower-grid board-result-lower">
           <section className="card">
             <div className="section-head compact"><div><span className="eyebrow">탐지 후보</span><h2>탐지 후보</h2></div><span className="badge badge-dark">{analysis.findings.length}개</span></div>
@@ -90,6 +100,7 @@ export default function AnalysisResultPage() {
             <Card><RecommendationList items={analysis.recommendations} /></Card>
           </section>
         </div>
+        </ScrollReveal>
       </div>
     </MainLayout>
   );

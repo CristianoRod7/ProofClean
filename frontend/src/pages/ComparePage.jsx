@@ -2,6 +2,8 @@ import { Link, useParams } from 'react-router-dom';
 import { useState } from 'react';
 import { ArrowLeft, Info } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
+import ScrollReveal from '../components/common/ScrollReveal.jsx';
+import AnalysisProgress from '../components/analysis/AnalysisProgress.jsx';
 import BeforeAfterCompare from '../components/analysis/BeforeAfterCompare.jsx';
 import DetectionList from '../components/analysis/DetectionList.jsx';
 import DownloadButton from '../components/common/DownloadButton.jsx';
@@ -28,6 +30,7 @@ export default function ComparePage() {
   return (
     <MainLayout>
       <div className="page-wide board-page compare-page">
+        <ScrollReveal className="flow-reveal" amount={0.05}>
         <section className="board-page-header compare-hero">
           <div>
             <span>비교 화면 / 마스킹 완료</span>
@@ -36,7 +39,10 @@ export default function ComparePage() {
           </div>
           <div className="row"><DownloadButton onClick={download} /><Link className="btn btn-muted" to={`/analyses/${id}/result`}><ArrowLeft size={18} /> 결과로 돌아가기</Link></div>
         </section>
-        <BeforeAfterCompare analysis={analysis} />
+        </ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={50}><AnalysisProgress current={4} /></ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={80}><BeforeAfterCompare analysis={analysis} /></ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={110}>
         <div className="compare-lower-grid board-compare-lower">
           <Card>
             <div className="section-head compact"><div><span className="eyebrow">마스킹 항목</span><h2>마스킹된 항목</h2></div></div>
@@ -49,6 +55,7 @@ export default function ComparePage() {
             <button className="btn btn-primary" onClick={download}>다운로드 동작 확인</button>
           </Card>
         </div>
+        </ScrollReveal>
         {toast && <div className="toast">{toast}</div>}
       </div>
     </MainLayout>

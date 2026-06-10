@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AlertCircle, FileType2, PlayCircle, ShieldQuestion } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
 import PageHero from '../components/layout/PageHero.jsx';
+import ScrollReveal from '../components/common/ScrollReveal.jsx';
+import AnalysisProgress from '../components/analysis/AnalysisProgress.jsx';
 import UploadDropzone from '../components/upload/UploadDropzone.jsx';
 import FilePreview from '../components/upload/FilePreview.jsx';
 import LoadingAnalysisScreen from '../components/upload/LoadingAnalysisScreen.jsx';
@@ -42,6 +44,7 @@ export default function UploadPage() {
   };
 
   const start = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     setLoading(true);
     setTimeout(() => {
       runMockAnalysis(id);
@@ -52,16 +55,20 @@ export default function UploadPage() {
   return (
     <MainLayout>
       <div className="page-wide board-page upload-page">
-        <PageHero
-          className="upload-page-hero"
-          eyebrow="새 분석 / 파일 업로드"
-          title="점검할 파일을 업로드하세요."
-          description="선택한 상황에 맞춰 이미지와 캡처 속 노출 후보를 확인합니다."
-        >
-          <span>분석 제목</span>
-          <strong>{analysis.title}</strong>
-        </PageHero>
+        <ScrollReveal className="flow-reveal" amount={0.05}>
+          <PageHero
+            className="upload-page-hero"
+            eyebrow="새 분석 / 파일 업로드"
+            title="점검할 파일을 업로드하세요."
+            description="선택한 상황에 맞춰 이미지와 캡처 속 노출 후보를 확인합니다."
+          >
+            <span>분석 제목</span>
+            <strong>{analysis.title}</strong>
+          </PageHero>
+        </ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={60}><AnalysisProgress current={2} /></ScrollReveal>
         {loading ? <LoadingAnalysisScreen /> : (
+          <ScrollReveal className="flow-reveal" delay={100}>
           <div className="upload-grid board-upload-grid">
             <div className="stack">
               <ErrorAlert message={error} />
@@ -90,6 +97,7 @@ export default function UploadPage() {
               </Card>
             </aside>
           </div>
+          </ScrollReveal>
         )}
       </div>
     </MainLayout>

@@ -18,7 +18,7 @@ export default function DetectionItem({ finding, active, onClick, index }) {
   const Icon = iconMap[finding.type] || ScanSearch;
   const confidence = Math.round((finding.confidence || 0) * 100);
   return (
-    <button className={`detection-item ${active ? 'active' : ''}`} onClick={onClick} type="button">
+    <button className={`detection-item ${active ? 'active' : ''}`} style={{ '--item-index': index }} onClick={onClick} type="button">
       <div className="detection-index">{index + 1}</div>
       <div className="detection-icon"><Icon size={19} /></div>
       <div className="detection-body">
