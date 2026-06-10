@@ -24,7 +24,7 @@ export default function RecommendationList({ items = [] }) {
         const done = completed.has(item.id);
         return (
           <button className={`recommendation-item ${done ? 'done' : ''}`} style={{ '--item-index': index }} key={item.id} onClick={() => toggle(item.id)} type="button">
-            {done ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+            {done ? <CheckCircle2 className="recommendation-check" size={20} /> : <Circle className="recommendation-check" size={20} />}
             <span>{item.text}</span>
           </button>
         );

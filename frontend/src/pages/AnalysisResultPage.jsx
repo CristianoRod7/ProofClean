@@ -95,7 +95,7 @@ export default function AnalysisResultPage() {
           <section className="stack">
             <Card>
               <div className="section-head compact"><div><span className="eyebrow">위험 시나리오</span><h2>위험 시나리오</h2></div></div>
-              <div className="scenario-list">{analysis.scenarios.map((scenario) => <RiskScenarioCard key={scenario.id} scenario={scenario} />)}</div>
+              <div className="scenario-list">{analysis.scenarios.map((scenario, index) => <RiskScenarioCard key={scenario.id} scenario={scenario} index={index} />)}</div>
             </Card>
             <Card><RecommendationList items={analysis.recommendations} /></Card>
           </section>

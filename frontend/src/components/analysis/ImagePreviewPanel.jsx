@@ -15,6 +15,7 @@ export default function ImagePreviewPanel({ src, purpose, findings = [], activeI
           className={`detect-box ${masked ? 'masked' : ''} ${activeId === finding.id ? 'highlight' : ''}`}
           style={{
             '--box-color': getRiskColor(finding.severity),
+            '--mask-index': index,
             left: `${finding.x * 100}%`,
             top: `${finding.y * 100}%`,
             width: `${finding.width * 100}%`,

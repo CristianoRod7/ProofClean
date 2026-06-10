@@ -9,22 +9,28 @@ import ModePreviewPanel from '../components/analysis/ModePreviewPanel.jsx';
 import AnalysisModeSelector from '../components/upload/AnalysisModeSelector.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import { createAnalysis } from '../services/mockAnalysis.js';
+import { purposeMeta } from '../data/demoAnalyses.js';
 
 export default function NewAnalysisPage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('중고거래 게시글 사진 점검');
-  const [purpose, setPurpose] = useState('SECOND_HAND');
-  const [previewMode, setPreviewMode] = useState('SECOND_HAND');
+  const [selectedMode, setSelectedMode] = useState(null);
+  const [hoveredMode, setHoveredMode] = useState(null);
+  const previewMode = hoveredMode || selectedMode || 'SECOND_HAND';
   const [error, setError] = useState('');
 
   const submit = (event) => {
     event.preventDefault();
     setError('');
+    if (!selectedMode) {
+      setError('점검할 업로드 상황을 선택하세요.');
+      return;
+    }
     if (!title.trim()) {
       setError('분석 제목을 입력하세요.');
       return;
     }
-    const created = createAnalysis({ title: title.trim(), purpose });
+    const created = createAnalysis({ title: title.trim(), purpose: selectedMode });
     navigate(`/analyses/${created.id}/upload`);
   };
 
@@ -57,15 +63,28 @@ export default function NewAnalysisPage() {
               <span className="badge badge-dark">선택 필수</span>
             </div>
             <div className="analysis-mode-workspace">
-              <AnalysisModeSelector value={purpose} onChange={setPurpose} onPreview={setPreviewMode} />
+              <AnalysisModeSelector
+                value={selectedMode}
+                onChange={setSelectedMode}
+                onHover={setHoveredMode}
+              />
               <ModePreviewPanel key={previewMode} mode={previewMode} />
             </div>
           </section>
         </ScrollReveal>
         <ScrollReveal className="flow-reveal" delay={130}>
-          <div className="board-sticky-cta interactive-flow-card">
-            <div><b>다음 단계: 파일 업로드</b><p className="muted">샘플 이미지로도 전체 분석 흐름을 시연할 수 있습니다.</p></div>
-            <button className="btn btn-primary btn-lg" type="submit">다음 단계로 <ArrowRight size={18} /></button>
+          <div className={`board-sticky-cta interactive-flow-card ${selectedMode ? 'is-ready' : 'is-waiting'}`}>
+            <div className="analysis-action-copy" key={selectedMode || 'empty'}>
+              <b>{selectedMode ? `선택됨: ${purposeMeta[selectedMode].label}` : '점검할 상황을 선택하세요'}</b>
+              <p className="muted">
+                {selectedMode
+                  ? `확인 단서: ${purposeMeta[selectedMode].examples.join(' · ')}`
+                  : '점검할 상황을 선택하면 다음 단계로 이동할 수 있습니다.'}
+              </p>
+            </div>
+            <button className="btn btn-primary btn-lg" type="submit" disabled={!selectedMode}>
+              {selectedMode ? '다음 단계로' : '상황을 선택하세요'} <ArrowRight size={18} />
+            </button>
           </div>
         </ScrollReveal>
       </form>

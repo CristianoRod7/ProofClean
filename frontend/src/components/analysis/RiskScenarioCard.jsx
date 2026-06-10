@@ -2,9 +2,9 @@ import { Route, ShieldQuestion } from 'lucide-react';
 import Badge from '../common/Badge.jsx';
 import { getRiskBadgeColor, getRiskLabel } from '../../utils/riskUtils.js';
 
-export default function RiskScenarioCard({ scenario }) {
+export default function RiskScenarioCard({ scenario, index = 0 }) {
   return (
-    <article className="scenario-card">
+    <article className="scenario-card" style={{ '--item-index': index }}>
       <div className="scenario-icon"><Route size={19} /></div>
       <div>
         <div className="between scenario-head">

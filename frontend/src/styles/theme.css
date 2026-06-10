@@ -18,4 +18,12 @@
   --shadow-card: 0 20px 55px rgba(15, 23, 42, 0.08);
   --shadow-soft: 0 26px 70px rgba(37, 99, 235, 0.14);
   --shadow-strong: 0 32px 90px rgba(15, 23, 42, 0.18);
+  --dark-card-bg: #12141a;
+  --dark-card-surface: #1d2028;
+  --dark-card-border: rgba(148, 163, 184, 0.22);
+  --dark-card-title: #f8fafc;
+  --dark-card-text: #d6e2f0;
+  --dark-card-muted: #aab7c8;
+  --dark-card-subtle: #94a3b8;
+  --accent-mint-soft: #5eead4;
 }
