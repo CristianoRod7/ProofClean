@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { BarChart3, History, PlusCircle, ShieldCheck, Sparkles } from 'lucide-react';
 import useAuth from '../../hooks/useAuth.js';
 
@@ -6,10 +6,10 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
   return (
     <aside className="sidebar">
-      <div className="logo sidebar-logo">
+      <Link className="logo sidebar-logo" to="/dashboard" aria-label="대시보드로 이동">
         <span className="logo-mark"><ShieldCheck size={20} /></span>
         <span>ProofClean</span>
-      </div>
+      </Link>
       <div className="operator-card">
         <span className="eyebrow">안전한 작업 공간</span>
         <h3>{user?.name || '데모 사용자'}</h3>
