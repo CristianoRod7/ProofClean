@@ -9,7 +9,7 @@ function normalize(list) { return [...list].sort((a, b) => new Date(b.updatedAt 
 
 export function seedDemoAnalyses() {
   const current = getItem(KEY, null);
-  if (!current || current.length === 0) setItem(KEY, demoAnalyses);
+  if (current === null) setItem(KEY, demoAnalyses);
 }
 
 export function getAnalyses() {

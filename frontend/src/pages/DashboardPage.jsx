@@ -24,8 +24,9 @@ export default function DashboardPage() {
           <section className="dashboard-welcome-hero">
             <div className="dashboard-welcome-copy">
               <span className="dashboard-welcome-kicker"><ShieldCheck size={16} /> {user?.name || '데모 사용자'}님의 개인정보 보호 홈</span>
-              <h1>공유하기 전, 숨은 개인정보 노출 가능성을 먼저 확인하세요.</h1>
-              <p>ProofClean은 사진, 캡처, 문서 이미지를 업로드하기 전에 얼굴, 위치, 송장, 학번, 이메일처럼 노출될 수 있는 단서를 점검하는 업로드 전 개인정보 보호 도구입니다.</p>
+              <h1>ProofClean</h1>
+              <h2 className="dashboard-welcome-subtitle">공유 전 개인정보 노출 위험을 미리 점검하세요.</h2>
+              <p>사진, 문서, 캡처 이미지 속 얼굴, 위치, 소속, 학번, 이메일 등 노출될 수 있는 단서를 분석하고 안전한 공유를 돕습니다.</p>
               <div className="dashboard-welcome-actions">
                 <Link className="board-button board-button-primary" to="/analyses/new">새 분석 시작 <ArrowRight size={17} /></Link>
                 <a className="board-button" href="#dashboard-usage">사용 방법 보기 <ArrowDown size={17} /></a>
