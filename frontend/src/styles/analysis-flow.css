@@ -375,3 +375,66 @@ html,body{overflow-x:clip}
   .dashboard-welcome-subtitle{margin-top:-2px;font-size:20px}
 }
 @media(prefers-reduced-motion:reduce){.history-summary-card,.history-card,.history-risk-meter i{transition-duration:.01ms!important;transform:none!important}}
+
+/* New-analysis wizard polish: natural-height sticky preview and readable mission cards */
+.new-analysis-page .mode-preview-column{
+  position:sticky;
+  top:96px;
+  align-self:start;
+  z-index:5;
+  height:auto;
+  max-height:none;
+  overflow:visible;
+}
+.new-analysis-page .mode-preview-panel{
+  position:relative;
+  top:auto;
+  width:100%;
+  max-width:320px;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  overflow:visible;
+  overscroll-behavior:auto;
+  grid-template-rows:148px auto;
+  border-color:rgba(94,234,212,.24);
+}
+.new-analysis-page .mode-preview-panel.is-locked{border-color:rgba(94,234,212,.58);box-shadow:0 16px 36px rgba(15,23,42,.16)}
+.new-analysis-page .mode-preview-panel__visual{padding:12px}
+.new-analysis-page .mode-preview-panel__copy{padding:18px 19px 19px}
+.mode-preview-panel__status{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mode-preview-panel__status .eyebrow{min-width:0;font-size:9px;letter-spacing:.1em}
+.mode-preview-state{flex:none;display:inline-flex;align-items:center;gap:5px;padding:5px 7px;border:1px solid rgba(148,163,184,.18);border-radius:999px;color:#cbd5e1;background:rgba(255,255,255,.06);font-size:9px;font-weight:850}
+.mode-preview-state.is-selected{color:#99f6e4;border-color:rgba(94,234,212,.34);background:rgba(20,184,166,.13)}
+.new-analysis-page .mode-preview-panel__copy h3{margin:13px 0 7px;color:#f8fafc;font-size:20px;line-height:1.32}
+.new-analysis-page .mode-preview-panel__copy>p{color:#cbd5e1;font-size:12px;line-height:1.6}
+.new-analysis-page .mode-preview-clues{gap:6px;margin:14px 0 13px}
+.new-analysis-page .mode-preview-clues span{padding:6px 8px;color:#dffcf8;border-color:rgba(94,234,212,.18);background:rgba(20,184,166,.09);font-size:10px;font-weight:750}
+.mode-preview-note{display:flex;align-items:flex-start;gap:7px;padding-top:12px;border-top:1px solid rgba(148,163,184,.14);color:#aab7c8!important;font-size:10px;line-height:1.55}
+.mode-preview-note svg{flex:none;margin-top:1px;color:#5eead4}
+
+.new-analysis-page .context-picker-card,
+.new-analysis-page .context-picker-card:last-child{min-height:300px;padding:14px}
+.new-analysis-page .context-picker-card .mode-thumbnail{margin:11px 0 15px}
+.new-analysis-page .picker-copy h3{color:#fff;font-size:19px;font-weight:800;letter-spacing:-.025em}
+.new-analysis-page .picker-copy p{min-height:58px;margin:7px 0 11px;color:#cbd5e1;font-size:13px;line-height:1.5}
+.new-analysis-page .picker-copy>div{gap:6px}
+.new-analysis-page .picker-copy>div span{padding:5px 7px;color:#e2e8f0;background:#2b3039;font-size:11px;line-height:1.2}
+.new-analysis-page .context-picker-card.selected .card-label>span:first-child,
+.new-analysis-page .context-picker-card.selected .selected-mode-mark{color:#99f6e4}
+
+.new-analysis-page .board-sticky-cta.is-waiting{color:#334155;border-color:#cbd5e1;background:rgba(248,250,252,.96)}
+.new-analysis-page .board-sticky-cta.is-waiting b{color:#1e293b}
+.new-analysis-page .board-sticky-cta.is-waiting p{color:#64748b}
+.new-analysis-page .board-sticky-cta.is-waiting .btn:disabled{opacity:1;color:#475569;border-color:#cbd5e1;background:#e2e8f0}
+.new-analysis-page .board-sticky-cta.is-ready{border-color:rgba(94,234,212,.48);box-shadow:0 14px 32px rgba(15,23,42,.13)}
+.new-analysis-page .board-sticky-cta.is-ready b{color:#99f6e4}
+
+@media(max-width:1100px){
+  .new-analysis-page .mode-preview-column{position:static;top:auto;max-height:none;overflow:visible}
+  .new-analysis-page .mode-preview-panel{max-width:none;max-height:none;overflow:visible;grid-template-columns:240px minmax(0,1fr);grid-template-rows:none}
+}
+@media(max-width:700px){
+  .new-analysis-page .mode-preview-panel{grid-template-columns:1fr;grid-template-rows:160px auto}
+  .new-analysis-page .context-picker-card,.new-analysis-page .context-picker-card:last-child{min-height:294px}
+}
