@@ -1,0 +1,91 @@
+import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, CheckCircle2, Info, PlusCircle } from 'lucide-react';
+import MainLayout from '../components/layout/MainLayout.jsx';
+import ScrollReveal from '../components/common/ScrollReveal.jsx';
+import AnalysisProgress from '../components/analysis/AnalysisProgress.jsx';
+import AnalysisFlowHeader from '../components/analysis/AnalysisFlowHeader.jsx';
+import BeforeAfterCompare from '../components/analysis/BeforeAfterCompare.jsx';
+import DetectionList from '../components/analysis/DetectionList.jsx';
+import DownloadButton from '../components/common/DownloadButton.jsx';
+import ErrorAlert from '../components/common/ErrorAlert.jsx';
+import Card from '../components/common/Card.jsx';
+import { createMaskedVersion, getAnalysisById } from '../services/mockAnalysis.js';
+import { getAnalysis, maskAnalysis } from '../services/analysisApi.js';
+
+export default function ComparePage() {
+  const { id } = useParams();
+  const [analysis, setAnalysis] = useState(() => {
+    const found = getAnalysisById(id);
+    return found && !found.maskedPreviewUrl ? createMaskedVersion(id) : found;
+  });
+  const [toast, setToast] = useState('');
+  const [activeId, setActiveId] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    getAnalysis(id).then(async (found) => {
+      if (!found || !active) return;
+      const next = found.maskedPreviewUrl ? found : await maskAnalysis(id);
+      if (active) setAnalysis(next);
+    });
+    return () => { active = false; };
+  }, [id]);
+
+  if (!analysis) return <MainLayout><ErrorAlert message="비교할 분석 기록을 찾을 수 없습니다." /></MainLayout>;
+
+  const download = () => {
+    setToast('실제 파일 다운로드는 백엔드 연동 후 활성화됩니다.');
+    setTimeout(() => setToast(''), 2600);
+  };
+
+  return (
+    <MainLayout>
+      <div className="page-wide board-page compare-page">
+        <ScrollReveal className="flow-reveal" amount={0.05}>
+          <AnalysisFlowHeader
+            className="compare-hero"
+            eyebrow="안전본 비교 · 4단계"
+            title="원본과 안전본을 비교하세요."
+            description="마스킹된 안전본을 확인한 뒤 공유 가능 여부를 최종 판단하세요."
+            meta={<><span>마스킹 상태</span><strong>{analysis.findings.length}개 후보 영역 적용</strong></>}
+            actions={<><DownloadButton onClick={download} /><Link className="btn btn-muted" to={`/analyses/${id}/result`}><ArrowLeft size={18} /> 결과로 돌아가기</Link></>}
+          />
+        </ScrollReveal>
+
+        <ScrollReveal className="flow-reveal" delay={50}><AnalysisProgress current={4} /></ScrollReveal>
+        <ScrollReveal className="flow-reveal" delay={80}><BeforeAfterCompare analysis={analysis} /></ScrollReveal>
+
+        <ScrollReveal className="flow-reveal" delay={100}>
+          <div className="compare-mask-note" role="note">
+            <Info size={20} />
+            <div><b>검은 영역은 마스킹된 탐지 후보입니다.</b><p>문맥에 필요한 내용까지 가려지지 않았는지 원본과 안전본을 함께 확인하세요.</p></div>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal className="flow-reveal" delay={115}>
+          <div className="compare-lower-grid board-compare-lower">
+            <Card className="result-dark-card">
+              <div className="section-head compact"><div><span className="eyebrow">마스킹 항목</span><h2>마스킹된 항목</h2></div></div>
+              <DetectionList findings={analysis.findings} activeId={activeId} onSelect={setActiveId} />
+            </Card>
+            <Card className="download-guide compare-checklist-card">
+              <CheckCircle2 size={30} />
+              <h2>공유 전 체크리스트</h2>
+              <ul className="compare-checklist">
+                <li><span>1</span>주소·연락처 후보가 가려졌는지 확인</li>
+                <li><span>2</span>원본과 안전본의 문맥이 유지되는지 확인</li>
+                <li><span>3</span>최종 공유 여부를 사용자가 직접 판단</li>
+              </ul>
+              <div className="compare-completion-actions">
+                <button className="btn btn-primary" onClick={download}>안전본 다운로드 확인</button>
+                <Link className="btn btn-secondary" to="/analyses/new"><PlusCircle size={18} /> 새 분석 시작</Link>
+              </div>
+            </Card>
+          </div>
+        </ScrollReveal>
+        {toast && <div className="toast">{toast}</div>}
+      </div>
+    </MainLayout>
+  );
+}
