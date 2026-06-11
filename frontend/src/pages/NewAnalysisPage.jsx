@@ -6,6 +6,8 @@ import AnalysisFlowHeader from '../components/analysis/AnalysisFlowHeader.jsx';
 import ScrollReveal from '../components/common/ScrollReveal.jsx';
 import AnalysisProgress from '../components/analysis/AnalysisProgress.jsx';
 import ModePreviewPanel from '../components/analysis/ModePreviewPanel.jsx';
+import ResultPreviewGuide from '../components/analysis/ResultPreviewGuide.jsx';
+import DetectionCriteriaSummary from '../components/analysis/DetectionCriteriaSummary.jsx';
 import AnalysisModeSelector from '../components/upload/AnalysisModeSelector.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import { createAnalysis } from '../services/mockAnalysis.js';
@@ -83,29 +85,33 @@ export default function NewAnalysisPage() {
             </div>
           </ScrollReveal>
           <div className="analysis-mode-workspace">
-            <AnalysisModeSelector
-              value={selectedMode}
-              onChange={(mode) => {
-                setSelectedMode(mode);
-                setHoveredMode(null);
-                if (!titleEdited) setTitle(defaultTitles[mode]);
-              }}
-              onHover={setHoveredMode}
-              previewLocked={Boolean(selectedMode)}
-            />
+            <div className="analysis-mode-main">
+              <AnalysisModeSelector
+                value={selectedMode}
+                onChange={(mode) => {
+                  setSelectedMode(mode);
+                  setHoveredMode(null);
+                  if (!titleEdited) setTitle(defaultTitles[mode]);
+                }}
+                onHover={setHoveredMode}
+                previewLocked={Boolean(selectedMode)}
+              />
+              <DetectionCriteriaSummary />
+            </div>
             <div className="mode-preview-column">
               <ModePreviewPanel mode={previewMode} locked={Boolean(selectedMode)} />
+              <ResultPreviewGuide />
             </div>
           </div>
         </section>
         <ScrollReveal className="flow-reveal" delay={130}>
           <div className={`board-sticky-cta interactive-flow-card ${selectedMode ? 'is-ready' : 'is-waiting'}`}>
             <div className="analysis-action-copy" key={selectedMode || 'empty'}>
-              <b>{selectedMode ? `선택됨: ${purposeMeta[selectedMode].label}` : '점검할 상황을 선택하세요'}</b>
+              <b>{selectedMode ? `선택됨: ${purposeMeta[selectedMode].label}` : '점검할 상황을 선택하면 다음 단계로 이동할 수 있습니다.'}</b>
               <p className="muted">
                 {selectedMode
                   ? `확인 단서: ${purposeMeta[selectedMode].examples.join(' · ')}`
-                  : '점검할 상황을 선택하면 다음 단계로 이동할 수 있습니다.'}
+                  : '선택한 상황에 따라 탐지 후보와 권장 조치가 자동으로 구성됩니다.'}
               </p>
             </div>
             <button className="btn btn-primary btn-lg" type="submit" disabled={!selectedMode}>

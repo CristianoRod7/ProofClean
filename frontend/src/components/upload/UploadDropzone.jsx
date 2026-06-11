@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { UploadCloud, FileImage, MousePointerClick } from 'lucide-react';
 
 export default function UploadDropzone({ onFile }) {
   const [dragging, setDragging] = useState(false);
+  const dragDepth = useRef(0);
   const handleDrop = (event) => {
     event.preventDefault();
+    dragDepth.current = 0;
     setDragging(false);
     const file = event.dataTransfer.files?.[0];
     if (file) onFile(file);
@@ -13,8 +15,17 @@ export default function UploadDropzone({ onFile }) {
   return (
     <label
       className={`dropzone brand-dropzone ${dragging ? 'dragging' : ''}`}
-      onDragOver={(event) => { event.preventDefault(); setDragging(true); }}
-      onDragLeave={() => setDragging(false)}
+      onDragEnter={(event) => {
+        event.preventDefault();
+        dragDepth.current += 1;
+        setDragging(true);
+      }}
+      onDragOver={(event) => event.preventDefault()}
+      onDragLeave={(event) => {
+        event.preventDefault();
+        dragDepth.current = Math.max(0, dragDepth.current - 1);
+        if (dragDepth.current === 0) setDragging(false);
+      }}
       onDrop={handleDrop}
     >
       <input type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" hidden onChange={(event) => onFile(event.target.files?.[0])} />
