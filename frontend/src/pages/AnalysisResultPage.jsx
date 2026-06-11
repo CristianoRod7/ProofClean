@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, GitCompare, Info, WandSparkles } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
@@ -13,7 +13,8 @@ import RiskScenarioCard from '../components/analysis/RiskScenarioCard.jsx';
 import RecommendationList from '../components/analysis/RecommendationList.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import Card from '../components/common/Card.jsx';
-import { createMaskedVersion, getAnalysisById, runMockAnalysis } from '../services/mockAnalysis.js';
+import { getAnalysisById, runMockAnalysis } from '../services/mockAnalysis.js';
+import { getAnalysis, maskAnalysis } from '../services/analysisApi.js';
 
 export default function AnalysisResultPage() {
   const { id } = useParams();
@@ -24,12 +25,23 @@ export default function AnalysisResultPage() {
     return found;
   });
   const [activeId, setActiveId] = useState(() => analysis?.findings?.[0]?.id || '');
+
+  useEffect(() => {
+    let active = true;
+    getAnalysis(id).then((next) => {
+      if (!active || !next) return;
+      setAnalysis(next);
+      setActiveId((current) => current || next.findings?.[0]?.id || '');
+    });
+    return () => { active = false; };
+  }, [id]);
+
   const activeFinding = useMemo(() => analysis?.findings?.find((finding) => finding.id === activeId), [analysis, activeId]);
 
   if (!analysis) return <MainLayout><ErrorAlert message="분석 결과를 찾을 수 없습니다." /></MainLayout>;
 
-  const createMask = () => {
-    const next = createMaskedVersion(id);
+  const createMask = async () => {
+    const next = await maskAnalysis(id);
     setAnalysis(next);
     navigate(`/analyses/${id}/compare`);
   };

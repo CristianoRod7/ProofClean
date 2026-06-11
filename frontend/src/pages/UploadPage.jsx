@@ -11,7 +11,8 @@ import FilePreview from '../components/upload/FilePreview.jsx';
 import LoadingAnalysisScreen from '../components/upload/LoadingAnalysisScreen.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import Card from '../components/common/Card.jsx';
-import { getAnalysisById, runMockAnalysis, uploadMockFile, useSampleImage } from '../services/mockAnalysis.js';
+import { getAnalysisById, useSampleImage } from '../services/mockAnalysis.js';
+import { runAnalysis, uploadFile } from '../services/analysisApi.js';
 import { isSupportedFile } from '../utils/fileUtils.js';
 import { purposeMeta } from '../data/demoAnalyses.js';
 
@@ -26,7 +27,7 @@ export default function UploadPage() {
 
   if (!analysis) return <MainLayout><ErrorAlert message="분석 프로젝트를 찾을 수 없습니다." /></MainLayout>;
 
-  const onFile = (nextFile) => {
+  const onFile = async (nextFile) => {
     setError('');
     if (!nextFile) return;
     if (!isSupportedFile(nextFile)) {
@@ -36,7 +37,7 @@ export default function UploadPage() {
     setFile(nextFile);
     const url = nextFile.type.startsWith('image/') ? URL.createObjectURL(nextFile) : '';
     setPreview(url);
-    uploadMockFile(id, { fileName: nextFile.name, filePreviewUrl: url });
+    await uploadFile(id, nextFile, url);
   };
 
   const sample = () => {
@@ -48,8 +49,8 @@ export default function UploadPage() {
   const start = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     setLoading(true);
-    setTimeout(() => {
-      runMockAnalysis(id);
+    setTimeout(async () => {
+      await runAnalysis(id);
       navigate(`/analyses/${id}/result`);
     }, 2000);
   };

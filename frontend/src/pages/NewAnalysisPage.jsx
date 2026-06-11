@@ -10,7 +10,7 @@ import ResultPreviewGuide from '../components/analysis/ResultPreviewGuide.jsx';
 import DetectionCriteriaSummary from '../components/analysis/DetectionCriteriaSummary.jsx';
 import AnalysisModeSelector from '../components/upload/AnalysisModeSelector.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
-import { createAnalysis } from '../services/mockAnalysis.js';
+import { createAnalysisApi } from '../services/analysisApi.js';
 import { purposeMeta } from '../data/demoAnalyses.js';
 
 const DEFAULT_MODE = 'SECOND_HAND';
@@ -31,7 +31,7 @@ export default function NewAnalysisPage() {
   const previewMode = selectedMode || hoveredMode || DEFAULT_MODE;
   const [error, setError] = useState('');
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
     setError('');
     if (!selectedMode) {
@@ -42,7 +42,7 @@ export default function NewAnalysisPage() {
       setError('분석 제목을 입력하세요.');
       return;
     }
-    const created = createAnalysis({ title: title.trim(), purpose: selectedMode });
+    const created = await createAnalysisApi({ title: title.trim(), purpose: selectedMode });
     navigate(`/analyses/${created.id}/upload`);
   };
 

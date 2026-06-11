@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, CheckCircle2, Info, PlusCircle } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
 import ScrollReveal from '../components/common/ScrollReveal.jsx';
@@ -11,15 +11,26 @@ import DownloadButton from '../components/common/DownloadButton.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import Card from '../components/common/Card.jsx';
 import { createMaskedVersion, getAnalysisById } from '../services/mockAnalysis.js';
+import { getAnalysis, maskAnalysis } from '../services/analysisApi.js';
 
 export default function ComparePage() {
   const { id } = useParams();
-  const [analysis] = useState(() => {
+  const [analysis, setAnalysis] = useState(() => {
     const found = getAnalysisById(id);
     return found && !found.maskedPreviewUrl ? createMaskedVersion(id) : found;
   });
   const [toast, setToast] = useState('');
   const [activeId, setActiveId] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    getAnalysis(id).then(async (found) => {
+      if (!found || !active) return;
+      const next = found.maskedPreviewUrl ? found : await maskAnalysis(id);
+      if (active) setAnalysis(next);
+    });
+    return () => { active = false; };
+  }, [id]);
 
   if (!analysis) return <MainLayout><ErrorAlert message="비교할 분석 기록을 찾을 수 없습니다." /></MainLayout>;
 
