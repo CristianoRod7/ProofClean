@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class FileUploadResponse(BaseModel):
@@ -15,3 +15,6 @@ class MaskResponse(BaseModel):
     analysisId: str
     maskedImageUrl: str
     safeImageUrl: str
+    maskedCount: int = 0
+    skippedCount: int = 0
+    skippedReasons: list[str] = Field(default_factory=list)

@@ -13,7 +13,7 @@ OPENAI_ANALYSIS_SCHEMA = {
     "schema": {
         "type": "object",
         "additionalProperties": False,
-        "required": ["detections", "scenarios", "recommendations"],
+        "required": ["detections", "summary", "scenarios", "recommendations"],
         "properties": {
             "detections": {
                 "type": "array",
@@ -22,15 +22,23 @@ OPENAI_ANALYSIS_SCHEMA = {
                     "additionalProperties": False,
                     "required": [
                         "id", "type", "label", "confidence", "severity",
-                        "description", "evidence", "box", "coordinateSpace",
+                        "description", "reason", "evidence", "box", "boxStatus", "coordinateSpace",
                     ],
                     "properties": {
                         "id": {"type": "string"},
-                        "type": {"type": "string"},
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "PHONE", "ADDRESS", "EMAIL", "STUDENT_ID", "ACCOUNT_NUMBER",
+                                "URL", "NAME", "LOCATION_HINT", "INVOICE", "FILE_PATH",
+                                "DOCUMENT_INFO", "NICKNAME", "FACE", "TEXT",
+                            ],
+                        },
                         "label": {"type": "string"},
                         "confidence": {"type": "number", "minimum": 0, "maximum": 1},
                         "severity": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
                         "description": {"type": "string"},
+                        "reason": {"type": "string"},
                         "evidence": {"type": ["string", "null"]},
                         "box": {
                             "anyOf": [
@@ -48,10 +56,12 @@ OPENAI_ANALYSIS_SCHEMA = {
                                 {"type": "null"},
                             ]
                         },
+                        "boxStatus": {"type": "string", "enum": ["exact", "estimated", "none"]},
                         "coordinateSpace": {"type": ["string", "null"], "enum": ["normalized", None]},
                     },
                 },
             },
+            "summary": {"type": "string"},
             "scenarios": {
                 "type": "array",
                 "items": {
@@ -140,7 +150,7 @@ class OpenAIProvider:
         if not content:
             raise OpenAIProviderError("OPENAI_EMPTY_RESPONSE", "OpenAI returned an empty response")
         try:
-            parsed = json.loads(content)
+            parsed = json.loads(self._strip_json_fence(content))
         except json.JSONDecodeError as exc:
             raise OpenAIProviderError("OPENAI_INVALID_RESPONSE", "OpenAI response was not valid JSON") from exc
         if not self._is_valid_payload(parsed):
@@ -152,9 +162,22 @@ class OpenAIProvider:
         return (
             isinstance(payload, dict)
             and isinstance(payload.get("detections"), list)
+            and isinstance(payload.get("summary"), str)
             and isinstance(payload.get("scenarios"), list)
             and isinstance(payload.get("recommendations"), list)
         )
+
+    @staticmethod
+    def _strip_json_fence(content: str) -> str:
+        value = content.strip()
+        if not value.startswith("```"):
+            return value
+        lines = value.splitlines()
+        if lines and lines[0].strip().lower() in {"```", "```json"}:
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        return "\n".join(lines).strip()
 
     @staticmethod
     def _error_code(error: Exception) -> str:

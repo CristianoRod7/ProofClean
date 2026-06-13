@@ -20,8 +20,11 @@ class Detection(BaseModel):
     confidence: float
     severity: str
     description: str
+    reason: str | None = None
     evidence: str | None = None
     box: Box | None = None
+    boxStatus: str = "none"
+    source: str = "mock"
     coordinateSpace: str = "none"
     coordinateStatus: str = "none"
     coordinateSource: str = "none"
@@ -50,6 +53,7 @@ class AnalysisResponse(BaseModel):
     status: str
     riskScore: int | None = None
     riskLevel: str | None = None
+    summary: str | None = None
     detections: list[Detection] = Field(default_factory=list)
     scenarios: list[Scenario] = Field(default_factory=list)
     recommendations: list[Recommendation] = Field(default_factory=list)

@@ -49,9 +49,11 @@ def create_masked_image(analysis: dict) -> dict:
     image = open_source_image(analysis)
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
+    detections = analysis.get("detections", [])
     detections_with_boxes = [
         detection for detection in analysis.get("detections", [])
-        if isinstance(detection.get("box"), dict) and detection.get("coordinateStatus") not in {"none", "demo"}
+        if isinstance(detection.get("box"), dict)
+        and detection.get("boxStatus", detection.get("coordinateStatus")) not in {"none", "demo"}
     ]
     if analysis.get("sourceType") == "sample":
         detections_with_boxes = [
@@ -60,6 +62,12 @@ def create_masked_image(analysis: dict) -> dict:
         ]
     if not detections_with_boxes:
         raise ValueError("정확한 위치 좌표가 없어 자동 마스킹을 건너뛰었습니다. 탐지 후보를 직접 확인해 주세요.")
+
+    skipped = [detection for detection in detections if detection not in detections_with_boxes]
+    skipped_reasons = [
+        f"좌표가 없어 {detection.get('label') or detection.get('type') or '탐지'} 항목은 자동 마스킹을 건너뛰었습니다."
+        for detection in skipped
+    ]
 
     for detection in detections_with_boxes:
         x1, y1, x2, y2 = clamp_box(
@@ -82,6 +90,9 @@ def create_masked_image(analysis: dict) -> dict:
         "contentType": "image/png",
         "path": str(path),
         "url": f"/static/masked/{filename}",
+        "maskedCount": len(detections_with_boxes),
+        "skippedCount": len(skipped),
+        "skippedReasons": skipped_reasons,
     }
     with store.lock:
         store.masked_files[masked_id] = record

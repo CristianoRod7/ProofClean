@@ -23,6 +23,7 @@ def serialize_analysis(analysis: dict) -> dict:
         "status": analysis["status"],
         "riskScore": analysis.get("riskScore"),
         "riskLevel": analysis.get("riskLevel"),
+        "summary": analysis.get("summary"),
         "detections": analysis.get("detections", []),
         "scenarios": analysis.get("scenarios", []),
         "recommendations": analysis.get("recommendations", []),
@@ -50,6 +51,7 @@ def create_analysis(title: str, mode: str, user_id: str) -> dict:
         "status": "created",
         "riskScore": None,
         "riskLevel": None,
+        "summary": None,
         "detections": [],
         "scenarios": [],
         "recommendations": [],
@@ -148,6 +150,7 @@ async def run_analysis(analysis_id: str, user_id: str) -> dict:
         "detections": ai_result["detections"],
         "scenarios": ai_result["scenarios"],
         "recommendations": ai_result["recommendations"],
+        "summary": ai_result.get("summary"),
         "riskScore": score,
         "riskLevel": level,
         "provider": ai_result["provider"],
@@ -173,6 +176,9 @@ async def mask_analysis(analysis_id: str, user_id: str) -> dict:
         "analysisId": analysis_id,
         "maskedImageUrl": masked_record["url"],
         "safeImageUrl": masked_record["url"],
+        "maskedCount": masked_record["maskedCount"],
+        "skippedCount": masked_record["skippedCount"],
+        "skippedReasons": masked_record["skippedReasons"],
     }
 
 

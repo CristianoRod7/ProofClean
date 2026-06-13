@@ -11,7 +11,7 @@ def normalize_mode(mode: str | None) -> str:
         "sns_upload": "sns",
     }
     value = aliases.get(value, value)
-    return value if value in {"sns", "marketplace", "assignment", "community", "other"} else "other"
+    return value if value in {"sns", "marketplace", "assignment", "community", "messenger", "other"} else "other"
 
 
 def detection(item_id: str, item_type: str, label: str, confidence: float, severity: str, description: str, box: tuple[int, int, int, int]) -> dict:
@@ -51,6 +51,12 @@ DETECTIONS = {
         detection("det-community-location", "LOCATION_HINT", "지역 단서", 0.81, "medium", "활동 지역이나 생활권을 추정할 수 있습니다.", (315, 112, 215, 40)),
         detection("det-comment", "COMMENT_TEXT", "댓글 단서", 0.72, "low", "댓글 문맥에 개인 정보가 포함될 가능성이 있습니다.", (95, 350, 650, 105)),
     ],
+    "messenger": [
+        detection("det-message-phone", "PHONE", "전화번호 후보", 0.91, "high", "대화 내용에 전화번호 형식의 후보가 포함되어 있습니다.", (150, 250, 250, 44)),
+        detection("det-message-account", "ACCOUNT_NUMBER", "계좌번호 후보", 0.86, "high", "송금에 사용될 수 있는 계좌번호 후보입니다.", (170, 335, 310, 44)),
+        detection("det-message-link", "URL", "링크 후보", 0.83, "medium", "외부 페이지로 연결되는 링크 후보입니다.", (160, 420, 390, 44)),
+        detection("det-message-profile", "NICKNAME", "프로필명 후보", 0.79, "medium", "다른 서비스 계정과 연결될 수 있는 프로필명 후보입니다.", (80, 65, 220, 44)),
+    ],
     "other": [
         detection("det-text", "TEXT", "텍스트 후보", 0.84, "medium", "공유 전 확인이 필요한 화면 텍스트입니다.", (120, 140, 540, 62)),
         detection("det-other-email", "EMAIL", "이메일 후보", 0.91, "high", "이메일 주소 형식의 개인정보 후보입니다.", (220, 310, 350, 46)),
@@ -64,6 +70,7 @@ SCENARIOS = {
     "marketplace": [("생활권 추정 가능성", "high", "주소나 거래 지역 단서가 함께 노출될 경우 생활권이 추정될 수 있습니다."), ("직접 연락 위험", "high", "전화번호가 노출되면 원치 않는 연락을 받을 수 있습니다.")],
     "assignment": [("학생 신원 연결", "high", "학번과 학교 이메일이 함께 노출되면 학생 신원이 연결될 수 있습니다."), ("개발 환경 노출", "medium", "저장 경로로 사용자명이나 프로젝트 구조가 드러날 수 있습니다.")],
     "community": [("온라인 계정 연결", "medium", "닉네임과 이메일을 통해 다른 계정이 연결될 수 있습니다."), ("생활권 추정", "medium", "게시글의 지역 단서로 활동 지역이 추정될 수 있습니다.")],
+    "messenger": [("연락처 및 계좌 노출", "high", "대화 캡처에 전화번호나 계좌번호가 노출될 수 있습니다."), ("대화 상대 연결", "medium", "프로필명과 링크를 통해 다른 계정이 연결될 수 있습니다.")],
     "other": [("문서 소유자 추정", "medium", "텍스트와 문서 정보가 결합되면 소유자가 추정될 수 있습니다."), ("연락처 노출", "high", "이메일 주소가 의도하지 않게 공유될 수 있습니다.")],
 }
 
@@ -73,6 +80,7 @@ RECOMMENDATIONS = {
     "marketplace": [("송장 영역을 마스킹하세요.", "송장이나 주소가 보이는 부분은 공유 전 가리는 것을 권장합니다."), ("전화번호를 가리세요.", "연락처가 필요한 경우에도 일부 숫자를 마스킹하세요."), ("주소와 거래 지역을 확인하세요.", "생활권을 추정할 수 있는 지역 단서를 제거하세요.")],
     "assignment": [("학번과 이메일을 가리세요.", "제출 화면을 공유할 때 학생 식별 정보를 마스킹하세요."), ("파일 경로를 확인하세요.", "사용자명이나 저장소명이 포함된 경로를 정리하세요."), ("이름 포함 여부를 확인하세요.", "문서 본문과 속성에 작성자 이름이 있는지 확인하세요.")],
     "community": [("닉네임과 지역명을 확인하세요.", "다른 계정과 연결되는 닉네임이나 지역 단서를 검토하세요."), ("댓글 속 개인정보를 확인하세요.", "댓글에 이메일이나 연락처가 포함되지 않았는지 확인하세요.")],
+    "messenger": [("연락처와 계좌번호를 확인하세요.", "공유 전에 전화번호와 송금 정보를 가리세요."), ("프로필명과 링크를 확인하세요.", "대화 상대와 외부 계정이 연결되는 단서를 검토하세요.")],
     "other": [("화면 텍스트 후보를 확인하세요.", "공유 목적과 무관한 텍스트 영역을 마스킹하세요."), ("이메일과 문서 정보를 확인하세요.", "연락처와 파일 속성 정보를 공유 전에 검토하세요.")],
 }
 

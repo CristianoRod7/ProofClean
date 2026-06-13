@@ -86,7 +86,11 @@ function mapDetection(item, context = {}) {
   }
 
   const sourceType = context.sourceType || 'sample';
+  const boxStatus = item.boxStatus
+    || ({ verified: 'exact', estimated: 'estimated', demo: 'demo', none: 'none' }[item.coordinateStatus])
+    || (normalizedBox ? (sourceType === 'sample' ? 'demo' : 'estimated') : 'none');
   const coordinateStatus = item.coordinateStatus
+    || ({ exact: 'verified', estimated: 'estimated', demo: 'demo', none: 'none' }[boxStatus])
     || (normalizedBox ? (sourceType === 'sample' ? 'demo' : 'estimated') : 'none');
   return {
     ...item,
@@ -95,6 +99,7 @@ function mapDetection(item, context = {}) {
     width: normalizedBox?.width ?? null,
     height: normalizedBox?.height ?? null,
     hasCoordinates: Boolean(normalizedBox),
+    boxStatus,
     coordinateStatus,
     coordinateSource: item.coordinateSource || (sourceType === 'sample' ? 'mock' : context.provider || ''),
   };
