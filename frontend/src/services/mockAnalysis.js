@@ -118,3 +118,24 @@ export function createMaskedVersion(id) {
 export function deleteAnalysis(id) {
   setItem(KEY, getItem(KEY, []).filter((analysis) => analysis.id !== id));
 }
+
+export function removeStaleAnalysisFromStorage(id) {
+  const analysisId = String(id || '').trim();
+  if (!analysisId) return;
+
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return;
+    const stored = JSON.parse(raw);
+    if (!Array.isArray(stored)) {
+      localStorage.removeItem(KEY);
+      return;
+    }
+    localStorage.setItem(
+      KEY,
+      JSON.stringify(stored.filter((analysis) => analysis?.id !== analysisId)),
+    );
+  } catch {
+    localStorage.removeItem(KEY);
+  }
+}

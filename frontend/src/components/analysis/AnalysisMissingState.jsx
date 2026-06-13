@@ -11,7 +11,7 @@ export default function AnalysisMissingState({ message = DEFAULT_MESSAGE }) {
         <section className="card empty analysis-missing-state" role="alert">
           <FileQuestion size={42} aria-hidden="true" />
           <div>
-            <h2>분석 기록을 찾을 수 없습니다.</h2>
+            <h2>분석 기록을 찾을 수 없습니다</h2>
             <p>{message}</p>
           </div>
           <Link className="btn btn-primary" to="/analyses/new">

@@ -11,18 +11,16 @@ import DownloadButton from '../components/common/DownloadButton.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import Card from '../components/common/Card.jsx';
 import AnalysisMissingState from '../components/analysis/AnalysisMissingState.jsx';
-import { createMaskedVersion, getAnalysisById } from '../services/mockAnalysis.js';
+import { getAnalysisById } from '../services/mockAnalysis.js';
 import { AnalysisNotFoundError, getAnalysis, maskAnalysis } from '../services/analysisApi.js';
 
 export default function ComparePage() {
   const { id } = useParams();
-  const [analysis, setAnalysis] = useState(() => {
-    const found = getAnalysisById(id);
-    return found && !found.maskedPreviewUrl ? createMaskedVersion(id) : found;
-  });
+  const [analysis, setAnalysis] = useState(() => getAnalysisById(id));
   const [toast, setToast] = useState('');
   const [activeId, setActiveId] = useState('');
   const [missing, setMissing] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     let active = true;
@@ -40,11 +38,16 @@ export default function ComparePage() {
           setAnalysis(null);
           setMissing(true);
         }
+      })
+      .finally(() => {
+        if (active) setChecking(false);
       });
     return () => { active = false; };
   }, [id]);
 
-  if (missing || !analysis) return <AnalysisMissingState />;
+  if (missing) return <AnalysisMissingState />;
+  if (checking && !analysis) return <MainLayout><div className="page-wide board-page"><p className="muted">분석 기록을 확인하는 중입니다.</p></div></MainLayout>;
+  if (!analysis) return <AnalysisMissingState message="분석 기록을 불러오지 못했습니다. 잠시 후 다시 시도하거나 새 분석을 시작해 주세요." />;
   const isUploadFallback = analysis.sourceType === 'upload' && (analysis.provider === 'mock' || analysis.aiFallback);
   const maskableCount = analysis.findings.filter((finding) => (
     finding.hasCoordinates && (analysis.sourceType === 'sample' || finding.coordinateStatus !== 'demo')

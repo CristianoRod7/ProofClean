@@ -36,12 +36,12 @@ export default function NewAnalysisPage() {
       setError('분석 제목을 입력하세요.');
       return;
     }
-    const created = await createAnalysisApi({ title: title.trim(), purpose: selectedMode });
-    if (!created?.id) {
-      setError('분석 프로젝트를 생성하지 못했습니다. 잠시 후 다시 시도하세요.');
-      return;
+    try {
+      const created = await createAnalysisApi({ title: title.trim(), purpose: selectedMode });
+      navigate(`/analyses/${created.id}/upload`);
+    } catch (creationError) {
+      setError(creationError?.response?.data?.detail || creationError?.message || '분석 프로젝트를 생성하지 못했습니다. 잠시 후 다시 시도하세요.');
     }
-    navigate(`/analyses/${created.id}/upload`);
   };
 
   return (

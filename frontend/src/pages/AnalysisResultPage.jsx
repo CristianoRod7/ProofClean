@@ -14,20 +14,17 @@ import RecommendationList from '../components/analysis/RecommendationList.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import Card from '../components/common/Card.jsx';
 import AnalysisMissingState from '../components/analysis/AnalysisMissingState.jsx';
-import { getAnalysisById, runMockAnalysis } from '../services/mockAnalysis.js';
+import { getAnalysisById } from '../services/mockAnalysis.js';
 import { AnalysisNotFoundError, getAnalysis, maskAnalysis } from '../services/analysisApi.js';
 
 export default function AnalysisResultPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [analysis, setAnalysis] = useState(() => {
-    const found = getAnalysisById(id);
-    if (found && found.status !== 'ANALYZED' && found.status !== 'MASKED') return runMockAnalysis(id);
-    return found;
-  });
+  const [analysis, setAnalysis] = useState(() => getAnalysisById(id));
   const [activeId, setActiveId] = useState(() => analysis?.findings?.[0]?.id || '');
   const [maskError, setMaskError] = useState('');
   const [missing, setMissing] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     let active = true;
@@ -42,13 +39,18 @@ export default function AnalysisResultPage() {
           setAnalysis(null);
           setMissing(true);
         }
+      })
+      .finally(() => {
+        if (active) setChecking(false);
       });
     return () => { active = false; };
   }, [id]);
 
   const activeFinding = useMemo(() => analysis?.findings?.find((finding) => finding.id === activeId), [analysis, activeId]);
 
-  if (missing || !analysis) return <AnalysisMissingState />;
+  if (missing) return <AnalysisMissingState />;
+  if (checking && !analysis) return <MainLayout><div className="page-wide board-page"><p className="muted">분석 기록을 확인하는 중입니다.</p></div></MainLayout>;
+  if (!analysis) return <AnalysisMissingState message="분석 기록을 불러오지 못했습니다. 잠시 후 다시 시도하거나 새 분석을 시작해 주세요." />;
 
   const isUploadFallback = analysis.sourceType === 'upload' && (analysis.provider === 'mock' || analysis.aiFallback);
   const maskableFindings = analysis.findings.filter((finding) => (

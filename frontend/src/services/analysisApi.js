@@ -3,9 +3,9 @@ import { API_ORIGIN } from './api.js';
 import {
   createAnalysis,
   createMaskedVersion,
-  deleteAnalysis,
   getAnalyses,
   getAnalysisById,
+  removeStaleAnalysisFromStorage,
   runMockAnalysis,
   saveAnalysis,
   uploadMockFile,
@@ -25,13 +25,15 @@ export class AnalysisNotFoundError extends Error {
     super('이 분석 기록을 찾을 수 없습니다. 서버가 재시작되었거나 오래된 임시 기록일 수 있습니다. 새 분석을 다시 시작해 주세요.');
     this.name = 'AnalysisNotFoundError';
     this.analysisId = id;
+    this.status = 404;
+    this.isNotFound = true;
   }
 }
 
 function requireAnalysisId(id) {
   const normalized = String(id || '').trim();
   if (!normalized || normalized === 'undefined' || normalized === 'null' || normalized === ':id') {
-    throw new Error('analysisId가 없습니다.');
+    throw new AnalysisNotFoundError(normalized);
   }
   return normalized;
 }
@@ -42,7 +44,7 @@ function isNotFound(error) {
 
 function handleNotFound(error, id) {
   if (!isNotFound(error)) return false;
-  deleteAnalysis(id);
+  removeStaleAnalysisFromStorage(id);
   throw new AnalysisNotFoundError(id);
 }
 
@@ -176,13 +178,10 @@ export async function getAnalysis(id) {
 }
 
 export async function createAnalysisApi(payload) {
-  try {
-    const purpose = payload.purpose || modeToPurpose[payload.mode] || 'ETC';
-    const { data } = await api.post('/analyses', { title: payload.title, mode: purposeToMode[purpose] || payload.mode || 'other' });
-    return saveAnalysis(mapApiAnalysis(data, { purpose }));
-  } catch {
-    return createAnalysis({ title: payload.title, purpose: payload.purpose || modeToPurpose[payload.mode] || 'ETC' });
-  }
+  const purpose = payload.purpose || modeToPurpose[payload.mode] || 'ETC';
+  const { data } = await api.post('/analyses', { title: payload.title, mode: purposeToMode[purpose] || payload.mode || 'other' });
+  if (!data?.id) throw new Error('백엔드가 분석 ID를 반환하지 않았습니다.');
+  return saveAnalysis(mapApiAnalysis(data, { purpose }));
 }
 
 export async function uploadFile(id, file, localPreviewUrl = '') {
@@ -242,4 +241,11 @@ export async function maskAnalysis(id) {
 export async function getFindings(id) { return (await getAnalysis(id))?.findings || []; }
 export async function getScenarios(id) { return (await getAnalysis(id))?.scenarios || []; }
 export async function getRecommendations(id) { return (await getAnalysis(id))?.recommendations || []; }
-export { createAnalysis, createMaskedVersion, getAnalyses, getAnalysisById, runMockAnalysis };
+export {
+  createAnalysis,
+  createMaskedVersion,
+  getAnalyses,
+  getAnalysisById,
+  removeStaleAnalysisFromStorage,
+  runMockAnalysis,
+};
