@@ -10,8 +10,9 @@ import DetectionList from '../components/analysis/DetectionList.jsx';
 import DownloadButton from '../components/common/DownloadButton.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import Card from '../components/common/Card.jsx';
+import AnalysisMissingState from '../components/analysis/AnalysisMissingState.jsx';
 import { createMaskedVersion, getAnalysisById } from '../services/mockAnalysis.js';
-import { getAnalysis, maskAnalysis } from '../services/analysisApi.js';
+import { AnalysisNotFoundError, getAnalysis, maskAnalysis } from '../services/analysisApi.js';
 
 export default function ComparePage() {
   const { id } = useParams();
@@ -21,21 +22,29 @@ export default function ComparePage() {
   });
   const [toast, setToast] = useState('');
   const [activeId, setActiveId] = useState('');
+  const [missing, setMissing] = useState(false);
 
   useEffect(() => {
     let active = true;
-    getAnalysis(id).then(async (found) => {
-      if (!found || !active) return;
-      const hasMaskableCoordinates = found.findings?.some((finding) => (
-        finding.hasCoordinates && (found.sourceType === 'sample' || finding.coordinateStatus !== 'demo')
-      ));
-      const next = found.maskedPreviewUrl || !hasMaskableCoordinates ? found : await maskAnalysis(id);
-      if (active) setAnalysis(next);
-    });
+    getAnalysis(id)
+      .then(async (found) => {
+        if (!found || !active) return;
+        const hasMaskableCoordinates = found.findings?.some((finding) => (
+          finding.hasCoordinates && (found.sourceType === 'sample' || finding.coordinateStatus !== 'demo')
+        ));
+        const next = found.maskedPreviewUrl || !hasMaskableCoordinates ? found : await maskAnalysis(id);
+        if (active) setAnalysis(next);
+      })
+      .catch((fetchError) => {
+        if (active && fetchError instanceof AnalysisNotFoundError) {
+          setAnalysis(null);
+          setMissing(true);
+        }
+      });
     return () => { active = false; };
   }, [id]);
 
-  if (!analysis) return <MainLayout><ErrorAlert message="비교할 분석 기록을 찾을 수 없습니다." /></MainLayout>;
+  if (missing || !analysis) return <AnalysisMissingState />;
   const isUploadFallback = analysis.sourceType === 'upload' && (analysis.provider === 'mock' || analysis.aiFallback);
   const maskableCount = analysis.findings.filter((finding) => (
     finding.hasCoordinates && (analysis.sourceType === 'sample' || finding.coordinateStatus !== 'demo')

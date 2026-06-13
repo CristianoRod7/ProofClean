@@ -13,8 +13,9 @@ import RiskScenarioCard from '../components/analysis/RiskScenarioCard.jsx';
 import RecommendationList from '../components/analysis/RecommendationList.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import Card from '../components/common/Card.jsx';
+import AnalysisMissingState from '../components/analysis/AnalysisMissingState.jsx';
 import { getAnalysisById, runMockAnalysis } from '../services/mockAnalysis.js';
-import { getAnalysis, maskAnalysis } from '../services/analysisApi.js';
+import { AnalysisNotFoundError, getAnalysis, maskAnalysis } from '../services/analysisApi.js';
 
 export default function AnalysisResultPage() {
   const { id } = useParams();
@@ -26,20 +27,28 @@ export default function AnalysisResultPage() {
   });
   const [activeId, setActiveId] = useState(() => analysis?.findings?.[0]?.id || '');
   const [maskError, setMaskError] = useState('');
+  const [missing, setMissing] = useState(false);
 
   useEffect(() => {
     let active = true;
-    getAnalysis(id).then((next) => {
-      if (!active || !next) return;
-      setAnalysis(next);
-      setActiveId((current) => current || next.findings?.[0]?.id || '');
-    });
+    getAnalysis(id)
+      .then((next) => {
+        if (!active || !next) return;
+        setAnalysis(next);
+        setActiveId((current) => current || next.findings?.[0]?.id || '');
+      })
+      .catch((fetchError) => {
+        if (active && fetchError instanceof AnalysisNotFoundError) {
+          setAnalysis(null);
+          setMissing(true);
+        }
+      });
     return () => { active = false; };
   }, [id]);
 
   const activeFinding = useMemo(() => analysis?.findings?.find((finding) => finding.id === activeId), [analysis, activeId]);
 
-  if (!analysis) return <MainLayout><ErrorAlert message="분석 결과를 찾을 수 없습니다." /></MainLayout>;
+  if (missing || !analysis) return <AnalysisMissingState />;
 
   const isUploadFallback = analysis.sourceType === 'upload' && (analysis.provider === 'mock' || analysis.aiFallback);
   const maskableFindings = analysis.findings.filter((finding) => (
@@ -52,13 +61,21 @@ export default function AnalysisResultPage() {
       setMaskError('정확한 위치 좌표가 없어 자동 마스킹을 건너뛰었습니다. 탐지 후보를 직접 확인해 주세요.');
       return;
     }
-    const next = await maskAnalysis(id);
-    setAnalysis(next);
-    if (next.maskingSkipped) {
-      setMaskError(next.maskingMessage);
-      return;
+    try {
+      const next = await maskAnalysis(id);
+      setAnalysis(next);
+      if (next.maskingSkipped) {
+        setMaskError(next.maskingMessage);
+        return;
+      }
+      navigate(`/analyses/${id}/compare`);
+    } catch (maskingError) {
+      if (maskingError instanceof AnalysisNotFoundError) {
+        setMissing(true);
+        return;
+      }
+      setMaskError(maskingError?.message || '안전본을 생성하지 못했습니다.');
     }
-    navigate(`/analyses/${id}/compare`);
   };
 
   return (

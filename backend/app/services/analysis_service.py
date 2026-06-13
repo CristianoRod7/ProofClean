@@ -77,7 +77,7 @@ def create_analysis(title: str, mode: str, user_id: str) -> dict:
 def require_analysis(analysis_id: str, user_id: str | None = None) -> dict:
     analysis = store.analyses.get(analysis_id)
     if not analysis or (user_id and analysis.get("ownerId") != user_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="분석 프로젝트를 찾을 수 없습니다.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="분석 기록을 찾을 수 없습니다.")
     return analysis
 
 
