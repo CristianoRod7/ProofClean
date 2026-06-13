@@ -23,8 +23,13 @@ export default function LoginPage() {
     }
   };
   const demo = async () => {
-    await auth.demoLogin({ rememberMe });
-    navigate('/dashboard');
+    setError('');
+    try {
+      await auth.demoLogin({ rememberMe });
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
