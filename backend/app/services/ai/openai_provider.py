@@ -1,10 +1,14 @@
 import base64
 import json
+import logging
 import mimetypes
 from pathlib import Path
 from typing import Any
 
 from app.core.config import settings
+
+
+logger = logging.getLogger(__name__)
 
 
 OPENAI_ANALYSIS_SCHEMA = {
@@ -103,6 +107,12 @@ class OpenAIProviderError(RuntimeError):
 
 class OpenAIProvider:
     async def analyze(self, file_path: str | None, prompt: str, mode: str) -> dict:
+        logger.info(
+            "[OpenAIProvider] preparing request model=%s mode=%s has_api_key=%s",
+            settings.openai_model,
+            mode,
+            bool(settings.openai_api_key),
+        )
         if not settings.openai_api_key:
             raise OpenAIProviderError("OPENAI_API_KEY_MISSING", "OPENAI_API_KEY is missing")
         if not file_path or not Path(file_path).is_file():
@@ -124,6 +134,12 @@ class OpenAIProvider:
             max_retries=settings.openai_max_retries,
         )
         try:
+            logger.info(
+                "[OpenAIProvider] calling OpenAI model=%s mime_type=%s image_bytes=%d",
+                settings.openai_model,
+                mime_type,
+                path.stat().st_size,
+            )
             response = await client.chat.completions.create(
                 model=settings.openai_model,
                 response_format={"type": "json_schema", "json_schema": OPENAI_ANALYSIS_SCHEMA},
@@ -144,7 +160,13 @@ class OpenAIProvider:
                 ],
             )
         except Exception as exc:
-            raise OpenAIProviderError(self._error_code(exc), "OpenAI Vision request failed") from exc
+            code = self._error_code(exc)
+            logger.warning(
+                "[OpenAIProvider] failed code=%s error_type=%s",
+                code,
+                exc.__class__.__name__,
+            )
+            raise OpenAIProviderError(code, f"OpenAI Vision request failed ({exc.__class__.__name__})") from exc
 
         content = response.choices[0].message.content if response.choices else None
         if not content:
@@ -155,6 +177,11 @@ class OpenAIProvider:
             raise OpenAIProviderError("OPENAI_INVALID_RESPONSE", "OpenAI response was not valid JSON") from exc
         if not self._is_valid_payload(parsed):
             raise OpenAIProviderError("OPENAI_SCHEMA_MISMATCH", "OpenAI response did not match the analysis schema")
+        logger.info(
+            "[OpenAIProvider] success model=%s detections=%d",
+            settings.openai_model,
+            len(parsed["detections"]),
+        )
         return parsed
 
     @staticmethod

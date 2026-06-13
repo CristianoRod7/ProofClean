@@ -3,6 +3,7 @@ from pathlib import Path
 
 from PIL import Image, UnidentifiedImageError
 
+from app.core.config import settings
 from app.services.ai.mock_provider import MockProvider
 from app.services.ai.openai_provider import OpenAIProvider, OpenAIProviderError
 from app.services.ai.prompt_builder import PromptBuilder
@@ -24,8 +25,18 @@ class AIService:
         normalized_mode = normalize_mode(mode)
         prompt = self.prompt_builder.build(normalized_mode)
         image_size = self._image_size(file_path)
+        path_exists = bool(file_path and Path(file_path).is_file())
+        logger.info(
+            "[AIService] sourceType=%s mode=%s file_path=%s file_exists=%s has_api_key=%s",
+            source_type,
+            normalized_mode,
+            file_path or "<none>",
+            path_exists,
+            bool(settings.openai_api_key),
+        )
 
         if source_type == "sample":
+            logger.info("[AIService] selected provider=mock reason=sample")
             raw = await self.mock_provider.analyze(file_path, prompt, normalized_mode)
             return {
                 **self.normalizer.normalize(raw, normalized_mode, source_type="sample", provider="mock", image_size=image_size or (900, 620)),
@@ -34,8 +45,9 @@ class AIService:
                 "fallbackReason": None,
             }
 
-        if file_path:
+        if path_exists:
             try:
+                logger.info("[AIService] selected provider=openai")
                 raw = await self.openai_provider.analyze(file_path, prompt, normalized_mode)
                 normalized = self.normalizer.normalize(
                     raw,
@@ -45,12 +57,16 @@ class AIService:
                     image_size=image_size,
                 )
                 normalized.pop("usedDefaultDetections", None)
+                logger.info(
+                    "[AIService] completed provider=openai detections=%d",
+                    len(normalized["detections"]),
+                )
                 return {**normalized, "provider": "openai", "aiFallback": False, "fallbackReason": None}
             except Exception as error:
-                reason = error.code if isinstance(error, OpenAIProviderError) else "OPENAI_REQUEST_FAILED"
+                reason = self._fallback_reason(error)
                 logger.warning(
-                    "OpenAI analysis failed; using coordinate-free mock fallback",
-                    exc_info=error,
+                    "[AIService] fallback provider=mock reason=%s",
+                    reason,
                 )
                 raw = await self.mock_provider.analyze(file_path, prompt, normalized_mode)
                 normalized = self.normalizer.normalize(
@@ -63,8 +79,10 @@ class AIService:
                 normalized.pop("usedDefaultDetections", None)
                 return {**normalized, "provider": "mock", "aiFallback": True, "fallbackReason": reason}
 
-        raw = await self.mock_provider.analyze(None, prompt, normalized_mode)
         if source_type == "upload":
+            reason = "UPLOADED_IMAGE_MISSING: uploaded file path is missing or does not exist"
+            logger.warning("[AIService] fallback provider=mock reason=%s", reason)
+            raw = await self.mock_provider.analyze(None, prompt, normalized_mode)
             normalized = self.normalizer.normalize(
                 raw,
                 normalized_mode,
@@ -77,14 +95,21 @@ class AIService:
                 **normalized,
                 "provider": "mock",
                 "aiFallback": True,
-                "fallbackReason": "UPLOADED_IMAGE_MISSING",
+                "fallbackReason": reason,
             }
+        raw = await self.mock_provider.analyze(None, prompt, normalized_mode)
         return {
             **self.normalizer.normalize(raw, normalized_mode, source_type="sample", provider="mock", image_size=(900, 620)),
             "provider": "mock",
             "aiFallback": False,
             "fallbackReason": None,
         }
+
+    @staticmethod
+    def _fallback_reason(error: Exception) -> str:
+        if isinstance(error, OpenAIProviderError):
+            return f"{error.code}: {error}"
+        return f"OPENAI_REQUEST_FAILED: {error.__class__.__name__}"
 
     @staticmethod
     def _image_size(file_path: str | None) -> tuple[int, int] | None:

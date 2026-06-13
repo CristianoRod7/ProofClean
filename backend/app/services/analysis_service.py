@@ -1,4 +1,6 @@
 from datetime import datetime, timezone
+import logging
+from pathlib import Path
 from uuid import uuid4
 
 from fastapi import HTTPException, status
@@ -9,6 +11,9 @@ from app.services.file_storage_service import create_sample_file
 from app.services.masking_service import create_masked_image
 from app.services.mock_ai_service import normalize_mode
 from app.services.risk_scoring_service import calculate_risk
+
+
+logger = logging.getLogger(__name__)
 
 
 def now() -> str:
@@ -143,6 +148,14 @@ async def run_analysis(analysis_id: str, user_id: str) -> dict:
     if source_type == "sample" and not analysis.get("fileId"):
         mark_sample(analysis_id, user_id)
     file_path = analysis.get("uploadedFilePath") if source_type == "upload" else None
+    logger.info(
+        "[AnalysisService] run analysis_id=%s sourceType=%s mode=%s file_path=%s file_exists=%s",
+        analysis_id,
+        source_type,
+        analysis["mode"],
+        file_path or "<none>",
+        bool(file_path and Path(file_path).is_file()),
+    )
     ai_result = await ai_service.analyze_image(file_path=file_path, mode=analysis["mode"], source_type=source_type)
     score, level = calculate_risk(ai_result["detections"])
     analysis.update({
@@ -160,6 +173,14 @@ async def run_analysis(analysis_id: str, user_id: str) -> dict:
         "fallbackReason": ai_result["fallbackReason"],
         "updatedAt": now(),
     })
+    logger.info(
+        "[AnalysisService] completed analysis_id=%s provider=%s sourceType=%s aiFallback=%s fallbackReason=%s",
+        analysis_id,
+        ai_result["provider"],
+        source_type,
+        ai_result["aiFallback"],
+        ai_result["fallbackReason"],
+    )
     return serialize_analysis(analysis)
 
 

@@ -55,6 +55,8 @@ class ApiIntegrationTests(unittest.TestCase):
                 self.assertEqual(fetched.json()["provider"], "mock")
                 self.assertTrue(fetched.json()["aiFallback"])
                 self.assertEqual(fetched.json()["sourceType"], "upload")
+                self.assertIn("OPENAI_API_KEY_MISSING", fetched.json()["fallbackReason"])
+                self.assertIn("OPENAI_API_KEY is missing", fetched.json()["fallbackReason"])
                 self.assertTrue(all(item["box"] is None for item in fetched.json()["detections"]))
 
                 stale = client.get("/api/analyses/analysis-stale", headers=headers)

@@ -52,7 +52,7 @@ class AIServiceTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(result["provider"], "mock")
         self.assertTrue(result["aiFallback"])
-        self.assertEqual(result["fallbackReason"], "OPENAI_TIMEOUT")
+        self.assertEqual(result["fallbackReason"], "OPENAI_TIMEOUT: request timed out")
         self.assertTrue(result["detections"])
         self.assertTrue(all(item["box"] is None for item in result["detections"]))
         self.assertTrue(all(item["coordinateStatus"] == "demo" for item in result["detections"]))
@@ -62,7 +62,10 @@ class AIServiceTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(result["provider"], "mock")
         self.assertTrue(result["aiFallback"])
-        self.assertEqual(result["fallbackReason"], "UPLOADED_IMAGE_MISSING")
+        self.assertEqual(
+            result["fallbackReason"],
+            "UPLOADED_IMAGE_MISSING: uploaded file path is missing or does not exist",
+        )
         self.assertTrue(all(item["box"] is None for item in result["detections"]))
 
     async def test_upload_openai_coordinates_remain_estimated(self) -> None:

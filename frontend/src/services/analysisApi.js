@@ -6,9 +6,7 @@ import {
   getAnalyses,
   getAnalysisById,
   removeStaleAnalysisFromStorage,
-  runMockAnalysis,
   saveAnalysis,
-  uploadMockFile,
 } from './mockAnalysis.js';
 
 const purposeToMode = { SNS: 'sns', SECOND_HAND: 'marketplace', ASSIGNMENT: 'assignment', COMMUNITY: 'community', MESSENGER: 'messenger', ETC: 'other' };
@@ -193,7 +191,7 @@ export async function uploadFile(id, file, localPreviewUrl = '') {
     return await fetchAndSave(analysisId);
   } catch (error) {
     handleNotFound(error, analysisId);
-    return uploadMockFile(analysisId, { fileName: file?.name || 'sample.png', filePreviewUrl: localPreviewUrl });
+    throw error;
   }
 }
 
@@ -204,7 +202,7 @@ export async function runAnalysis(id) {
     return saveAnalysis(mapApiAnalysis(data, getAnalysisById(analysisId) || {}));
   } catch (error) {
     handleNotFound(error, analysisId);
-    return runMockAnalysis(analysisId);
+    throw error;
   }
 }
 
@@ -215,7 +213,7 @@ export async function selectSample(id) {
     return await fetchAndSave(analysisId);
   } catch (error) {
     handleNotFound(error, analysisId);
-    return getAnalysisById(analysisId);
+    throw error;
   }
 }
 
@@ -247,5 +245,4 @@ export {
   getAnalyses,
   getAnalysisById,
   removeStaleAnalysisFromStorage,
-  runMockAnalysis,
 };
