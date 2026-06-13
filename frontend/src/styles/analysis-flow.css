@@ -534,6 +534,19 @@ html,body{overflow-x:clip}
 }
 .upload-page .brand-dropzone::after{content:none;animation:none;box-shadow:none}
 
+.analysis-loading-section{
+  width:100%;
+  min-height:460px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  scroll-margin-top:96px;
+  outline:none;
+}
+.analysis-loading-section>.analysis-loading{
+  width:100%;
+}
+
 /* Scenario artwork overrides and shared analysis-side readability */
 .scenario-visual{
   position:relative;

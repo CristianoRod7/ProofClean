@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AlertCircle, FileType2, PlayCircle, ShieldQuestion } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout.jsx';
@@ -24,6 +24,25 @@ export default function UploadPage() {
   const [preview, setPreview] = useState(analysis?.filePreviewUrl || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const loadingRef = useRef(null);
+
+  useEffect(() => {
+    if (!loading) return undefined;
+
+    const frame = requestAnimationFrame(() => {
+      const loadingSection = loadingRef.current;
+      if (!loadingSection) return;
+
+      const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      loadingSection.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'center',
+      });
+      loadingSection.focus({ preventScroll: true });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [loading]);
 
   if (!analysis) return <MainLayout><ErrorAlert message="분석 프로젝트를 찾을 수 없습니다." /></MainLayout>;
 
@@ -47,13 +66,18 @@ export default function UploadPage() {
     await selectSample(id);
   };
 
-  const start = () => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  const start = async () => {
+    setError('');
     setLoading(true);
-    setTimeout(async () => {
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       await runAnalysis(id);
       navigate(`/analyses/${id}/result`);
-    }, 2000);
+    } catch (analysisError) {
+      setError(analysisError?.message || '분석을 실행하지 못했습니다. 잠시 후 다시 시도하세요.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -72,7 +96,17 @@ export default function UploadPage() {
         <ScrollReveal className="flow-reveal" delay={80}>
           <UploadContextSummary purpose={analysis.purpose} title={analysis.title} />
         </ScrollReveal>
-        {loading ? <LoadingAnalysisScreen /> : (
+        {loading ? (
+          <section
+            ref={loadingRef}
+            className="analysis-loading-section"
+            tabIndex={-1}
+            aria-live="polite"
+            aria-label="파일 분석 진행 상태"
+          >
+            <LoadingAnalysisScreen />
+          </section>
+        ) : (
           <ScrollReveal className="flow-reveal" delay={100}>
           <div className="upload-grid board-upload-grid">
             <div className="stack">
