@@ -1,6 +1,7 @@
 import { purposeMeta } from '../data/demoAnalyses.js';
 
 const SCENARIO_IMAGE_ROOT = '/scenarios';
+export const SCENARIO_IMAGE_VERSION = '2026-06-13';
 
 const scenarioDefinitions = [
   {
@@ -59,7 +60,7 @@ export const scenarioAssets = scenarioDefinitions.map((scenario) => ({
   shortLabel: purposeMeta[scenario.mode].shortLabel,
   description: purposeMeta[scenario.mode].description,
   clues: purposeMeta[scenario.mode].examples,
-  customImage: `${SCENARIO_IMAGE_ROOT}/${scenario.imageFileName}`,
+  customImage: `${SCENARIO_IMAGE_ROOT}/${scenario.imageFileName}?v=${SCENARIO_IMAGE_VERSION}`,
 })).sort((a, b) => a.order - b.order);
 
 export function normalizeScenarioMode(mode) {
