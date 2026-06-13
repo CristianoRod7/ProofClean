@@ -23,21 +23,27 @@ export default function ScenarioCard({
       onBlur={() => preview(null)}
       onClick={() => onSelect(scenario.mode)}
       style={{ '--card-index': index }}
-      className={`showcase-card context-picker-card scenario-card ${selected ? 'selected' : ''}`}
+      className={`showcase-card context-picker-card analysis-mode-card ${selected ? 'selected' : ''}`}
     >
-      <div className="card-label">
-        <span>업로드 상황</span>
-        {selected ? (
-          <span className="selected-mode-mark"><CheckCircle2 size={17} /> 선택됨</span>
-        ) : (
-          <em>{scenario.shortLabel}</em>
-        )}
+      <div className="mode-card-visual">
+        <ScenarioVisual mode={scenario.mode} />
+        <div className="mode-card-meta">
+          <span className="mode-card-eyebrow">업로드 상황</span>
+          {selected ? (
+            <span className="mode-card-badge selected-mode-mark"><CheckCircle2 size={15} /> 선택됨</span>
+          ) : (
+            <span className="mode-card-badge">{scenario.shortLabel}</span>
+          )}
+        </div>
       </div>
-      <ScenarioVisual mode={scenario.mode} />
-      <div className="picker-copy">
-        <h3>{scenario.title}</h3>
-        <p>{scenario.description}</p>
-        <div>{scenario.clues.slice(0, 3).map((clue) => <span key={clue}>{clue}</span>)}</div>
+      <div className="mode-card-body picker-copy">
+        <h3 className="mode-card-title">{scenario.title}</h3>
+        <p className="mode-card-description">{scenario.description}</p>
+        <div className="mode-card-chips">
+          {scenario.clues.slice(0, 3).map((clue) => (
+            <span className="mode-card-chip" key={clue}>{clue}</span>
+          ))}
+        </div>
       </div>
     </button>
   );
