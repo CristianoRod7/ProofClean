@@ -48,6 +48,10 @@ export function mapApiAnalysis(data, existing = {}) {
     fileName: data.fileName || existing.fileName || '',
     filePreviewUrl: absoluteUrl(data.originalImageUrl) || existing.filePreviewUrl || '',
     maskedPreviewUrl: absoluteUrl(data.maskedImageUrl) || existing.maskedPreviewUrl || '',
+    sourceType: data.sourceType || existing.sourceType || 'sample',
+    provider: data.provider || existing.provider || '',
+    aiFallback: Boolean(data.aiFallback),
+    fallbackReason: data.fallbackReason || '',
     createdAt: data.createdAt || existing.createdAt,
     updatedAt: data.updatedAt || new Date().toISOString(),
   };
@@ -104,6 +108,15 @@ export async function runAnalysis(id) {
     return saveAnalysis(mapApiAnalysis(data, getAnalysisById(id) || {}));
   } catch {
     return runMockAnalysis(id);
+  }
+}
+
+export async function selectSample(id) {
+  try {
+    await api.post(`/api/analyses/${id}/sample`);
+    return await fetchAndSave(id);
+  } catch {
+    return getAnalysisById(id);
   }
 }
 

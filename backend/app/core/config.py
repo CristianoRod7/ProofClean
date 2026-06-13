@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,6 +19,8 @@ class Settings(BaseSettings):
     upload_dir: Path = APP_DIR / "storage" / "uploads"
     masked_dir: Path = APP_DIR / "storage" / "masked"
     allowed_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    openai_api_key: str = Field(default="", validation_alias=AliasChoices("OPENAI_API_KEY", "PROOFCLEAN_OPENAI_API_KEY"))
+    openai_model: str = Field(default="gpt-4o-mini", validation_alias=AliasChoices("OPENAI_MODEL", "PROOFCLEAN_OPENAI_MODEL"))
 
 
 settings = Settings()

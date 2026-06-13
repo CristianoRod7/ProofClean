@@ -12,7 +12,7 @@ import LoadingAnalysisScreen from '../components/upload/LoadingAnalysisScreen.js
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import Card from '../components/common/Card.jsx';
 import { getAnalysisById, useSampleImage } from '../services/mockAnalysis.js';
-import { runAnalysis, uploadFile } from '../services/analysisApi.js';
+import { runAnalysis, selectSample, uploadFile } from '../services/analysisApi.js';
 import { isSupportedFile } from '../utils/fileUtils.js';
 import { purposeMeta } from '../data/demoAnalyses.js';
 
@@ -40,10 +40,11 @@ export default function UploadPage() {
     await uploadFile(id, nextFile, url);
   };
 
-  const sample = () => {
+  const sample = async () => {
     setFile(null);
     const updated = useSampleImage(id);
     setPreview(updated.filePreviewUrl);
+    await selectSample(id);
   };
 
   const start = () => {

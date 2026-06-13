@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, File, UploadFile
 
 from app.core.security import get_current_user_id
-from app.schemas.analysis import AnalysisCreateRequest, AnalysisResponse
+from app.schemas.analysis import AnalysisCreateRequest, AnalysisResponse, SampleResponse
 from app.schemas.file import FileUploadResponse, MaskResponse
-from app.services.analysis_service import attach_file, create_analysis, list_analyses, mask_analysis, require_analysis, run_analysis, serialize_analysis
+from app.services.analysis_service import attach_file, create_analysis, list_analyses, mark_sample, mask_analysis, require_analysis, run_analysis, serialize_analysis
 from app.services.file_storage_service import save_upload
 
 
@@ -33,12 +33,17 @@ async def upload_file(analysis_id: str, user_id: CurrentUser, file: UploadFile =
     require_analysis(analysis_id, user_id)
     record = await save_upload(analysis_id, file)
     attach_file(analysis_id, record, user_id)
-    return {key: record[key] for key in ("fileId", "analysisId", "fileName", "contentType", "size", "previewUrl")}
+    return {**{key: record[key] for key in ("fileId", "analysisId", "fileName", "contentType", "size", "previewUrl")}, "sourceType": "upload"}
 
 
 @router.post("/{analysis_id}/run", response_model=AnalysisResponse)
-def run(analysis_id: str, user_id: CurrentUser) -> dict:
-    return run_analysis(analysis_id, user_id)
+async def run(analysis_id: str, user_id: CurrentUser) -> dict:
+    return await run_analysis(analysis_id, user_id)
+
+
+@router.post("/{analysis_id}/sample", response_model=SampleResponse)
+def sample(analysis_id: str, user_id: CurrentUser) -> dict:
+    return mark_sample(analysis_id, user_id)
 
 
 @router.get("/{analysis_id}/findings")
@@ -57,5 +62,5 @@ def recommendations(analysis_id: str, user_id: CurrentUser) -> list[dict]:
 
 
 @router.post("/{analysis_id}/mask", response_model=MaskResponse)
-def mask(analysis_id: str, user_id: CurrentUser) -> dict:
-    return mask_analysis(analysis_id, user_id)
+async def mask(analysis_id: str, user_id: CurrentUser) -> dict:
+    return await mask_analysis(analysis_id, user_id)

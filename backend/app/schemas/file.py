@@ -8,6 +8,7 @@ class FileUploadResponse(BaseModel):
     contentType: str
     size: int
     previewUrl: str
+    sourceType: str
 
 
 class MaskResponse(BaseModel):

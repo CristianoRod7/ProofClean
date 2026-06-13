@@ -13,7 +13,7 @@ from app.services.auth_service import seed_demo_user
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     seed_demo_user()
-    seed_demo_analyses()
+    await seed_demo_analyses()
     yield
 
 

@@ -52,5 +52,16 @@ class AnalysisResponse(BaseModel):
     originalImageUrl: str | None = None
     maskedImageUrl: str | None = None
     fileName: str | None = None
+    sourceType: str = "sample"
+    isSample: bool = True
+    provider: str | None = None
+    aiFallback: bool = False
+    fallbackReason: str | None = None
     createdAt: str
     updatedAt: str
+
+
+class SampleResponse(BaseModel):
+    analysisId: str
+    sourceType: str
+    previewUrl: str
