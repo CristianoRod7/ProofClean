@@ -4,7 +4,7 @@ from pathlib import Path
 from PIL import Image, UnidentifiedImageError
 
 from app.services.ai.mock_provider import MockProvider
-from app.services.ai.openai_provider import OpenAIProvider
+from app.services.ai.openai_provider import OpenAIProvider, OpenAIProviderError
 from app.services.ai.prompt_builder import PromptBuilder
 from app.services.ai.result_normalizer import ResultNormalizer
 from app.services.mock_ai_service import normalize_mode
@@ -44,17 +44,14 @@ class AIService:
                     provider="openai",
                     image_size=image_size,
                 )
-                used_defaults = normalized.pop("usedDefaultDetections", False)
-                if used_defaults:
-                    return {
-                        **normalized,
-                        "provider": "mock",
-                        "aiFallback": True,
-                        "fallbackReason": "AI 응답에 탐지 후보가 없어 데모 탐지 기준으로 대체했습니다.",
-                    }
+                normalized.pop("usedDefaultDetections", None)
                 return {**normalized, "provider": "openai", "aiFallback": False, "fallbackReason": None}
             except Exception as error:
-                logger.warning("OpenAI analysis failed; using mock provider: %s", error)
+                reason = error.code if isinstance(error, OpenAIProviderError) else "OPENAI_REQUEST_FAILED"
+                logger.warning(
+                    "OpenAI analysis failed; using coordinate-free mock fallback",
+                    exc_info=error,
+                )
                 raw = await self.mock_provider.analyze(file_path, prompt, normalized_mode)
                 normalized = self.normalizer.normalize(
                     raw,
@@ -64,9 +61,24 @@ class AIService:
                     image_size=image_size,
                 )
                 normalized.pop("usedDefaultDetections", None)
-                return {**normalized, "provider": "mock", "aiFallback": True, "fallbackReason": str(error)}
+                return {**normalized, "provider": "mock", "aiFallback": True, "fallbackReason": reason}
 
         raw = await self.mock_provider.analyze(None, prompt, normalized_mode)
+        if source_type == "upload":
+            normalized = self.normalizer.normalize(
+                raw,
+                normalized_mode,
+                source_type="upload",
+                provider="mock",
+                image_size=image_size,
+            )
+            normalized.pop("usedDefaultDetections", None)
+            return {
+                **normalized,
+                "provider": "mock",
+                "aiFallback": True,
+                "fallbackReason": "UPLOADED_IMAGE_MISSING",
+            }
         return {
             **self.normalizer.normalize(raw, normalized_mode, source_type="sample", provider="mock", image_size=(900, 620)),
             "provider": "mock",

@@ -27,10 +27,11 @@ class ResultNormalizer:
         mock_detections, mock_scenarios, mock_recommendations = generate_analysis(normalized_mode)
         data = raw if isinstance(raw, dict) else {}
         raw_detections = data.get("detections")
-        used_defaults = not isinstance(raw_detections, list) or not raw_detections
+        detections_missing = not isinstance(raw_detections, list)
+        used_defaults = detections_missing or (provider == "mock" and not raw_detections)
         detection_input = deepcopy(mock_detections) if used_defaults else raw_detections
-        scenarios = data.get("scenarios") if isinstance(data.get("scenarios"), list) and data["scenarios"] else mock_scenarios
-        recommendations = data.get("recommendations") if isinstance(data.get("recommendations"), list) and data["recommendations"] else mock_recommendations
+        scenarios = self._provider_list(data, "scenarios", mock_scenarios, provider)
+        recommendations = self._provider_list(data, "recommendations", mock_recommendations, provider)
         return {
             "detections": self._detections(
                 detection_input,
@@ -43,6 +44,13 @@ class ResultNormalizer:
             "recommendations": self._recommendations(recommendations),
             "usedDefaultDetections": used_defaults,
         }
+
+    @staticmethod
+    def _provider_list(data: dict, key: str, mock_default: list, provider: str) -> list:
+        value = data.get(key)
+        if isinstance(value, list) and (value or provider == "openai"):
+            return value
+        return mock_default
 
     def _detections(
         self,

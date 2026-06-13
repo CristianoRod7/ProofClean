@@ -1,5 +1,3 @@
-from typing import Any
-
 from pydantic import BaseModel, Field
 
 
@@ -22,7 +20,13 @@ class Detection(BaseModel):
     confidence: float
     severity: str
     description: str
+    evidence: str | None = None
     box: Box | None = None
+    coordinateSpace: str = "none"
+    coordinateStatus: str = "none"
+    coordinateSource: str = "none"
+    imageWidth: int | None = None
+    imageHeight: int | None = None
 
 
 class Scenario(BaseModel):
@@ -46,9 +50,9 @@ class AnalysisResponse(BaseModel):
     status: str
     riskScore: int | None = None
     riskLevel: str | None = None
-    detections: list[dict[str, Any]] = Field(default_factory=list)
-    scenarios: list[dict[str, Any]] = Field(default_factory=list)
-    recommendations: list[dict[str, Any]] = Field(default_factory=list)
+    detections: list[Detection] = Field(default_factory=list)
+    scenarios: list[Scenario] = Field(default_factory=list)
+    recommendations: list[Recommendation] = Field(default_factory=list)
     originalImageUrl: str | None = None
     maskedImageUrl: str | None = None
     fileName: str | None = None
