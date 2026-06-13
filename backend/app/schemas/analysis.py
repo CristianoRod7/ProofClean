@@ -9,10 +9,10 @@ class AnalysisCreateRequest(BaseModel):
 
 
 class Box(BaseModel):
-    x: int
-    y: int
-    width: int
-    height: int
+    x: float
+    y: float
+    width: float
+    height: float
 
 
 class Detection(BaseModel):
@@ -22,7 +22,7 @@ class Detection(BaseModel):
     confidence: float
     severity: str
     description: str
-    box: Box
+    box: Box | None = None
 
 
 class Scenario(BaseModel):
@@ -52,6 +52,8 @@ class AnalysisResponse(BaseModel):
     originalImageUrl: str | None = None
     maskedImageUrl: str | None = None
     fileName: str | None = None
+    imageWidth: int | None = None
+    imageHeight: int | None = None
     sourceType: str = "sample"
     isSample: bool = True
     provider: str | None = None

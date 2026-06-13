@@ -26,13 +26,20 @@ export default function ComparePage() {
     let active = true;
     getAnalysis(id).then(async (found) => {
       if (!found || !active) return;
-      const next = found.maskedPreviewUrl ? found : await maskAnalysis(id);
+      const hasMaskableCoordinates = found.findings?.some((finding) => (
+        finding.hasCoordinates && (found.sourceType === 'sample' || finding.coordinateStatus !== 'demo')
+      ));
+      const next = found.maskedPreviewUrl || !hasMaskableCoordinates ? found : await maskAnalysis(id);
       if (active) setAnalysis(next);
     });
     return () => { active = false; };
   }, [id]);
 
   if (!analysis) return <MainLayout><ErrorAlert message="비교할 분석 기록을 찾을 수 없습니다." /></MainLayout>;
+  const isUploadFallback = analysis.sourceType === 'upload' && (analysis.provider === 'mock' || analysis.aiFallback);
+  const maskableCount = analysis.findings.filter((finding) => (
+    finding.hasCoordinates && (analysis.sourceType === 'sample' || finding.coordinateStatus !== 'demo')
+  )).length;
 
   const download = () => {
     setToast('실제 파일 다운로드는 백엔드 연동 후 활성화됩니다.');
@@ -48,18 +55,32 @@ export default function ComparePage() {
             eyebrow="안전본 비교 · 4단계"
             title="원본과 안전본을 비교하세요."
             description="마스킹된 안전본을 확인한 뒤 공유 가능 여부를 최종 판단하세요."
-            meta={<><span>마스킹 상태</span><strong>{analysis.findings.length}개 후보 영역 적용</strong></>}
+            meta={<><span>마스킹 상태</span><strong>{analysis.maskedPreviewUrl ? `${maskableCount}개 후보 영역 적용` : '자동 마스킹 미적용'}</strong></>}
             actions={<><DownloadButton onClick={download} /><Link className="btn btn-muted" to={`/analyses/${id}/result`}><ArrowLeft size={18} /> 결과로 돌아가기</Link></>}
           />
         </ScrollReveal>
 
         <ScrollReveal className="flow-reveal" delay={50}><AnalysisProgress current={4} /></ScrollReveal>
+        {isUploadFallback && (
+          <div className="coordinate-warning" role="alert">
+            <Info size={20} />
+            <div>
+              <b>현재 결과는 AI 분석 실패로 인해 데모 탐지 기준으로 표시되었습니다.</b>
+              <p>실제 개인정보 위치와 다를 수 있어 고정 mock 좌표와 자동 마스킹을 적용하지 않았습니다.</p>
+            </div>
+          </div>
+        )}
         <ScrollReveal className="flow-reveal" delay={80}><BeforeAfterCompare analysis={analysis} /></ScrollReveal>
 
         <ScrollReveal className="flow-reveal" delay={100}>
           <div className="compare-mask-note" role="note">
             <Info size={20} />
-            <div><b>검은 영역은 마스킹된 탐지 후보입니다.</b><p>문맥에 필요한 내용까지 가려지지 않았는지 원본과 안전본을 함께 확인하세요.</p></div>
+            <div>
+              <b>{analysis.maskedPreviewUrl ? '검은 영역은 좌표가 확인된 탐지 후보입니다.' : '자동 마스킹이 적용되지 않았습니다.'}</b>
+              <p>{analysis.maskedPreviewUrl
+                ? '문맥에 필요한 내용까지 가려지지 않았는지 원본과 안전본을 함께 확인하세요.'
+                : '정확한 위치 좌표가 없어 원본을 그대로 표시합니다. 탐지 후보 목록을 직접 확인해 주세요.'}</p>
+            </div>
           </div>
         </ScrollReveal>
 

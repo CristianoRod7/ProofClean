@@ -25,6 +25,7 @@ export default function AnalysisResultPage() {
     return found;
   });
   const [activeId, setActiveId] = useState(() => analysis?.findings?.[0]?.id || '');
+  const [maskError, setMaskError] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -40,9 +41,23 @@ export default function AnalysisResultPage() {
 
   if (!analysis) return <MainLayout><ErrorAlert message="분석 결과를 찾을 수 없습니다." /></MainLayout>;
 
+  const isUploadFallback = analysis.sourceType === 'upload' && (analysis.provider === 'mock' || analysis.aiFallback);
+  const maskableFindings = analysis.findings.filter((finding) => (
+    finding.hasCoordinates && (analysis.sourceType === 'sample' || finding.coordinateStatus !== 'demo')
+  ));
+
   const createMask = async () => {
+    setMaskError('');
+    if (!maskableFindings.length) {
+      setMaskError('정확한 위치 좌표가 없어 자동 마스킹을 건너뛰었습니다. 탐지 후보를 직접 확인해 주세요.');
+      return;
+    }
     const next = await maskAnalysis(id);
     setAnalysis(next);
+    if (next.maskingSkipped) {
+      setMaskError(next.maskingMessage);
+      return;
+    }
     navigate(`/analyses/${id}/compare`);
   };
 
@@ -77,12 +92,23 @@ export default function AnalysisResultPage() {
           </div>
         </ScrollReveal>
 
+        {isUploadFallback && (
+          <div className="coordinate-warning" role="alert">
+            <Info size={20} />
+            <div>
+              <b>현재 결과는 데모 탐지 기준으로 표시되었습니다.</b>
+              <p>AI 분석 실패로 실제 이미지 정밀 좌표를 확인하지 못했습니다. 실제 개인정보 위치와 다를 수 있으며 임의 마스킹 박스는 표시하지 않습니다.</p>
+            </div>
+          </div>
+        )}
+        <ErrorAlert message={maskError} />
+
         <ScrollReveal className="flow-reveal" delay={90}>
           <div className="result-grid board-result-grid result-inspection-grid">
             <Card className="image-analysis-card showcase-card">
               <div className="section-head compact">
                 <div><span className="eyebrow">탐지 위치</span><h2>원본 이미지 미리보기</h2></div>
-                <span className="badge badge-yellow">박스 클릭 가능</span>
+                <span className="badge badge-yellow">좌표 확인 {maskableFindings.length}개</span>
               </div>
               <ImagePreviewPanel
                 src={analysis.filePreviewUrl}
@@ -102,14 +128,16 @@ export default function AnalysisResultPage() {
             <Card className="cta-card result-next-step-card analysis-side-panel">
               <span className="eyebrow">다음 단계</span>
               <h2>안전본을 생성하고 비교하세요</h2>
-              <p>탐지 후보 좌표를 기준으로 검은 마스킹 박스를 적용한 안전본 미리보기를 만듭니다.</p>
+              <p>{maskableFindings.length
+                ? '확인된 탐지 후보 좌표를 기준으로 마스킹된 안전본 미리보기를 만듭니다.'
+                : '정확한 위치 좌표가 없는 항목은 자동 마스킹하지 않습니다. 탐지 목록을 직접 확인해 주세요.'}</p>
               <ul>
                 <li>탐지 후보 영역 다시 확인</li>
                 <li>필요한 영역을 마스킹 처리</li>
                 <li>원본과 안전본을 나란히 검수</li>
               </ul>
               <div className="stack">
-                <button className="btn btn-primary btn-block" onClick={createMask}><WandSparkles size={18} /> 안전본 생성</button>
+                <button className="btn btn-primary btn-block" onClick={createMask} disabled={!maskableFindings.length}><WandSparkles size={18} /> 안전본 생성</button>
                 <Link className="btn btn-secondary btn-block" to={`/analyses/${id}/compare`}><GitCompare size={18} /> 원본/안전본 비교</Link>
                 <Link className="btn btn-muted btn-block" to="/history"><ArrowLeft size={18} /> 기록으로 돌아가기</Link>
               </div>

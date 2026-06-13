@@ -19,19 +19,71 @@ function absoluteUrl(value) {
   return `${API_ROOT}${value.startsWith('/') ? '' : '/'}${value}`;
 }
 
-function mapDetection(item) {
-  const box = item.box || {};
+function mapDetection(item, context = {}) {
+  const box = item.box && typeof item.box === 'object' ? item.box : null;
+  const coordinateSpace = String(item.coordinateSpace || item.boxSpace || '').toLowerCase();
+  const imageWidth = Number(item.imageWidth || context.imageWidth || 0);
+  const imageHeight = Number(item.imageHeight || context.imageHeight || 0);
+  let normalizedBox = null;
+
+  if (box) {
+    const values = ['x', 'y', 'width', 'height'].map((key) => Number(box[key]));
+    const valid = values.every(Number.isFinite) && values[2] > 0 && values[3] > 0;
+    if (valid && (coordinateSpace === 'normalized' || (coordinateSpace !== 'pixel' && values.every((value) => value >= 0 && value <= 1)))) {
+      normalizedBox = { x: values[0], y: values[1], width: values[2], height: values[3] };
+    } else if (valid && imageWidth > 0 && imageHeight > 0) {
+      normalizedBox = {
+        x: values[0] / imageWidth,
+        y: values[1] / imageHeight,
+        width: values[2] / imageWidth,
+        height: values[3] / imageHeight,
+      };
+    }
+  } else {
+    const values = ['x', 'y', 'width', 'height'].map((key) => Number(item[key]));
+    if (values.every(Number.isFinite) && values[2] > 0 && values[3] > 0) {
+      normalizedBox = { x: values[0], y: values[1], width: values[2], height: values[3] };
+    }
+  }
+
+  if (normalizedBox) {
+    const x = Math.max(0, Math.min(1, normalizedBox.x));
+    const y = Math.max(0, Math.min(1, normalizedBox.y));
+    normalizedBox = {
+      x,
+      y,
+      width: Math.max(0, Math.min(1 - x, normalizedBox.width)),
+      height: Math.max(0, Math.min(1 - y, normalizedBox.height)),
+    };
+    if (!normalizedBox.width || !normalizedBox.height) normalizedBox = null;
+  }
+
+  const sourceType = context.sourceType || 'sample';
+  const coordinateStatus = item.coordinateStatus
+    || (normalizedBox ? (sourceType === 'sample' ? 'demo' : 'estimated') : 'none');
   return {
     ...item,
-    x: Math.max(0, Math.min(1, Number(box.x ?? item.x ?? 0) / (item.box ? 900 : 1))),
-    y: Math.max(0, Math.min(1, Number(box.y ?? item.y ?? 0) / (item.box ? 620 : 1))),
-    width: Math.max(0.02, Math.min(1, Number(box.width ?? item.width ?? 0.2) / (item.box ? 900 : 1))),
-    height: Math.max(0.02, Math.min(1, Number(box.height ?? item.height ?? 0.1) / (item.box ? 620 : 1))),
+    x: normalizedBox?.x ?? null,
+    y: normalizedBox?.y ?? null,
+    width: normalizedBox?.width ?? null,
+    height: normalizedBox?.height ?? null,
+    hasCoordinates: Boolean(normalizedBox),
+    coordinateStatus,
+    coordinateSource: item.coordinateSource || (sourceType === 'sample' ? 'mock' : context.provider || ''),
   };
 }
 
 export function mapApiAnalysis(data, existing = {}) {
-  const findings = (data.detections || data.findings || existing.findings || []).map(mapDetection);
+  const sourceType = data.sourceType || existing.sourceType || 'sample';
+  const provider = data.provider || existing.provider || '';
+  const imageWidth = data.imageWidth || existing.imageWidth;
+  const imageHeight = data.imageHeight || existing.imageHeight;
+  const findings = (data.detections || data.findings || existing.findings || []).map((item) => mapDetection(item, {
+    sourceType,
+    provider,
+    imageWidth,
+    imageHeight,
+  }));
   return {
     ...existing,
     id: data.id,
@@ -46,10 +98,12 @@ export function mapApiAnalysis(data, existing = {}) {
     scenarios: data.scenarios || existing.scenarios || [],
     recommendations: (data.recommendations || existing.recommendations || []).map((item) => ({ ...item, text: item.text || item.title || item.description })),
     fileName: data.fileName || existing.fileName || '',
+    imageWidth,
+    imageHeight,
     filePreviewUrl: absoluteUrl(data.originalImageUrl) || existing.filePreviewUrl || '',
     maskedPreviewUrl: absoluteUrl(data.maskedImageUrl) || existing.maskedPreviewUrl || '',
-    sourceType: data.sourceType || existing.sourceType || 'sample',
-    provider: data.provider || existing.provider || '',
+    sourceType,
+    provider,
     aiFallback: Boolean(data.aiFallback),
     fallbackReason: data.fallbackReason || '',
     createdAt: data.createdAt || existing.createdAt,
@@ -124,7 +178,15 @@ export async function maskAnalysis(id) {
   try {
     await api.post(`/api/analyses/${id}/mask`);
     return await fetchAndSave(id);
-  } catch {
+  } catch (error) {
+    const current = getAnalysisById(id);
+    if (current?.sourceType === 'upload') {
+      return saveAnalysis({
+        ...current,
+        maskingSkipped: true,
+        maskingMessage: error?.response?.data?.detail || '정확한 위치 좌표가 없어 자동 마스킹을 건너뛰었습니다.',
+      });
+    }
     return createMaskedVersion(id);
   }
 }

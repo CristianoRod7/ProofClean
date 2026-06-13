@@ -18,8 +18,8 @@ export default function BeforeAfterCompare({ analysis }) {
         <ImagePreviewPanel
           src={analysis.maskedPreviewUrl || analysis.filePreviewUrl}
           purpose={analysis.purpose}
-          findings={analysis.findings}
-          masked
+          findings={analysis.maskedPreviewUrl ? analysis.findings : []}
+          masked={Boolean(analysis.maskedPreviewUrl)}
           showLegend={false}
         />
       </div>

@@ -18,7 +18,8 @@ class PromptBuilder:
 
 JSON 객체만 반환하세요. 객체에는 detections, scenarios, recommendations 배열이 반드시 있어야 합니다.
 detections 항목 형식:
-{{"id":"det-1","type":"EMAIL","label":"이메일 후보","confidence":0.8,"severity":"medium","description":"설명","box":{{"x":10,"y":20,"width":100,"height":40}}}}
-box 좌표를 확실히 모르면 null로 반환하세요. confidence는 0~1, severity는 low, medium, high 중 하나여야 합니다.
+{{"id":"det-1","type":"EMAIL","label":"이메일 후보","confidence":0.8,"severity":"medium","description":"설명","box":{{"x":0.1,"y":0.2,"width":0.3,"height":0.08}},"coordinateSpace":"normalized"}}
+box는 이미지 전체를 0~1로 본 normalized 좌표로 반환하세요. 위치를 확실히 특정할 수 없으면 임의 좌표를 만들지 말고 box를 null로 반환하세요.
+confidence는 0~1, severity는 low, medium, high 중 하나여야 합니다.
 scenarios 항목은 id, title, level, description을 포함하고 recommendations 항목은 id, title, description, completed를 포함하세요.
 """.strip()

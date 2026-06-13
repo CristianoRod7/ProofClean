@@ -49,26 +49,69 @@ export function createAnalysis({ title, purpose }) {
   });
 }
 
-export function uploadMockFile(id, { fileName, filePreviewUrl }) {
+export function uploadMockFile(id, { fileName, filePreviewUrl, sourceType = 'upload' }) {
   const analysis = getAnalysisById(id);
   if (!analysis) throw new Error('분석 프로젝트를 찾을 수 없습니다.');
-  return saveAnalysis({ ...analysis, status: 'UPLOADED', fileName, filePreviewUrl: filePreviewUrl || SAMPLE_IMAGE, updatedAt: now() });
+  return saveAnalysis({
+    ...analysis,
+    status: 'UPLOADED',
+    fileName,
+    filePreviewUrl: filePreviewUrl || SAMPLE_IMAGE,
+    sourceType,
+    isSample: sourceType === 'sample',
+    updatedAt: now(),
+  });
 }
 
 export function useSampleImage(id) {
-  return uploadMockFile(id, { fileName: 'proofclean-sample-image.png', filePreviewUrl: SAMPLE_IMAGE });
+  return uploadMockFile(id, { fileName: 'proofclean-sample-image.png', filePreviewUrl: SAMPLE_IMAGE, sourceType: 'sample' });
 }
 
 export function runMockAnalysis(id) {
   const analysis = getAnalysisById(id);
   if (!analysis) throw new Error('분석 프로젝트를 찾을 수 없습니다.');
   const result = buildMockResult(analysis.purpose);
-  return saveAnalysis({ ...analysis, ...result, status: 'ANALYZED', filePreviewUrl: analysis.filePreviewUrl || SAMPLE_IMAGE, fileName: analysis.fileName || 'proofclean-sample-image.png', updatedAt: now() });
+  const sourceType = analysis.sourceType || 'sample';
+  const findings = result.findings.map((finding) => (
+    sourceType === 'upload'
+      ? {
+          ...finding,
+          x: null,
+          y: null,
+          width: null,
+          height: null,
+          hasCoordinates: false,
+          coordinateStatus: 'demo',
+          coordinateSource: 'mock',
+        }
+      : { ...finding, hasCoordinates: true, coordinateStatus: 'demo', coordinateSource: 'mock' }
+  ));
+  return saveAnalysis({
+    ...analysis,
+    ...result,
+    findings,
+    detections: findings,
+    status: 'ANALYZED',
+    filePreviewUrl: analysis.filePreviewUrl || SAMPLE_IMAGE,
+    fileName: analysis.fileName || 'proofclean-sample-image.png',
+    provider: 'mock',
+    aiFallback: sourceType === 'upload',
+    fallbackReason: sourceType === 'upload' ? '백엔드 AI 분석을 사용할 수 없어 데모 탐지 기준으로 대체했습니다.' : '',
+    updatedAt: now(),
+  });
 }
 
 export function createMaskedVersion(id) {
   const analysis = getAnalysisById(id);
   if (!analysis) throw new Error('분석 프로젝트를 찾을 수 없습니다.');
+  if (analysis.sourceType === 'upload' && !analysis.findings?.some((finding) => finding.hasCoordinates && finding.coordinateStatus !== 'demo')) {
+    return saveAnalysis({
+      ...analysis,
+      maskingSkipped: true,
+      maskingMessage: '정확한 위치 좌표가 없어 자동 마스킹을 건너뛰었습니다.',
+      updatedAt: now(),
+    });
+  }
   return saveAnalysis({ ...analysis, status: 'MASKED', maskedPreviewUrl: analysis.filePreviewUrl || SAMPLE_IMAGE, updatedAt: now() });
 }
 

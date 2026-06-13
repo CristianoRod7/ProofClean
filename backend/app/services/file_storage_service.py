@@ -35,6 +35,7 @@ async def save_upload(analysis_id: str, upload: UploadFile) -> dict:
     path.write_bytes(content)
     try:
         with Image.open(path) as image:
+            width, height = image.size
             image.verify()
     except (UnidentifiedImageError, OSError) as exc:
         path.unlink(missing_ok=True)
@@ -46,6 +47,8 @@ async def save_upload(analysis_id: str, upload: UploadFile) -> dict:
         "fileName": safe_name(upload.filename or stored_name),
         "contentType": upload.content_type or "application/octet-stream",
         "size": len(content),
+        "width": width,
+        "height": height,
         "path": str(path),
         "previewUrl": f"/static/uploads/{stored_name}",
     }
@@ -82,6 +85,8 @@ def create_sample_file(analysis_id: str) -> dict:
         "fileName": "proofclean-sample-image.png",
         "contentType": "image/png",
         "size": path.stat().st_size,
+        "width": 900,
+        "height": 620,
         "path": str(path),
         "previewUrl": f"/static/uploads/{stored_name}",
     }

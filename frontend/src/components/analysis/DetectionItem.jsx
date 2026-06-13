@@ -14,6 +14,13 @@ const iconMap = {
   DOCUMENT: FileText,
 };
 
+const coordinateLabels = {
+  verified: '위치 확인됨',
+  estimated: '위치 추정',
+  demo: '데모 좌표',
+  none: '좌표 없음',
+};
+
 export default function DetectionItem({ finding, active, onClick, index }) {
   const Icon = iconMap[finding.type] || ScanSearch;
   const confidence = Math.round((finding.confidence || 0) * 100);
@@ -30,6 +37,9 @@ export default function DetectionItem({ finding, active, onClick, index }) {
           <DetectionBadge severity={finding.severity} />
         </div>
         <p>{finding.description}</p>
+        <span className={`coordinate-badge coordinate-${finding.coordinateStatus || 'none'}`}>
+          {coordinateLabels[finding.coordinateStatus] || '좌표 없음'}
+        </span>
         <div className="confidence-row">
           <span>신뢰도 {confidence}%</span>
           <div className="mini-track"><i style={{ width: `${confidence}%` }} /></div>

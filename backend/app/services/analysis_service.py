@@ -29,6 +29,8 @@ def serialize_analysis(analysis: dict) -> dict:
         "originalImageUrl": analysis.get("originalImageUrl"),
         "maskedImageUrl": analysis.get("maskedImageUrl"),
         "fileName": analysis.get("fileName"),
+        "imageWidth": analysis.get("imageWidth"),
+        "imageHeight": analysis.get("imageHeight"),
         "sourceType": analysis.get("sourceType", "sample"),
         "isSample": analysis.get("isSample", True),
         "provider": analysis.get("provider"),
@@ -55,6 +57,8 @@ def create_analysis(title: str, mode: str, user_id: str) -> dict:
         "maskedImageUrl": None,
         "fileId": None,
         "fileName": None,
+        "imageWidth": None,
+        "imageHeight": None,
         "uploadedFilePath": None,
         "sourceType": "sample",
         "isSample": True,
@@ -88,6 +92,8 @@ def attach_file(analysis_id: str, file_record: dict, user_id: str) -> dict:
     analysis.update({
         "fileId": file_record["fileId"],
         "fileName": file_record["fileName"],
+        "imageWidth": file_record.get("width"),
+        "imageHeight": file_record.get("height"),
         "originalImageUrl": file_record["previewUrl"],
         "uploadedFilePath": file_record["path"],
         "sourceType": "upload",
@@ -114,6 +120,8 @@ def mark_sample(analysis_id: str, user_id: str) -> dict:
     analysis.update({
         "fileId": sample["fileId"],
         "fileName": sample["fileName"],
+        "imageWidth": sample.get("width"),
+        "imageHeight": sample.get("height"),
         "originalImageUrl": sample["previewUrl"],
         "uploadedFilePath": None,
         "sourceType": "sample",
@@ -156,7 +164,10 @@ async def mask_analysis(analysis_id: str, user_id: str) -> dict:
     analysis = require_analysis(analysis_id, user_id)
     if not analysis.get("detections"):
         await run_analysis(analysis_id, user_id)
-    masked_record = create_masked_image(analysis)
+    try:
+        masked_record = create_masked_image(analysis)
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
     analysis.update({"status": "masked", "maskedImageUrl": masked_record["url"], "updatedAt": now()})
     return {
         "analysisId": analysis_id,

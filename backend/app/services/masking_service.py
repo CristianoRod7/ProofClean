@@ -30,7 +30,14 @@ def open_source_image(analysis: dict) -> Image.Image:
     return placeholder_image()
 
 
-def clamp_box(box: dict, image_width: int, image_height: int) -> tuple[int, int, int, int]:
+def clamp_box(box: dict, image_width: int, image_height: int, coordinate_space: str) -> tuple[int, int, int, int]:
+    if coordinate_space == "normalized":
+        box = {
+            "x": float(box.get("x", 0)) * image_width,
+            "y": float(box.get("y", 0)) * image_height,
+            "width": float(box.get("width", 0)) * image_width,
+            "height": float(box.get("height", 0)) * image_height,
+        }
     x1 = max(0, min(image_width - 1, int(box.get("x", 0))))
     y1 = max(0, min(image_height - 1, int(box.get("y", 0))))
     x2 = max(x1 + 1, min(image_width, x1 + int(box.get("width", 1))))
@@ -42,8 +49,25 @@ def create_masked_image(analysis: dict) -> dict:
     image = open_source_image(analysis)
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
-    for detection in analysis.get("detections", []):
-        x1, y1, x2, y2 = clamp_box(detection.get("box", {}), image.width, image.height)
+    detections_with_boxes = [
+        detection for detection in analysis.get("detections", [])
+        if isinstance(detection.get("box"), dict) and detection.get("coordinateStatus") not in {"none", "demo"}
+    ]
+    if analysis.get("sourceType") == "sample":
+        detections_with_boxes = [
+            detection for detection in analysis.get("detections", [])
+            if isinstance(detection.get("box"), dict)
+        ]
+    if not detections_with_boxes:
+        raise ValueError("정확한 위치 좌표가 없어 자동 마스킹을 건너뛰었습니다. 탐지 후보를 직접 확인해 주세요.")
+
+    for detection in detections_with_boxes:
+        x1, y1, x2, y2 = clamp_box(
+            detection["box"],
+            image.width,
+            image.height,
+            detection.get("coordinateSpace", "pixel"),
+        )
         radius = max(4, min(14, (y2 - y1) // 4))
         draw.rounded_rectangle((x1, y1, x2, y2), radius=radius, fill=(8, 15, 25, 230), outline=(94, 234, 212, 210), width=2)
     masked = Image.alpha_composite(image.convert("RGBA"), overlay).convert("RGB")
