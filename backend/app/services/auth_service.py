@@ -50,3 +50,10 @@ def authenticate_user(email: str, password: str) -> dict:
     if not user or not verify_password(password, user["password_hash"]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="이메일 또는 비밀번호를 확인하세요.")
     return {"user": public_user(user), "token": create_access_token(user["id"])}
+
+
+def get_user_by_id(user_id: str) -> dict:
+    user = store.users.get(user_id)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="유효하지 않은 인증 사용자입니다.")
+    return public_user(user)

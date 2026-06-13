@@ -1,4 +1,4 @@
-import { getItem, removeItem, setItem } from './storage.js';
+import { getItem, setItem } from './storage.js';
 
 export const AUTH_USER_KEY = 'proofclean_user';
 export const AUTH_TOKEN_KEY = 'proofclean_token';
@@ -7,8 +7,6 @@ const USERS_KEY = 'proofclean_mock_users';
 
 function persistSession(user) {
   const token = user.email === MOCK_USER.email ? 'mock-token-demo-user' : `mock-token-${user.id}`;
-  setItem(AUTH_USER_KEY, user);
-  setItem(AUTH_TOKEN_KEY, token);
   return { user, token };
 }
 
@@ -32,7 +30,4 @@ export async function demoLogin() {
   return persistSession(MOCK_USER);
 }
 
-export function logout() {
-  removeItem(AUTH_USER_KEY);
-  removeItem(AUTH_TOKEN_KEY);
-}
+export function logout() {}
