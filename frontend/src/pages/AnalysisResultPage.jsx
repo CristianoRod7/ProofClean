@@ -99,7 +99,7 @@ export default function AnalysisResultPage() {
               )}
             </Card>
 
-            <Card className="cta-card result-next-step-card">
+            <Card className="cta-card result-next-step-card analysis-side-panel">
               <span className="eyebrow">다음 단계</span>
               <h2>안전본을 생성하고 비교하세요</h2>
               <p>탐지 후보 좌표를 기준으로 검은 마스킹 박스를 적용한 안전본 미리보기를 만듭니다.</p>

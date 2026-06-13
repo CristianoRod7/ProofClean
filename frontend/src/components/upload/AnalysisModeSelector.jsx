@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
-import { purposeMeta } from '../../data/demoAnalyses.js';
-import ModeVisual from '../analysis/ModeVisuals.jsx';
-
-const modes = ['SNS', 'SECOND_HAND', 'ASSIGNMENT', 'COMMUNITY', 'ETC'];
+import ScenarioCard from '../analysis/ScenarioCard.jsx';
+import { scenarioAssets } from '../../config/scenarioAssets.js';
 
 export default function AnalysisModeSelector({ value, onChange, onHover, previewLocked = false }) {
   const [entering, setEntering] = useState(true);
@@ -13,42 +10,19 @@ export default function AnalysisModeSelector({ value, onChange, onHover, preview
     return () => window.clearTimeout(timer);
   }, []);
 
-  const preview = (mode) => {
-    if (!previewLocked) onHover?.(mode);
-  };
-
   return (
     <div className={`context-picker-grid ${entering ? 'is-entering' : 'is-settled'}`}>
-      {modes.map((mode, index) => {
-        const meta = purposeMeta[mode];
-        const selected = value === mode;
-
-        return (
-          <button
-            key={mode}
-            type="button"
-            aria-pressed={selected}
-            onMouseEnter={() => preview(mode)}
-            onMouseLeave={() => preview(null)}
-            onFocus={() => preview(mode)}
-            onBlur={() => preview(null)}
-            onClick={() => onChange(mode)}
-            style={{ '--card-index': index }}
-            className={`showcase-card context-picker-card ${selected ? 'selected' : ''}`}
-          >
-            <div className="card-label">
-              <span>업로드 상황</span>
-              {selected ? <span className="selected-mode-mark"><CheckCircle2 size={17} /> 선택됨</span> : <em>{meta.shortLabel}</em>}
-            </div>
-            <ModeVisual mode={mode} />
-            <div className="picker-copy">
-              <h3>{meta.label}</h3>
-              <p>{meta.description}</p>
-              <div>{meta.examples.slice(0, 3).map((example) => <span key={example}>{example}</span>)}</div>
-            </div>
-          </button>
-        );
-      })}
+      {scenarioAssets.map((scenario, index) => (
+        <ScenarioCard
+          key={scenario.mode}
+          scenario={scenario}
+          selected={value === scenario.mode}
+          index={index}
+          onSelect={onChange}
+          onPreview={onHover}
+          previewLocked={previewLocked}
+        />
+      ))}
     </div>
   );
 }

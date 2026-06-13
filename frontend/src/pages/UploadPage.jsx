@@ -85,17 +85,17 @@ export default function UploadPage() {
               <FilePreview file={file} preview={preview || analysis.filePreviewUrl} purpose={analysis.purpose} />
             </div>
             <aside className="stack board-guide-stack">
-              <Card className="guide-card">
+              <Card className="guide-card analysis-side-panel">
                 <ShieldQuestion size={28} />
                 <h3>분석 결과는 탐지 후보입니다</h3>
                 <p>ProofClean은 업로드 전 확인을 돕는 도구입니다. 개인정보 확정 판정이 아니며 최종 판단은 사용자가 직접 해야 합니다.</p>
               </Card>
-              <Card className="guide-card">
+              <Card className="guide-card analysis-side-panel">
                 <FileType2 size={28} />
                 <h3>지원 형식</h3>
                 <p>jpg, jpeg, png, webp, pdf를 지원합니다. 현재 시제품에서는 이미지 미리보기와 대체 화면을 우선 표시합니다.</p>
               </Card>
-              <Card className="guide-card warning">
+              <Card className="guide-card warning analysis-side-panel">
                 <AlertCircle size={28} />
                 <h3>백엔드 API 의존 없음</h3>
                 <p>현재 분석과 마스킹은 로컬 저장소 기반 데모 흐름으로 동작합니다.</p>

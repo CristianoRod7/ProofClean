@@ -9,7 +9,7 @@ const items = [
 
 export default function ResultPreviewGuide() {
   return (
-    <section className="result-preview-guide" aria-labelledby="result-preview-guide-title">
+    <section className="result-preview-guide analysis-side-panel" aria-labelledby="result-preview-guide-title">
       <div className="result-preview-guide__heading">
         <span>다음 단계 미리보기</span>
         <h3 id="result-preview-guide-title">분석 결과에서 보게 될 항목</h3>

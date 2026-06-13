@@ -12,15 +12,9 @@ import AnalysisModeSelector from '../components/upload/AnalysisModeSelector.jsx'
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import { createAnalysisApi } from '../services/analysisApi.js';
 import { purposeMeta } from '../data/demoAnalyses.js';
+import { getScenarioAsset } from '../config/scenarioAssets.js';
 
 const DEFAULT_MODE = 'SECOND_HAND';
-const defaultTitles = {
-  SNS: 'SNS 사진 점검',
-  SECOND_HAND: '중고거래 게시글 사진 점검',
-  ASSIGNMENT: '과제 캡처 점검',
-  COMMUNITY: '커뮤니티 게시글 점검',
-  ETC: '기타 파일 점검',
-};
 
 export default function NewAnalysisPage() {
   const navigate = useNavigate();
@@ -91,7 +85,7 @@ export default function NewAnalysisPage() {
                 onChange={(mode) => {
                   setSelectedMode(mode);
                   setHoveredMode(null);
-                  if (!titleEdited) setTitle(defaultTitles[mode]);
+                  if (!titleEdited) setTitle(getScenarioAsset(mode).defaultTitle);
                 }}
                 onHover={setHoveredMode}
                 previewLocked={Boolean(selectedMode)}

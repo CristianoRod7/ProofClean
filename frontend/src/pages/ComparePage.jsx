@@ -69,7 +69,7 @@ export default function ComparePage() {
               <div className="section-head compact"><div><span className="eyebrow">마스킹 항목</span><h2>마스킹된 항목</h2></div></div>
               <DetectionList findings={analysis.findings} activeId={activeId} onSelect={setActiveId} />
             </Card>
-            <Card className="download-guide compare-checklist-card">
+            <Card className="download-guide compare-checklist-card analysis-side-panel">
               <CheckCircle2 size={30} />
               <h2>공유 전 체크리스트</h2>
               <ul className="compare-checklist">
