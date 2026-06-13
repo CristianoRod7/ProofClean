@@ -22,8 +22,9 @@ export default function DetectionCriteriaSummary() {
   return (
     <section className="detection-criteria-summary" aria-labelledby="detection-criteria-title">
       <div className="detection-criteria-summary__heading">
-        <span>탐지 기준 요약</span>
-        <h3 id="detection-criteria-title">선택한 상황에 따라 탐지 기준이 달라집니다.</h3>
+        <span>분석 범위</span>
+        <h3 id="detection-criteria-title">탐지 기준 요약</h3>
+        <p>선택한 상황에 따라 확인할 단서와 공유 전 조치가 달라집니다.</p>
       </div>
       <div className="detection-criteria-grid">
         {criteria.map(({ icon: Icon, title, description }) => (

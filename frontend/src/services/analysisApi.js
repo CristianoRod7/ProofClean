@@ -10,8 +10,8 @@ import {
 } from './mockAnalysis.js';
 
 const API_ROOT = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
-const purposeToMode = { SNS: 'sns', SECOND_HAND: 'marketplace', ASSIGNMENT: 'assignment', COMMUNITY: 'community', ETC: 'other' };
-const modeToPurpose = { sns: 'SNS', marketplace: 'SECOND_HAND', second_hand: 'SECOND_HAND', assignment: 'ASSIGNMENT', community: 'COMMUNITY', other: 'ETC', etc: 'ETC' };
+const purposeToMode = { SNS: 'sns', SECOND_HAND: 'marketplace', ASSIGNMENT: 'assignment', COMMUNITY: 'community', MESSENGER: 'messenger', ETC: 'other' };
+const modeToPurpose = { sns: 'SNS', marketplace: 'SECOND_HAND', second_hand: 'SECOND_HAND', assignment: 'ASSIGNMENT', community: 'COMMUNITY', messenger: 'MESSENGER', other: 'ETC', etc: 'ETC' };
 const statusMap = { created: 'CREATED', uploaded: 'UPLOADED', completed: 'ANALYZED', masked: 'MASKED' };
 
 function absoluteUrl(value) {
@@ -36,7 +36,7 @@ export function mapApiAnalysis(data, existing = {}) {
     ...existing,
     id: data.id,
     title: data.title || existing.title || '개인정보 노출 위험 분석',
-    purpose: modeToPurpose[String(data.mode || '').toLowerCase()] || existing.purpose || 'ETC',
+    purpose: existing.purpose || modeToPurpose[String(data.mode || '').toLowerCase()] || 'ETC',
     mode: data.mode,
     status: statusMap[String(data.status || '').toLowerCase()] || data.status || existing.status || 'CREATED',
     riskScore: data.riskScore ?? existing.riskScore ?? 0,
@@ -85,7 +85,7 @@ export async function createAnalysisApi(payload) {
   try {
     const purpose = payload.purpose || modeToPurpose[payload.mode] || 'ETC';
     const { data } = await api.post('/api/analyses', { title: payload.title, mode: purposeToMode[purpose] || payload.mode || 'other' });
-    return saveAnalysis(mapApiAnalysis(data));
+    return saveAnalysis(mapApiAnalysis(data, { purpose }));
   } catch {
     return createAnalysis({ title: payload.title, purpose: payload.purpose || modeToPurpose[payload.mode] || 'ETC' });
   }

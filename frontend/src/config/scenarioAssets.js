@@ -4,6 +4,7 @@ const SCENARIO_IMAGE_ROOT = '/scenarios';
 
 const scenarioDefinitions = [
   {
+    order: 1,
     mode: 'SNS',
     aliases: ['sns'],
     imageFileName: 'sns.png',
@@ -11,6 +12,7 @@ const scenarioDefinitions = [
     visualLabel: 'SNS 게시물과 얼굴, 위치 단서를 점검하는 화면',
   },
   {
+    order: 2,
     mode: 'SECOND_HAND',
     aliases: ['marketplace', 'second_hand'],
     imageFileName: 'marketplace.png',
@@ -18,6 +20,7 @@ const scenarioDefinitions = [
     visualLabel: '택배 송장과 주소, 연락처를 점검하는 화면',
   },
   {
+    order: 3,
     mode: 'ASSIGNMENT',
     aliases: ['assignment'],
     imageFileName: 'assignment.png',
@@ -25,6 +28,7 @@ const scenarioDefinitions = [
     visualLabel: '과제 문서와 학번, 이메일, 파일 경로를 점검하는 화면',
   },
   {
+    order: 4,
     mode: 'COMMUNITY',
     aliases: ['community'],
     imageFileName: 'community.png',
@@ -32,6 +36,15 @@ const scenarioDefinitions = [
     visualLabel: '커뮤니티 게시글과 닉네임, 댓글 단서를 점검하는 화면',
   },
   {
+    order: 5,
+    mode: 'MESSENGER',
+    aliases: ['messenger', 'chat', 'dm'],
+    imageFileName: 'messenger.png',
+    defaultTitle: '메신저 캡처 점검',
+    visualLabel: '메신저 대화와 프로필명, 연락처, 링크를 점검하는 화면',
+  },
+  {
+    order: 6,
     mode: 'ETC',
     aliases: ['other', 'etc'],
     imageFileName: 'other.png',
@@ -47,7 +60,7 @@ export const scenarioAssets = scenarioDefinitions.map((scenario) => ({
   description: purposeMeta[scenario.mode].description,
   clues: purposeMeta[scenario.mode].examples,
   customImage: `${SCENARIO_IMAGE_ROOT}/${scenario.imageFileName}`,
-}));
+})).sort((a, b) => a.order - b.order);
 
 export function normalizeScenarioMode(mode) {
   const normalized = String(mode || '').trim().toLowerCase();

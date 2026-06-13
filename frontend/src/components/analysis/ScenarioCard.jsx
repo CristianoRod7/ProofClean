@@ -40,7 +40,7 @@ export default function ScenarioCard({
         <h3 className="mode-card-title">{scenario.title}</h3>
         <p className="mode-card-description">{scenario.description}</p>
         <div className="mode-card-chips">
-          {scenario.clues.slice(0, 3).map((clue) => (
+          {scenario.clues.map((clue) => (
             <span className="mode-card-chip" key={clue}>{clue}</span>
           ))}
         </div>

@@ -35,6 +35,14 @@ export const purposeMeta = {
     examples: ['닉네임', '이메일', '지역명'],
     placeholder: 'community',
   },
+  MESSENGER: {
+    label: '메신저 공유',
+    shortLabel: '메신저',
+    icon: 'MessageCircleMore',
+    description: '프로필명, 전화번호, 링크, 대화 내용 속 개인정보 후보를 확인합니다.',
+    examples: ['프로필명', '전화번호', '링크', '대화내용'],
+    placeholder: 'messenger',
+  },
   ETC: {
     label: '기타',
     shortLabel: '기타',
@@ -50,6 +58,7 @@ export const purposeScores = {
   SNS: { riskScore: 74, riskLevel: 'HIGH' },
   ASSIGNMENT: { riskScore: 68, riskLevel: 'HIGH' },
   COMMUNITY: { riskScore: 63, riskLevel: 'HIGH' },
+  MESSENGER: { riskScore: 66, riskLevel: 'HIGH' },
   ETC: { riskScore: 52, riskLevel: 'MEDIUM' },
 };
 

@@ -2,8 +2,10 @@ import {
   AtSign,
   FileText,
   Image as ImageIcon,
+  Link2,
   MapPin,
   MessageCircle,
+  Phone,
   Package,
   ScanSearch,
   UserRound,
@@ -90,6 +92,31 @@ function CommunityScene() {
   );
 }
 
+function MessengerScene() {
+  return (
+    <div className="mode-scene mode-scene--messenger">
+      <div className="messenger-phone">
+        <div className="messenger-phone__head">
+          <span className="messenger-avatar" />
+          <div><b>프로젝트 오픈채팅</b><small>참여자 8명 · 온라인</small></div>
+          <em>•••</em>
+        </div>
+        <div className="messenger-chat">
+          <div className="messenger-bubble messenger-bubble--received">자료 링크 다시 보내드릴게요.</div>
+          <div className="messenger-link"><Link2 size={8} /><span>project-share.kr/final</span></div>
+          <div className="messenger-bubble messenger-bubble--sent">연락처는 010-23**-**** 입니다.</div>
+          <div className="messenger-input"><span>메시지 입력</span><i>＋</i></div>
+        </div>
+        <div className="messenger-detect messenger-detect--profile" />
+        <div className="messenger-detect messenger-detect--phone" />
+      </div>
+      <Marker className="mode-marker--top"><UserRound size={10} />프로필명</Marker>
+      <Marker className="mode-marker--bottom"><Phone size={10} />전화번호</Marker>
+      <Marker className="messenger-link-marker"><Link2 size={9} />공유 링크</Marker>
+    </div>
+  );
+}
+
 function OtherScene() {
   return (
     <div className="mode-scene mode-scene--other">
@@ -111,6 +138,7 @@ export default function ModeVisual({ mode = 'SNS' }) {
     SECOND_HAND: MarketplaceScene,
     ASSIGNMENT: AssignmentScene,
     COMMUNITY: CommunityScene,
+    MESSENGER: MessengerScene,
     ETC: OtherScene,
   };
   const Scene = scenes[mode] || OtherScene;
@@ -119,6 +147,7 @@ export default function ModeVisual({ mode = 'SNS' }) {
     SECOND_HAND: '중고거래 송장 개인정보 탐지 미리보기',
     ASSIGNMENT: '과제 문서 개인정보 탐지 미리보기',
     COMMUNITY: '커뮤니티 게시글 개인정보 탐지 미리보기',
+    MESSENGER: '메신저 대화 개인정보 탐지 미리보기',
     ETC: '혼합 파일 개인정보 탐지 미리보기',
   };
 
