@@ -1,7 +1,9 @@
 import api from './api.js';
+import { API_ORIGIN } from './api.js';
 import {
   createAnalysis,
   createMaskedVersion,
+  deleteAnalysis,
   getAnalyses,
   getAnalysisById,
   runMockAnalysis,
@@ -9,14 +11,39 @@ import {
   uploadMockFile,
 } from './mockAnalysis.js';
 
-const API_ROOT = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 const purposeToMode = { SNS: 'sns', SECOND_HAND: 'marketplace', ASSIGNMENT: 'assignment', COMMUNITY: 'community', MESSENGER: 'messenger', ETC: 'other' };
 const modeToPurpose = { sns: 'SNS', marketplace: 'SECOND_HAND', second_hand: 'SECOND_HAND', assignment: 'ASSIGNMENT', community: 'COMMUNITY', messenger: 'MESSENGER', other: 'ETC', etc: 'ETC' };
 const statusMap = { created: 'CREATED', uploaded: 'UPLOADED', completed: 'ANALYZED', masked: 'MASKED' };
 
 function absoluteUrl(value) {
   if (!value || value.startsWith('data:') || /^https?:\/\//.test(value)) return value || '';
-  return `${API_ROOT}${value.startsWith('/') ? '' : '/'}${value}`;
+  return `${API_ORIGIN}${value.startsWith('/') ? '' : '/'}${value}`;
+}
+
+export class AnalysisNotFoundError extends Error {
+  constructor(id) {
+    super('이 분석 기록을 찾을 수 없습니다. 서버가 재시작되었거나 오래된 임시 기록일 수 있습니다. 새 분석을 다시 시작해 주세요.');
+    this.name = 'AnalysisNotFoundError';
+    this.analysisId = id;
+  }
+}
+
+function requireAnalysisId(id) {
+  const normalized = String(id || '').trim();
+  if (!normalized || normalized === 'undefined' || normalized === 'null' || normalized === ':id') {
+    throw new Error('analysisId가 없습니다.');
+  }
+  return normalized;
+}
+
+function isNotFound(error) {
+  return error?.response?.status === 404;
+}
+
+function handleNotFound(error, id) {
+  if (!isNotFound(error)) return false;
+  deleteAnalysis(id);
+  throw new AnalysisNotFoundError(id);
 }
 
 function mapDetection(item, context = {}) {
@@ -112,15 +139,21 @@ export function mapApiAnalysis(data, existing = {}) {
 }
 
 async function fetchAndSave(id) {
-  const { data } = await api.get(`/api/analyses/${id}`);
-  return saveAnalysis(mapApiAnalysis(data, getAnalysisById(id) || {}));
+  const analysisId = requireAnalysisId(id);
+  try {
+    const { data } = await api.get(`/analyses/${analysisId}`);
+    return saveAnalysis(mapApiAnalysis(data, getAnalysisById(analysisId) || {}));
+  } catch (error) {
+    handleNotFound(error, analysisId);
+    throw error;
+  }
 }
 
 export const demoAnalyses = async () => getAnalysesApi();
 
 export async function getAnalysesApi() {
   try {
-    const { data } = await api.get('/api/analyses');
+    const { data } = await api.get('/analyses');
     return data.map((item) => saveAnalysis(mapApiAnalysis(item, getAnalysisById(item.id) || {})));
   } catch {
     return getAnalyses();
@@ -128,17 +161,19 @@ export async function getAnalysesApi() {
 }
 
 export async function getAnalysis(id) {
+  const analysisId = requireAnalysisId(id);
   try {
-    return await fetchAndSave(id);
-  } catch {
-    return getAnalysisById(id);
+    return await fetchAndSave(analysisId);
+  } catch (error) {
+    if (error instanceof AnalysisNotFoundError) throw error;
+    return getAnalysisById(analysisId);
   }
 }
 
 export async function createAnalysisApi(payload) {
   try {
     const purpose = payload.purpose || modeToPurpose[payload.mode] || 'ETC';
-    const { data } = await api.post('/api/analyses', { title: payload.title, mode: purposeToMode[purpose] || payload.mode || 'other' });
+    const { data } = await api.post('/analyses', { title: payload.title, mode: purposeToMode[purpose] || payload.mode || 'other' });
     return saveAnalysis(mapApiAnalysis(data, { purpose }));
   } catch {
     return createAnalysis({ title: payload.title, purpose: payload.purpose || modeToPurpose[payload.mode] || 'ETC' });
@@ -146,40 +181,48 @@ export async function createAnalysisApi(payload) {
 }
 
 export async function uploadFile(id, file, localPreviewUrl = '') {
+  const analysisId = requireAnalysisId(id);
   try {
     const form = new FormData();
     form.append('file', file);
-    await api.post(`/api/analyses/${id}/files`, form);
-    return await fetchAndSave(id);
-  } catch {
-    return uploadMockFile(id, { fileName: file?.name || 'sample.png', filePreviewUrl: localPreviewUrl });
+    await api.post(`/analyses/${analysisId}/files`, form);
+    return await fetchAndSave(analysisId);
+  } catch (error) {
+    handleNotFound(error, analysisId);
+    return uploadMockFile(analysisId, { fileName: file?.name || 'sample.png', filePreviewUrl: localPreviewUrl });
   }
 }
 
 export async function runAnalysis(id) {
+  const analysisId = requireAnalysisId(id);
   try {
-    const { data } = await api.post(`/api/analyses/${id}/run`);
-    return saveAnalysis(mapApiAnalysis(data, getAnalysisById(id) || {}));
-  } catch {
-    return runMockAnalysis(id);
+    const { data } = await api.post(`/analyses/${analysisId}/run`);
+    return saveAnalysis(mapApiAnalysis(data, getAnalysisById(analysisId) || {}));
+  } catch (error) {
+    handleNotFound(error, analysisId);
+    return runMockAnalysis(analysisId);
   }
 }
 
 export async function selectSample(id) {
+  const analysisId = requireAnalysisId(id);
   try {
-    await api.post(`/api/analyses/${id}/sample`);
-    return await fetchAndSave(id);
-  } catch {
-    return getAnalysisById(id);
+    await api.post(`/analyses/${analysisId}/sample`);
+    return await fetchAndSave(analysisId);
+  } catch (error) {
+    handleNotFound(error, analysisId);
+    return getAnalysisById(analysisId);
   }
 }
 
 export async function maskAnalysis(id) {
+  const analysisId = requireAnalysisId(id);
   try {
-    await api.post(`/api/analyses/${id}/mask`);
-    return await fetchAndSave(id);
+    await api.post(`/analyses/${analysisId}/mask`);
+    return await fetchAndSave(analysisId);
   } catch (error) {
-    const current = getAnalysisById(id);
+    handleNotFound(error, analysisId);
+    const current = getAnalysisById(analysisId);
     if (current?.sourceType === 'upload') {
       return saveAnalysis({
         ...current,
@@ -187,7 +230,7 @@ export async function maskAnalysis(id) {
         maskingMessage: error?.response?.data?.detail || '정확한 위치 좌표가 없어 자동 마스킹을 건너뛰었습니다.',
       });
     }
-    return createMaskedVersion(id);
+    return createMaskedVersion(analysisId);
   }
 }
 

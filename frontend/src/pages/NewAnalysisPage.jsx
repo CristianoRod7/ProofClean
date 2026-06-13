@@ -37,6 +37,10 @@ export default function NewAnalysisPage() {
       return;
     }
     const created = await createAnalysisApi({ title: title.trim(), purpose: selectedMode });
+    if (!created?.id) {
+      setError('분석 프로젝트를 생성하지 못했습니다. 잠시 후 다시 시도하세요.');
+      return;
+    }
     navigate(`/analyses/${created.id}/upload`);
   };
 

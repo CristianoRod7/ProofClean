@@ -547,6 +547,31 @@ html,body{overflow-x:clip}
   width:100%;
 }
 
+.analysis-missing-state{
+  min-height:360px;
+  margin:clamp(32px,8vh,88px) auto;
+  padding:clamp(32px,6vw,64px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  max-width:760px;
+  text-align:center;
+}
+.analysis-missing-state h2{
+  margin:0 0 10px;
+  font-size:clamp(24px,3vw,34px);
+}
+.analysis-missing-state p{
+  margin:0;
+  max-width:620px;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.7;
+  word-break:keep-all;
+}
+
 /* Scenario artwork overrides and shared analysis-side readability */
 .scenario-visual{
   position:relative;

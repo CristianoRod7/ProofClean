@@ -11,20 +11,42 @@ import FilePreview from '../components/upload/FilePreview.jsx';
 import LoadingAnalysisScreen from '../components/upload/LoadingAnalysisScreen.jsx';
 import ErrorAlert from '../components/common/ErrorAlert.jsx';
 import Card from '../components/common/Card.jsx';
+import AnalysisMissingState from '../components/analysis/AnalysisMissingState.jsx';
 import { getAnalysisById, useSampleImage } from '../services/mockAnalysis.js';
-import { runAnalysis, selectSample, uploadFile } from '../services/analysisApi.js';
+import { AnalysisNotFoundError, getAnalysis, runAnalysis, selectSample, uploadFile } from '../services/analysisApi.js';
 import { isSupportedFile } from '../utils/fileUtils.js';
 import { purposeMeta } from '../data/demoAnalyses.js';
 
 export default function UploadPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const analysis = getAnalysisById(id);
+  const [analysis, setAnalysis] = useState(() => getAnalysisById(id));
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(analysis?.filePreviewUrl || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [missing, setMissing] = useState(false);
+  const [checking, setChecking] = useState(true);
   const loadingRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    getAnalysis(id)
+      .then((found) => {
+        if (!active) return;
+        if (found) {
+          setAnalysis(found);
+          setPreview((current) => current || found.filePreviewUrl || '');
+        }
+      })
+      .catch((fetchError) => {
+        if (active && fetchError instanceof AnalysisNotFoundError) setMissing(true);
+      })
+      .finally(() => {
+        if (active) setChecking(false);
+      });
+    return () => { active = false; };
+  }, [id]);
 
   useEffect(() => {
     if (!loading) return undefined;
@@ -44,7 +66,9 @@ export default function UploadPage() {
     return () => cancelAnimationFrame(frame);
   }, [loading]);
 
-  if (!analysis) return <MainLayout><ErrorAlert message="분석 프로젝트를 찾을 수 없습니다." /></MainLayout>;
+  if (missing) return <AnalysisMissingState />;
+  if (checking && !analysis) return <MainLayout><div className="page-wide board-page"><p className="muted">분석 기록을 확인하는 중입니다.</p></div></MainLayout>;
+  if (!analysis) return <AnalysisMissingState />;
 
   const onFile = async (nextFile) => {
     setError('');
@@ -56,14 +80,29 @@ export default function UploadPage() {
     setFile(nextFile);
     const url = nextFile.type.startsWith('image/') ? URL.createObjectURL(nextFile) : '';
     setPreview(url);
-    await uploadFile(id, nextFile, url);
+    try {
+      const updated = await uploadFile(id, nextFile, url);
+      if (updated) setAnalysis(updated);
+    } catch (uploadError) {
+      if (uploadError instanceof AnalysisNotFoundError) {
+        setMissing(true);
+        return;
+      }
+      setError(uploadError?.message || '파일을 업로드하지 못했습니다.');
+    }
   };
 
   const sample = async () => {
     setFile(null);
     const updated = useSampleImage(id);
     setPreview(updated.filePreviewUrl);
-    await selectSample(id);
+    try {
+      const selected = await selectSample(id);
+      if (selected) setAnalysis(selected);
+    } catch (sampleError) {
+      if (sampleError instanceof AnalysisNotFoundError) setMissing(true);
+      else setError(sampleError?.message || '샘플을 준비하지 못했습니다.');
+    }
   };
 
   const start = async () => {
@@ -75,6 +114,11 @@ export default function UploadPage() {
       await runAnalysis(id);
       navigate(`/analyses/${id}/result`);
     } catch (analysisError) {
+      if (analysisError instanceof AnalysisNotFoundError) {
+        setMissing(true);
+        setLoading(false);
+        return;
+      }
       setError(analysisError?.message || '분석을 실행하지 못했습니다. 잠시 후 다시 시도하세요.');
       setLoading(false);
     }
