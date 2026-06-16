@@ -139,6 +139,10 @@ export function mapApiAnalysis(data, existing = {}) {
     aiFallback: Boolean(data.aiFallback),
     fallbackReason: data.fallbackReason || '',
     createdAt: data.createdAt || existing.createdAt,
+    maskedCount: data.maskedCount ?? existing.maskedCount ?? 0,
+    skippedCount: data.skippedCount ?? existing.skippedCount ?? 0,
+    mergedCount: data.mergedCount ?? existing.mergedCount ?? 0,
+    skippedReasons: data.skippedReasons || existing.skippedReasons || [],
     updatedAt: data.updatedAt || new Date().toISOString(),
   };
 }

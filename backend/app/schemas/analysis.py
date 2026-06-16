@@ -67,6 +67,10 @@ class AnalysisResponse(BaseModel):
     provider: str | None = None
     aiFallback: bool = False
     fallbackReason: str | None = None
+    maskedCount: int = 0
+    skippedCount: int = 0
+    mergedCount: int = 0
+    skippedReasons: list[str] = Field(default_factory=list)
     createdAt: str
     updatedAt: str
 

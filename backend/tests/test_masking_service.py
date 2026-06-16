@@ -39,6 +39,36 @@ class MaskingServiceTests(unittest.TestCase):
         self.assertEqual(result["skippedCount"], 1)
         self.assertIn("이메일", result["skippedReasons"][0])
 
+    def test_overlapping_boxes_are_merged_before_masking(self) -> None:
+        analysis = {
+            "id": "analysis-test-merge",
+            "sourceType": "upload",
+            "detections": [
+                {
+                    "type": "PHONE",
+                    "label": "전화번호",
+                    "evidence": "010-1234-5678",
+                    "box": {"x": 0.10, "y": 0.10, "width": 0.16, "height": 0.05},
+                    "coordinateSpace": "normalized",
+                    "boxStatus": "exact",
+                },
+                {
+                    "type": "PHONE",
+                    "label": "전화번호",
+                    "evidence": "010-1234-5678",
+                    "box": {"x": 0.22, "y": 0.105, "width": 0.16, "height": 0.05},
+                    "coordinateSpace": "normalized",
+                    "boxStatus": "exact",
+                },
+            ],
+        }
+
+        result = create_masked_image(analysis)
+
+        self.assertEqual(result["rawMaskableCount"], 2)
+        self.assertEqual(result["maskedCount"], 1)
+        self.assertEqual(result["mergedCount"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

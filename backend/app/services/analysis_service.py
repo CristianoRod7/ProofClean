@@ -42,6 +42,10 @@ def serialize_analysis(analysis: dict) -> dict:
         "provider": analysis.get("provider"),
         "aiFallback": analysis.get("aiFallback", False),
         "fallbackReason": analysis.get("fallbackReason"),
+        "maskedCount": analysis.get("maskedCount", 0),
+        "skippedCount": analysis.get("skippedCount", 0),
+        "mergedCount": analysis.get("mergedCount", 0),
+        "skippedReasons": analysis.get("skippedReasons", []),
         "createdAt": analysis["createdAt"],
         "updatedAt": analysis["updatedAt"],
     }
@@ -72,6 +76,10 @@ def create_analysis(title: str, mode: str, user_id: str) -> dict:
         "provider": None,
         "aiFallback": False,
         "fallbackReason": None,
+        "maskedCount": 0,
+        "skippedCount": 0,
+        "mergedCount": 0,
+        "skippedReasons": [],
         "ownerId": user_id,
         "createdAt": timestamp,
         "updatedAt": timestamp,
@@ -192,13 +200,22 @@ async def mask_analysis(analysis_id: str, user_id: str) -> dict:
         masked_record = create_masked_image(analysis)
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
-    analysis.update({"status": "masked", "maskedImageUrl": masked_record["url"], "updatedAt": now()})
+    analysis.update({
+        "status": "masked",
+        "maskedImageUrl": masked_record["url"],
+        "maskedCount": masked_record["maskedCount"],
+        "skippedCount": masked_record["skippedCount"],
+        "mergedCount": masked_record.get("mergedCount", 0),
+        "skippedReasons": masked_record["skippedReasons"],
+        "updatedAt": now(),
+    })
     return {
         "analysisId": analysis_id,
         "maskedImageUrl": masked_record["url"],
         "safeImageUrl": masked_record["url"],
         "maskedCount": masked_record["maskedCount"],
         "skippedCount": masked_record["skippedCount"],
+        "mergedCount": masked_record.get("mergedCount", 0),
         "skippedReasons": masked_record["skippedReasons"],
     }
 

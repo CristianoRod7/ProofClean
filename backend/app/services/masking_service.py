@@ -6,6 +6,15 @@ from PIL import Image, ImageDraw, ImageFont, UnidentifiedImageError
 from app.core.config import settings
 from app.data.store import store
 
+REDACTION_FILL = (15, 23, 42, 236)
+REDACTION_OUTLINE = (45, 212, 191, 150)
+MASK_PADDING = 10
+MASK_MIN_WIDTH = 48
+MASK_MIN_HEIGHT = 24
+MERGE_IOU_THRESHOLD = 0.15
+MERGE_GAP_PX = 16
+MAX_AREA_RATIO = 0.45
+
 
 def placeholder_image() -> Image.Image:
     image = Image.new("RGB", (900, 620), "#e8f3f4")
@@ -45,39 +54,130 @@ def clamp_box(box: dict, image_width: int, image_height: int, coordinate_space: 
     return x1, y1, x2, y2
 
 
+def expand_box(box: tuple[int, int, int, int], image_width: int, image_height: int, padding: int = MASK_PADDING) -> tuple[int, int, int, int]:
+    x1, y1, x2, y2 = box
+    cx = (x1 + x2) / 2
+    cy = (y1 + y2) / 2
+    width = max(MASK_MIN_WIDTH, (x2 - x1) + padding * 2)
+    height = max(MASK_MIN_HEIGHT, (y2 - y1) + padding * 2)
+    next_x1 = max(0, round(cx - width / 2))
+    next_y1 = max(0, round(cy - height / 2))
+    next_x2 = min(image_width, round(cx + width / 2))
+    next_y2 = min(image_height, round(cy + height / 2))
+    if next_x2 - next_x1 < min(MASK_MIN_WIDTH, image_width):
+        next_x2 = min(image_width, next_x1 + min(MASK_MIN_WIDTH, image_width))
+        next_x1 = max(0, next_x2 - min(MASK_MIN_WIDTH, image_width))
+    if next_y2 - next_y1 < min(MASK_MIN_HEIGHT, image_height):
+        next_y2 = min(image_height, next_y1 + min(MASK_MIN_HEIGHT, image_height))
+        next_y1 = max(0, next_y2 - min(MASK_MIN_HEIGHT, image_height))
+    return next_x1, next_y1, max(next_x1 + 1, next_x2), max(next_y1 + 1, next_y2)
+
+
+def box_iou(first: tuple[int, int, int, int], second: tuple[int, int, int, int]) -> float:
+    left = max(first[0], second[0])
+    top = max(first[1], second[1])
+    right = min(first[2], second[2])
+    bottom = min(first[3], second[3])
+    intersection = max(0, right - left) * max(0, bottom - top)
+    if not intersection:
+        return 0.0
+    first_area = (first[2] - first[0]) * (first[3] - first[1])
+    second_area = (second[2] - second[0]) * (second[3] - second[1])
+    return intersection / max(1, first_area + second_area - intersection)
+
+
+def box_gap(first: tuple[int, int, int, int], second: tuple[int, int, int, int]) -> float:
+    horizontal = max(second[0] - first[2], first[0] - second[2], 0)
+    vertical = max(second[1] - first[3], first[1] - second[3], 0)
+    return (horizontal ** 2 + vertical ** 2) ** 0.5
+
+
+def should_merge(first: dict, second: dict) -> bool:
+    same_identity = first["type"] == second["type"] or (
+        first["evidence"] and first["evidence"] == second["evidence"]
+    )
+    if not same_identity:
+        return False
+    return box_iou(first["box"], second["box"]) > MERGE_IOU_THRESHOLD or box_gap(first["box"], second["box"]) <= MERGE_GAP_PX
+
+
+def union_box(first: tuple[int, int, int, int], second: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+    return min(first[0], second[0]), min(first[1], second[1]), max(first[2], second[2]), max(first[3], second[3])
+
+
+def collect_mask_boxes(analysis: dict, image_width: int, image_height: int) -> tuple[list[dict], list[str]]:
+    source_type = analysis.get("sourceType")
+    ai_fallback = bool(analysis.get("aiFallback"))
+    boxes: list[dict] = []
+    skipped_reasons: list[str] = []
+
+    for detection in analysis.get("detections", []):
+        label = detection.get("label") or detection.get("type") or "탐지"
+        box_status = detection.get("boxStatus", detection.get("coordinateStatus"))
+        box = detection.get("box")
+        if not isinstance(box, dict) or box_status in {"none"}:
+            skipped_reasons.append(f"좌표가 없어 {label} 항목은 자동 마스킹을 건너뛰었습니다.")
+            continue
+        if source_type == "upload" and (box_status == "demo" or (ai_fallback and detection.get("coordinateSource") == "mock")):
+            skipped_reasons.append(f"데모 좌표인 {label} 항목은 실제 업로드 이미지 자동 마스킹에서 제외했습니다.")
+            continue
+        raw_box = clamp_box(box, image_width, image_height, detection.get("coordinateSpace", "pixel"))
+        expanded = expand_box(raw_box, image_width, image_height)
+        area_ratio = ((expanded[2] - expanded[0]) * (expanded[3] - expanded[1])) / max(1, image_width * image_height)
+        if source_type != "sample" and area_ratio > MAX_AREA_RATIO:
+            skipped_reasons.append(f"{label} 항목의 좌표가 이미지의 45% 이상을 덮어 자동 마스킹에서 제외했습니다.")
+            continue
+        boxes.append({
+            "box": expanded,
+            "type": str(detection.get("type") or "TEXT"),
+            "evidence": str(detection.get("evidence") or "").strip(),
+            "labels": {label},
+        })
+    return boxes, skipped_reasons
+
+
+def merge_mask_boxes(mask_boxes: list[dict], image_width: int, image_height: int) -> list[dict]:
+    merged: list[dict] = []
+    for candidate in mask_boxes:
+        current = candidate.copy()
+        changed = True
+        while changed:
+            changed = False
+            for index, existing in enumerate(merged):
+                if should_merge(existing, current):
+                    current["box"] = expand_box(union_box(existing["box"], current["box"]), image_width, image_height, padding=0)
+                    current["labels"] = set(existing.get("labels", set())) | set(current.get("labels", set()))
+                    current["evidence"] = current["evidence"] or existing.get("evidence", "")
+                    del merged[index]
+                    changed = True
+                    break
+        merged.append(current)
+    return merged
+
+
+def draw_redaction(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int]) -> None:
+    x1, y1, x2, y2 = box
+    radius = max(8, min(16, (y2 - y1) // 3))
+    shadow = (x1 + 2, y1 + 3, x2 + 2, y2 + 3)
+    draw.rounded_rectangle(shadow, radius=radius, fill=(15, 23, 42, 42))
+    draw.rounded_rectangle((x1, y1, x2, y2), radius=radius, fill=REDACTION_FILL, outline=REDACTION_OUTLINE, width=1)
+    if x2 - x1 >= 96 and y2 - y1 >= 28:
+        font = ImageFont.load_default()
+        draw.text((x1 + 12, y1 + max(6, (y2 - y1 - 10) // 2)), "PROTECTED", fill=(203, 213, 225, 210), font=font)
+
+
 def create_masked_image(analysis: dict) -> dict:
     image = open_source_image(analysis)
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
-    detections = analysis.get("detections", [])
-    detections_with_boxes = [
-        detection for detection in analysis.get("detections", [])
-        if isinstance(detection.get("box"), dict)
-        and detection.get("boxStatus", detection.get("coordinateStatus")) not in {"none", "demo"}
-    ]
-    if analysis.get("sourceType") == "sample":
-        detections_with_boxes = [
-            detection for detection in analysis.get("detections", [])
-            if isinstance(detection.get("box"), dict)
-        ]
-    if not detections_with_boxes:
+    mask_boxes, skipped_reasons = collect_mask_boxes(analysis, image.width, image.height)
+    if not mask_boxes:
         raise ValueError("정확한 위치 좌표가 없어 자동 마스킹을 건너뛰었습니다. 탐지 후보를 직접 확인해 주세요.")
 
-    skipped = [detection for detection in detections if detection not in detections_with_boxes]
-    skipped_reasons = [
-        f"좌표가 없어 {detection.get('label') or detection.get('type') or '탐지'} 항목은 자동 마스킹을 건너뛰었습니다."
-        for detection in skipped
-    ]
+    merged_boxes = merge_mask_boxes(mask_boxes, image.width, image.height)
+    for item in merged_boxes:
+        draw_redaction(draw, item["box"])
 
-    for detection in detections_with_boxes:
-        x1, y1, x2, y2 = clamp_box(
-            detection["box"],
-            image.width,
-            image.height,
-            detection.get("coordinateSpace", "pixel"),
-        )
-        radius = max(4, min(14, (y2 - y1) // 4))
-        draw.rounded_rectangle((x1, y1, x2, y2), radius=radius, fill=(8, 15, 25, 230), outline=(94, 234, 212, 210), width=2)
     masked = Image.alpha_composite(image.convert("RGBA"), overlay).convert("RGB")
     masked_id = f"masked-{uuid4()}"
     filename = f"safe_{analysis['id']}_{masked_id[-8:]}.png"
@@ -90,8 +190,10 @@ def create_masked_image(analysis: dict) -> dict:
         "contentType": "image/png",
         "path": str(path),
         "url": f"/static/masked/{filename}",
-        "maskedCount": len(detections_with_boxes),
-        "skippedCount": len(skipped),
+        "maskedCount": len(merged_boxes),
+        "rawMaskableCount": len(mask_boxes),
+        "skippedCount": len(skipped_reasons),
+        "mergedCount": max(0, len(mask_boxes) - len(merged_boxes)),
         "skippedReasons": skipped_reasons,
     }
     with store.lock:

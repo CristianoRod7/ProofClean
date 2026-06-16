@@ -88,9 +88,9 @@ export default function ComparePage() {
           <div className="compare-mask-note" role="note">
             <Info size={20} />
             <div>
-              <b>{analysis.maskedPreviewUrl ? '검은 영역은 좌표가 확인된 탐지 후보입니다.' : '자동 마스킹이 적용되지 않았습니다.'}</b>
+              <b>{analysis.maskedPreviewUrl ? '네이비 보안 박스는 병합된 개인정보 영역입니다.' : '자동 마스킹이 적용되지 않았습니다.'}</b>
               <p>{analysis.maskedPreviewUrl
-                ? '문맥에 필요한 내용까지 가려지지 않았는지 원본과 안전본을 함께 확인하세요.'
+                ? '겹치거나 가까운 탐지 박스를 합쳐 시각적 노이즈를 줄였습니다. 문맥에 필요한 내용까지 가려지지 않았는지 확인하세요.'
                 : '정확한 위치 좌표가 없어 원본을 그대로 표시합니다. 탐지 후보 목록을 직접 확인해 주세요.'}</p>
             </div>
           </div>

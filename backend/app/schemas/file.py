@@ -17,4 +17,5 @@ class MaskResponse(BaseModel):
     safeImageUrl: str
     maskedCount: int = 0
     skippedCount: int = 0
+    mergedCount: int = 0
     skippedReasons: list[str] = Field(default_factory=list)
