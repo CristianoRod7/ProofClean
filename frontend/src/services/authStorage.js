@@ -32,16 +32,17 @@ export function purgeLegacyLocalSession() {
 }
 
 export function getStoredSession() {
-  purgeLegacyLocalSession();
-  const remembered = localStorage.getItem(REMEMBER_ME_KEY) === 'true';
-  const storage = remembered ? localStorage : sessionStorage;
-  const token = parseToken(storage.getItem(AUTH_TOKEN_KEY));
+  const localToken = parseToken(localStorage.getItem(AUTH_TOKEN_KEY));
+  const sessionToken = parseToken(sessionStorage.getItem(AUTH_TOKEN_KEY));
+  const remembered = Boolean(localToken && localStorage.getItem(REMEMBER_ME_KEY) === 'true');
+  const storage = localToken ? localStorage : sessionStorage;
+  const token = localToken || sessionToken;
   const user = parseUser(storage.getItem(AUTH_USER_KEY));
   return { token, user, rememberMe: remembered };
 }
 
 export function getStoredToken() {
-  return getStoredSession().token;
+  return parseToken(localStorage.getItem(AUTH_TOKEN_KEY)) || parseToken(sessionStorage.getItem(AUTH_TOKEN_KEY));
 }
 
 export function persistAuthSession({ user, token }, rememberMe = false) {
