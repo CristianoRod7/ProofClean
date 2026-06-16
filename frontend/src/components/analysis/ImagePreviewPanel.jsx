@@ -83,7 +83,7 @@ function mergeOverlayFindings(findings, imageRect) {
   }));
 }
 
-export default function ImagePreviewPanel({ src, purpose, findings = [], activeId, onSelect, masked = false, showLegend = true }) {
+export default function ImagePreviewPanel({ src, purpose, findings = [], activeId, onSelect, masked = false, showLegend = true, mergeOverlays = true }) {
   const frameRef = useRef(null);
   const imageRef = useRef(null);
   const [imageRect, setImageRect] = useState(EMPTY_RECT);
@@ -127,8 +127,20 @@ export default function ImagePreviewPanel({ src, purpose, findings = [], activeI
     && [finding.x, finding.y, finding.width, finding.height].every(Number.isFinite)
   ));
   const overlayGroups = useMemo(
-    () => mergeOverlayFindings(positionedFindings, imageRect),
-    [positionedFindings, imageRect],
+    () => (mergeOverlays
+      ? mergeOverlayFindings(positionedFindings, imageRect)
+      : positionedFindings.map((finding) => ({
+        id: finding.id,
+        label: finding.label,
+        type: finding.type,
+        evidence: finding.evidence || '',
+        severity: finding.severity,
+        coordinateStatus: finding.coordinateStatus,
+        rect: rectFromFinding(finding, imageRect),
+        items: [finding],
+        title: finding.label,
+      }))),
+    [positionedFindings, imageRect, mergeOverlays],
   );
 
   return (

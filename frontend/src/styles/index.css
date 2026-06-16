@@ -524,8 +524,8 @@ p, h1, h2, h3, h4, td, th, label, span { overflow-wrap: anywhere; }
 .preview-grid-overlay { z-index: 1; }
 .preview-media-frame .preview-grid-overlay { right: auto; bottom: auto; }
 .detect-box { z-index: 2; max-width: 100%; max-height: 100%; padding: 0; }
-.preview-original .detect-box { opacity: .72; }
-.preview-original .detect-box:hover, .preview-original .detect-box.highlight { opacity: 1; }
+.preview-original .detect-box { opacity: .74; border-color: rgba(37,99,235,.75); background: rgba(37,99,235,.06); border-radius: 6px; box-shadow: none; }
+.preview-original .detect-box:hover, .preview-original .detect-box.highlight { opacity: 1; box-shadow: 0 0 0 3px rgba(37,99,235,.16); }
 .preview-masked .detect-box::after { content: ""; position: absolute; inset: 9px 12px; border-radius: 999px; background: linear-gradient(90deg, rgba(203,213,225,.22), rgba(203,213,225,.08)); opacity: .7; }
 .preview-legend { z-index: 6; max-width: calc(100% - 32px); }
 .risk-card { min-height: 0; padding: 26px; }
