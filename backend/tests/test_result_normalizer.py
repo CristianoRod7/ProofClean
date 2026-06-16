@@ -61,6 +61,30 @@ class ResultNormalizerTests(unittest.TestCase):
         self.assertTrue(result["usedDefaultDetections"])
         self.assertTrue(all(item["box"] is None for item in result["detections"]))
 
+    def test_gemini_upload_is_classified_like_real_ai(self) -> None:
+        result = self.normalizer.normalize(
+            {
+                "detections": [{
+                    "type": "TEXT",
+                    "evidence": "student202416002@college.ac.kr",
+                    "confidence": 0.92,
+                    "box": None,
+                }],
+                "summary": "이메일이 포함되어 있습니다.",
+                "scenarios": [],
+                "recommendations": [],
+            },
+            "assignment",
+            source_type="upload",
+            provider="gemini",
+            image_size=(1000, 500),
+        )
+
+        detection = result["detections"][0]
+        self.assertEqual(detection["type"], "EMAIL")
+        self.assertEqual(detection["source"], "gemini")
+        self.assertEqual(detection["boxStatus"], "none")
+
 
 if __name__ == "__main__":
     unittest.main()

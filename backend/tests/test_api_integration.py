@@ -13,7 +13,9 @@ class ApiIntegrationTests(unittest.TestCase):
         image = io.BytesIO()
         Image.new("RGB", (640, 480), "white").save(image, format="PNG")
         original_api_key = settings.openai_api_key
+        original_ai_provider = settings.ai_provider
         settings.openai_api_key = ""
+        settings.ai_provider = "openai"
 
         try:
             with TestClient(app) as client:
@@ -64,6 +66,7 @@ class ApiIntegrationTests(unittest.TestCase):
                 self.assertEqual(stale.json()["detail"], "분석 기록을 찾을 수 없습니다.")
         finally:
             settings.openai_api_key = original_api_key
+            settings.ai_provider = original_ai_provider
 
 
 if __name__ == "__main__":

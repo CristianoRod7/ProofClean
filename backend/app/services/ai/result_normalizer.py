@@ -53,7 +53,7 @@ class ResultNormalizer:
     @staticmethod
     def _provider_list(data: dict, key: str, mock_default: list, provider: str) -> list:
         value = data.get(key)
-        if isinstance(value, list) and (value or provider == "openai"):
+        if isinstance(value, list) and (value or provider in {"openai", "gemini"}):
             return value
         return mock_default
 
@@ -78,7 +78,7 @@ class ResultNormalizer:
 
             evidence = self._evidence(item.get("evidence") or item.get("extractedText"))
             reason = str(item.get("reason") or item.get("description") or "").strip()
-            if source_type == "upload" and provider == "openai":
+            if source_type == "upload" and provider in {"openai", "gemini"}:
                 classification = self.classifier.classify_evidence(
                     evidence or "",
                     mode=mode,

@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     upload_dir: Path = APP_DIR / "storage" / "uploads"
     masked_dir: Path = APP_DIR / "storage" / "masked"
     allowed_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    ai_provider: str = Field(default="gemini", validation_alias=AliasChoices("AI_PROVIDER", "PROOFCLEAN_AI_PROVIDER"))
+    gemini_api_key: str = Field(default="", validation_alias=AliasChoices("GEMINI_API_KEY", "PROOFCLEAN_GEMINI_API_KEY"))
+    gemini_model: str = Field(default="gemini-2.5-flash", validation_alias=AliasChoices("GEMINI_MODEL", "PROOFCLEAN_GEMINI_MODEL"))
     openai_api_key: str = Field(default="", validation_alias=AliasChoices("OPENAI_API_KEY", "PROOFCLEAN_OPENAI_API_KEY"))
     openai_model: str = Field(default="gpt-4o-mini", validation_alias=AliasChoices("OPENAI_MODEL", "PROOFCLEAN_OPENAI_MODEL"))
     openai_timeout_seconds: float = Field(
