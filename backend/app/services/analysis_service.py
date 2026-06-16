@@ -10,6 +10,7 @@ from app.services.ai import ai_service
 from app.services.file_storage_service import create_sample_file
 from app.services.masking_service import create_masked_image
 from app.services.mock_ai_service import normalize_mode
+from app.services.ocr_service import OCRServiceError, apply_ai_estimated_status, ocr_service
 from app.services.risk_scoring_service import calculate_risk
 
 
@@ -167,6 +168,22 @@ async def run_analysis(analysis_id: str, user_id: str) -> dict:
         bool(file_path and Path(file_path).is_file()),
     )
     ai_result = await ai_service.analyze_image(file_path=file_path, mode=analysis["mode"], source_type=source_type)
+    ocr_warning = None
+    if source_type == "upload" and file_path and ai_result.get("provider") in {"gemini", "openai"} and not ai_result.get("aiFallback"):
+        try:
+            ocr_result = ocr_service.enrich_detections(ai_result["detections"], file_path, analysis["mode"])
+            ai_result["detections"] = ocr_result["detections"]
+            logger.info(
+                "[AnalysisService] OCR matched analysis_id=%s items=%s lines=%s matched=%s",
+                analysis_id,
+                ocr_result["ocrItemsCount"],
+                ocr_result["ocrLinesCount"],
+                ocr_result["ocrMatchedCount"],
+            )
+        except OCRServiceError as error:
+            ocr_warning = f"OCR failed: {error.code}: {error.message}"
+            ai_result["detections"] = [apply_ai_estimated_status(detection) for detection in ai_result["detections"]]
+            logger.warning("[AnalysisService] %s", ocr_warning)
     score, level = calculate_risk(ai_result["detections"])
     analysis.update({
         "status": "completed",
@@ -180,7 +197,7 @@ async def run_analysis(analysis_id: str, user_id: str) -> dict:
         "sourceType": source_type,
         "isSample": source_type == "sample",
         "aiFallback": ai_result["aiFallback"],
-        "fallbackReason": ai_result["fallbackReason"],
+        "fallbackReason": "; ".join(reason for reason in (ai_result["fallbackReason"], ocr_warning) if reason) or None,
         "updatedAt": now(),
     })
     logger.info(
@@ -189,7 +206,7 @@ async def run_analysis(analysis_id: str, user_id: str) -> dict:
         ai_result["provider"],
         source_type,
         ai_result["aiFallback"],
-        ai_result["fallbackReason"],
+        analysis.get("fallbackReason"),
     )
     return serialize_analysis(analysis)
 

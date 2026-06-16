@@ -122,6 +122,9 @@ def collect_mask_boxes(analysis: dict, image_width: int, image_height: int) -> t
         if source_type == "upload" and (box_status == "demo" or (ai_fallback and detection.get("coordinateSource") == "mock")):
             skipped_reasons.append(f"데모 좌표인 {label} 항목은 실제 업로드 이미지 자동 마스킹에서 제외했습니다.")
             continue
+        if source_type == "upload" and box_status == "ai-estimated":
+            skipped_reasons.append(f"AI 추정 좌표인 {label} 항목은 OCR 확인 전 자동 마스킹에서 제외했습니다.")
+            continue
         raw_box = clamp_box(box, image_width, image_height, detection.get("coordinateSpace", "pixel"))
         expanded = expand_box(raw_box, image_width, image_height)
         area_ratio = ((expanded[2] - expanded[0]) * (expanded[3] - expanded[1])) / max(1, image_width * image_height)

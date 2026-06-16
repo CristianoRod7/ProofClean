@@ -69,6 +69,21 @@ class MaskingServiceTests(unittest.TestCase):
         self.assertEqual(result["maskedCount"], 1)
         self.assertEqual(result["mergedCount"], 1)
 
+    def test_upload_ai_estimated_coordinates_are_not_masked_by_default(self) -> None:
+        analysis = {
+            "id": "analysis-test-ai-estimated",
+            "sourceType": "upload",
+            "detections": [{
+                "label": "전화번호",
+                "box": {"x": 0.1, "y": 0.1, "width": 0.2, "height": 0.1},
+                "coordinateSpace": "normalized",
+                "boxStatus": "ai-estimated",
+            }],
+        }
+
+        with self.assertRaisesRegex(ValueError, "정확한 위치 좌표가 없어"):
+            create_masked_image(analysis)
+
     def test_default_masking_style_is_pixelate(self) -> None:
         analysis = {
             "id": "analysis-test-style",
