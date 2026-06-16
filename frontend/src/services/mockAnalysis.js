@@ -112,7 +112,7 @@ export function createMaskedVersion(id) {
       updatedAt: now(),
     });
   }
-  return saveAnalysis({ ...analysis, status: 'MASKED', maskedPreviewUrl: analysis.filePreviewUrl || SAMPLE_IMAGE, updatedAt: now() });
+  return saveAnalysis({ ...analysis, status: 'MASKED', maskedPreviewUrl: analysis.filePreviewUrl || SAMPLE_IMAGE, maskingStyle: analysis.maskingStyle || 'solid', updatedAt: now() });
 }
 
 export function deleteAnalysis(id) {

@@ -1,6 +1,6 @@
 import unittest
 
-from app.services.masking_service import create_masked_image
+from app.services.masking_service import create_masked_image, normalized_masking_style
 
 
 class MaskingServiceTests(unittest.TestCase):
@@ -68,6 +68,41 @@ class MaskingServiceTests(unittest.TestCase):
         self.assertEqual(result["rawMaskableCount"], 2)
         self.assertEqual(result["maskedCount"], 1)
         self.assertEqual(result["mergedCount"], 1)
+
+    def test_default_masking_style_is_pixelate(self) -> None:
+        analysis = {
+            "id": "analysis-test-style",
+            "sourceType": "upload",
+            "detections": [{
+                "label": "주소",
+                "box": {"x": 0.1, "y": 0.1, "width": 0.2, "height": 0.1},
+                "coordinateSpace": "normalized",
+                "boxStatus": "exact",
+            }],
+        }
+
+        result = create_masked_image(analysis)
+
+        self.assertEqual(result["maskingStyle"], "pixelate")
+
+    def test_explicit_blur_masking_style_is_reported(self) -> None:
+        analysis = {
+            "id": "analysis-test-blur",
+            "sourceType": "upload",
+            "detections": [{
+                "label": "계좌번호",
+                "box": {"x": 0.1, "y": 0.1, "width": 0.2, "height": 0.1},
+                "coordinateSpace": "normalized",
+                "boxStatus": "exact",
+            }],
+        }
+
+        result = create_masked_image(analysis, masking_style="blur")
+
+        self.assertEqual(result["maskingStyle"], "blur")
+
+    def test_unknown_masking_style_falls_back_to_pixelate(self) -> None:
+        self.assertEqual(normalized_masking_style("unknown"), "pixelate")
 
 
 if __name__ == "__main__":

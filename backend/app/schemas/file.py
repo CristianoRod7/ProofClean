@@ -18,4 +18,5 @@ class MaskResponse(BaseModel):
     maskedCount: int = 0
     skippedCount: int = 0
     mergedCount: int = 0
+    maskingStyle: str = "pixelate"
     skippedReasons: list[str] = Field(default_factory=list)

@@ -1,7 +1,7 @@
 from pathlib import Path
 from uuid import uuid4
 
-from PIL import Image, ImageDraw, ImageFont, UnidentifiedImageError
+from PIL import Image, ImageDraw, ImageFilter, ImageFont, UnidentifiedImageError
 
 from app.core.config import settings
 from app.data.store import store
@@ -14,6 +14,7 @@ MASK_MIN_HEIGHT = 24
 MERGE_IOU_THRESHOLD = 0.15
 MERGE_GAP_PX = 16
 MAX_AREA_RATIO = 0.45
+SUPPORTED_MASKING_STYLES = {"pixelate", "blur", "fill", "solid"}
 
 
 def placeholder_image() -> Image.Image:
@@ -155,30 +156,81 @@ def merge_mask_boxes(mask_boxes: list[dict], image_width: int, image_height: int
     return merged
 
 
-def draw_redaction(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int]) -> None:
+def normalized_masking_style(style: str | None = None) -> str:
+    selected = str(style or settings.masking_style or "pixelate").strip().lower()
+    return selected if selected in SUPPORTED_MASKING_STYLES else "pixelate"
+
+
+def rounded_mask(size: tuple[int, int], radius: int) -> Image.Image:
+    mask = Image.new("L", size, 0)
+    mask_draw = ImageDraw.Draw(mask)
+    mask_draw.rounded_rectangle((0, 0, size[0], size[1]), radius=radius, fill=255)
+    return mask
+
+
+def pixelate_region(image: Image.Image, box: tuple[int, int, int, int]) -> None:
+    x1, y1, x2, y2 = box
+    width = max(1, x2 - x1)
+    height = max(1, y2 - y1)
+    region = image.crop(box)
+    block_size = 14
+    small_size = (max(1, width // block_size), max(1, height // block_size))
+    small = region.resize(small_size, Image.Resampling.BILINEAR)
+    pixelated = small.resize((width, height), Image.Resampling.NEAREST)
+    image.paste(pixelated, (x1, y1), rounded_mask((width, height), max(6, min(14, height // 3))))
+
+
+def blur_region(image: Image.Image, box: tuple[int, int, int, int]) -> None:
+    x1, y1, x2, y2 = box
+    width = max(1, x2 - x1)
+    height = max(1, y2 - y1)
+    radius = max(12, min(20, min(width, height) // 2))
+    blurred = image.crop(box).filter(ImageFilter.GaussianBlur(radius=radius))
+    image.paste(blurred, (x1, y1), rounded_mask((width, height), max(6, min(14, height // 3))))
+
+
+def draw_fill_redaction(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int]) -> None:
+    x1, y1, x2, y2 = box
+    radius = max(8, min(16, (y2 - y1) // 3))
+    draw.rounded_rectangle((x1, y1, x2, y2), radius=radius, fill=(248, 250, 252, 238), outline=(20, 184, 166, 150), width=1)
+    if x2 - x1 >= 54 and y2 - y1 >= 22:
+        draw.text((x1 + 10, y1 + max(5, (y2 - y1 - 10) // 2)), "숨김", fill=(15, 118, 110, 230), font=ImageFont.load_default())
+
+
+def draw_solid_redaction(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int]) -> None:
     x1, y1, x2, y2 = box
     radius = max(8, min(16, (y2 - y1) // 3))
     shadow = (x1 + 2, y1 + 3, x2 + 2, y2 + 3)
     draw.rounded_rectangle(shadow, radius=radius, fill=(15, 23, 42, 42))
     draw.rounded_rectangle((x1, y1, x2, y2), radius=radius, fill=REDACTION_FILL, outline=REDACTION_OUTLINE, width=1)
     if x2 - x1 >= 96 and y2 - y1 >= 28:
-        font = ImageFont.load_default()
-        draw.text((x1 + 12, y1 + max(6, (y2 - y1 - 10) // 2)), "PROTECTED", fill=(203, 213, 225, 210), font=font)
+        draw.text((x1 + 12, y1 + max(6, (y2 - y1 - 10) // 2)), "PROTECTED", fill=(203, 213, 225, 210), font=ImageFont.load_default())
 
 
-def create_masked_image(analysis: dict) -> dict:
-    image = open_source_image(analysis)
-    overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
-    draw = ImageDraw.Draw(overlay)
+def apply_mask(image: Image.Image, draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], masking_style: str) -> None:
+    if masking_style == "pixelate":
+        pixelate_region(image, box)
+    elif masking_style == "blur":
+        blur_region(image, box)
+    elif masking_style == "fill":
+        draw_fill_redaction(draw, box)
+    else:
+        draw_solid_redaction(draw, box)
+
+
+def create_masked_image(analysis: dict, masking_style: str | None = None) -> dict:
+    style = normalized_masking_style(masking_style)
+    image = open_source_image(analysis).convert("RGBA")
+    draw = ImageDraw.Draw(image, "RGBA")
     mask_boxes, skipped_reasons = collect_mask_boxes(analysis, image.width, image.height)
     if not mask_boxes:
         raise ValueError("정확한 위치 좌표가 없어 자동 마스킹을 건너뛰었습니다. 탐지 후보를 직접 확인해 주세요.")
 
     merged_boxes = merge_mask_boxes(mask_boxes, image.width, image.height)
     for item in merged_boxes:
-        draw_redaction(draw, item["box"])
+        apply_mask(image, draw, item["box"], style)
 
-    masked = Image.alpha_composite(image.convert("RGBA"), overlay).convert("RGB")
+    masked = image.convert("RGB")
     masked_id = f"masked-{uuid4()}"
     filename = f"safe_{analysis['id']}_{masked_id[-8:]}.png"
     path = settings.masked_dir / filename
@@ -194,6 +246,7 @@ def create_masked_image(analysis: dict) -> dict:
         "rawMaskableCount": len(mask_boxes),
         "skippedCount": len(skipped_reasons),
         "mergedCount": max(0, len(mask_boxes) - len(merged_boxes)),
+        "maskingStyle": style,
         "skippedReasons": skipped_reasons,
     }
     with store.lock:

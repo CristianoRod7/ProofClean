@@ -1,6 +1,9 @@
 import ImagePreviewPanel from './ImagePreviewPanel.jsx';
 
 export default function BeforeAfterCompare({ analysis }) {
+  const maskingStyle = analysis.maskingStyle || 'pixelate';
+  const showSafeOverlay = ['solid', 'fill'].includes(maskingStyle);
+
   return (
     <div className="compare-stage">
       <div className="compare-card original">
@@ -18,7 +21,7 @@ export default function BeforeAfterCompare({ analysis }) {
         <ImagePreviewPanel
           src={analysis.maskedPreviewUrl || analysis.filePreviewUrl}
           purpose={analysis.purpose}
-          findings={analysis.maskedPreviewUrl ? analysis.findings : []}
+          findings={analysis.maskedPreviewUrl && showSafeOverlay ? analysis.findings : []}
           masked={Boolean(analysis.maskedPreviewUrl)}
           showLegend={false}
         />

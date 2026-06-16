@@ -45,6 +45,7 @@ def serialize_analysis(analysis: dict) -> dict:
         "maskedCount": analysis.get("maskedCount", 0),
         "skippedCount": analysis.get("skippedCount", 0),
         "mergedCount": analysis.get("mergedCount", 0),
+        "maskingStyle": analysis.get("maskingStyle"),
         "skippedReasons": analysis.get("skippedReasons", []),
         "createdAt": analysis["createdAt"],
         "updatedAt": analysis["updatedAt"],
@@ -79,6 +80,7 @@ def create_analysis(title: str, mode: str, user_id: str) -> dict:
         "maskedCount": 0,
         "skippedCount": 0,
         "mergedCount": 0,
+        "maskingStyle": None,
         "skippedReasons": [],
         "ownerId": user_id,
         "createdAt": timestamp,
@@ -206,6 +208,7 @@ async def mask_analysis(analysis_id: str, user_id: str) -> dict:
         "maskedCount": masked_record["maskedCount"],
         "skippedCount": masked_record["skippedCount"],
         "mergedCount": masked_record.get("mergedCount", 0),
+        "maskingStyle": masked_record.get("maskingStyle", "pixelate"),
         "skippedReasons": masked_record["skippedReasons"],
         "updatedAt": now(),
     })
@@ -216,6 +219,7 @@ async def mask_analysis(analysis_id: str, user_id: str) -> dict:
         "maskedCount": masked_record["maskedCount"],
         "skippedCount": masked_record["skippedCount"],
         "mergedCount": masked_record.get("mergedCount", 0),
+        "maskingStyle": masked_record.get("maskingStyle", "pixelate"),
         "skippedReasons": masked_record["skippedReasons"],
     }
 

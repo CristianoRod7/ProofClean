@@ -14,6 +14,13 @@ import AnalysisMissingState from '../components/analysis/AnalysisMissingState.js
 import { getAnalysisById } from '../services/mockAnalysis.js';
 import { AnalysisNotFoundError, getAnalysis, maskAnalysis } from '../services/analysisApi.js';
 
+const maskStyleCopy = {
+  pixelate: { title: '모자이크 처리된 영역은 개인정보 후보입니다.', body: '겹치거나 가까운 탐지 박스를 합친 뒤 모자이크를 적용해 문서 구조는 유지하고 텍스트는 읽기 어렵게 처리했습니다.' },
+  blur: { title: '흐림 처리된 영역은 비식별화된 개인정보 후보입니다.', body: '겹치거나 가까운 탐지 박스를 합친 뒤 강한 블러를 적용했습니다. 문맥에 필요한 내용까지 흐려지지 않았는지 확인하세요.' },
+  fill: { title: '숨김 처리된 영역은 개인정보 후보입니다.', body: '겹치거나 가까운 탐지 박스를 합친 뒤 밝은 숨김 영역으로 대체했습니다. 문맥에 필요한 내용까지 가려지지 않았는지 확인하세요.' },
+  solid: { title: '가려진 영역은 개인정보 후보입니다.', body: '겹치거나 가까운 탐지 박스를 합친 뒤 보안 박스로 가렸습니다. 문맥에 필요한 내용까지 가려지지 않았는지 확인하세요.' },
+};
+
 export default function ComparePage() {
   const { id } = useParams();
   const [analysis, setAnalysis] = useState(() => getAnalysisById(id));
@@ -52,6 +59,8 @@ export default function ComparePage() {
   const maskableCount = analysis.findings.filter((finding) => (
     finding.hasCoordinates && (analysis.sourceType === 'sample' || finding.coordinateStatus !== 'demo')
   )).length;
+  const maskingStyle = analysis.maskingStyle || 'pixelate';
+  const maskingCopy = maskStyleCopy[maskingStyle] || maskStyleCopy.pixelate;
 
   const download = () => {
     setToast('실제 파일 다운로드는 백엔드 연동 후 활성화됩니다.');
@@ -88,9 +97,9 @@ export default function ComparePage() {
           <div className="compare-mask-note" role="note">
             <Info size={20} />
             <div>
-              <b>{analysis.maskedPreviewUrl ? '네이비 보안 박스는 병합된 개인정보 영역입니다.' : '자동 마스킹이 적용되지 않았습니다.'}</b>
+              <b>{analysis.maskedPreviewUrl ? maskingCopy.title : '자동 마스킹이 적용되지 않았습니다.'}</b>
               <p>{analysis.maskedPreviewUrl
-                ? '겹치거나 가까운 탐지 박스를 합쳐 시각적 노이즈를 줄였습니다. 문맥에 필요한 내용까지 가려지지 않았는지 확인하세요.'
+                ? maskingCopy.body
                 : '정확한 위치 좌표가 없어 원본을 그대로 표시합니다. 탐지 후보 목록을 직접 확인해 주세요.'}</p>
             </div>
           </div>
