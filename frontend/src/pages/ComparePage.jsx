@@ -59,8 +59,8 @@ export default function ComparePage() {
   const maskableCount = analysis.findings.filter((finding) => (
     finding.hasCoordinates && (analysis.sourceType === 'sample' || finding.coordinateStatus !== 'demo')
   )).length;
-  const maskingStyle = analysis.maskingStyle || 'pixelate';
-  const maskingCopy = maskStyleCopy[maskingStyle] || maskStyleCopy.pixelate;
+  const maskingStyle = analysis.maskingStyle || 'solid';
+  const maskingCopy = maskStyleCopy[maskingStyle] || maskStyleCopy.solid;
 
   const download = () => {
     setToast('실제 파일 다운로드는 백엔드 연동 후 활성화됩니다.');

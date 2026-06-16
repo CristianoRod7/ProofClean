@@ -1449,7 +1449,7 @@ img,svg { max-width:100%; }
 .result-page .confidence-row{color:var(--dark-card-muted)}
 .coordinate-badge{display:inline-flex;align-items:center;width:max-content;min-height:26px;margin-top:10px;padding:5px 9px;border:1px solid rgba(148,163,184,.25);border-radius:999px;color:#cbd5e1;background:rgba(148,163,184,.1);font-size:11px;font-weight:850;line-height:1.2}
 .coordinate-badge.coordinate-estimated,.coordinate-badge.coordinate-ai-estimated{color:#fde68a;border-color:rgba(251,191,36,.3);background:rgba(245,158,11,.11)}
-.coordinate-badge.coordinate-verified,.coordinate-badge.coordinate-exact,.coordinate-badge.coordinate-ocr-exact,.coordinate-badge.coordinate-ocr-line,.coordinate-badge.coordinate-ocr-regex{color:#99f6e4;border-color:rgba(45,212,191,.3);background:rgba(20,184,166,.12)}
+.coordinate-badge.coordinate-verified,.coordinate-badge.coordinate-exact,.coordinate-badge.coordinate-ocr-exact,.coordinate-badge.coordinate-ocr-token,.coordinate-badge.coordinate-ocr-line,.coordinate-badge.coordinate-ocr-regex{color:#99f6e4;border-color:rgba(45,212,191,.3);background:rgba(20,184,166,.12)}
 .coordinate-badge.coordinate-demo,.coordinate-badge.coordinate-none{color:#fca5a5;border-color:rgba(248,113,113,.28);background:rgba(239,68,68,.1)}
 .detection-evidence{margin-top:10px;padding:9px 11px;border-radius:10px;color:#e2e8f0;background:rgba(15,23,42,.42);font-size:13px;line-height:1.5;word-break:keep-all}
 .detection-evidence b{margin-right:6px;color:#5eead4}

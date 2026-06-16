@@ -1,7 +1,7 @@
 import ImagePreviewPanel from './ImagePreviewPanel.jsx';
 
 export default function BeforeAfterCompare({ analysis }) {
-  const maskingStyle = analysis.maskingStyle || 'pixelate';
+  const maskingStyle = analysis.maskingStyle || 'solid';
   const showSafeOverlay = ['solid', 'fill'].includes(maskingStyle);
 
   return (

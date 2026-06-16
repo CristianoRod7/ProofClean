@@ -142,7 +142,7 @@ export function mapApiAnalysis(data, existing = {}) {
     maskedCount: data.maskedCount ?? existing.maskedCount ?? 0,
     skippedCount: data.skippedCount ?? existing.skippedCount ?? 0,
     mergedCount: data.mergedCount ?? existing.mergedCount ?? 0,
-    maskingStyle: data.maskingStyle || existing.maskingStyle || "pixelate",
+    maskingStyle: data.maskingStyle || existing.maskingStyle || "solid",
     skippedReasons: data.skippedReasons || existing.skippedReasons || [],
     updatedAt: data.updatedAt || new Date().toISOString(),
   };

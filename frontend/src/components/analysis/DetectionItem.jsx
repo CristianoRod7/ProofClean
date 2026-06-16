@@ -25,6 +25,7 @@ const coordinateLabels = {
   verified: '위치 확인됨',
   estimated: '위치 추정',
   'ocr-exact': 'OCR 좌표 확인',
+  'ocr-token': 'OCR 값 매칭',
   'ocr-line': 'OCR 라인 매칭',
   'ocr-regex': 'OCR 규칙 매칭',
   'ai-estimated': 'AI 추정 좌표',

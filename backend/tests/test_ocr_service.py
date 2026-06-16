@@ -1,6 +1,6 @@
 import unittest
 
-from app.services.ocr_service import enrich_detections_with_ocr, group_ocr_lines, normalize_match_text
+from app.services.ocr_service import enrich_detections_with_ocr, group_ocr_lines, normalize_match_text, token_sequence_match_box
 
 
 class OCRMatchingTests(unittest.TestCase):
@@ -31,8 +31,21 @@ class OCRMatchingTests(unittest.TestCase):
         result = enrich_detections_with_ocr(detections, ocr_items, mode="marketplace")
 
         self.assertEqual(result["ocrLinesCount"], 1)
-        self.assertEqual(result["detections"][0]["boxStatus"], "ocr-line")
+        self.assertEqual(result["detections"][0]["boxStatus"], "ocr-token")
         self.assertEqual(result["detections"][0]["box"], {"x": 20, "y": 80, "width": 204, "height": 20})
+
+
+    def test_token_sequence_masks_value_without_label(self) -> None:
+        line = {
+            "text": "전화번호: 010-1234-5678",
+            "items": [{"text": "전화번호: 010-1234-5678", "box": {"x": 100, "y": 50, "width": 200, "height": 20}}],
+            "box": {"x": 100, "y": 50, "width": 200, "height": 20},
+        }
+
+        box = token_sequence_match_box("010-1234-5678", line)
+
+        self.assertGreater(box["x"], 100)
+        self.assertLess(box["width"], 150)
 
     def test_type_aware_regex_match_links_invoice_without_ai_evidence_box(self) -> None:
         detections = [{"id": "det-1", "type": "INVOICE", "evidence": "barcode", "box": None}]

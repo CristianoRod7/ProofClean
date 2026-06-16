@@ -84,7 +84,7 @@ class MaskingServiceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "정확한 위치 좌표가 없어"):
             create_masked_image(analysis)
 
-    def test_default_masking_style_is_pixelate(self) -> None:
+    def test_default_masking_style_is_solid(self) -> None:
         analysis = {
             "id": "analysis-test-style",
             "sourceType": "upload",
@@ -98,7 +98,7 @@ class MaskingServiceTests(unittest.TestCase):
 
         result = create_masked_image(analysis)
 
-        self.assertEqual(result["maskingStyle"], "pixelate")
+        self.assertEqual(result["maskingStyle"], "solid")
 
     def test_explicit_blur_masking_style_is_reported(self) -> None:
         analysis = {

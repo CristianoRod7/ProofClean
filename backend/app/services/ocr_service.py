@@ -130,6 +130,66 @@ def group_ocr_lines(items: list[dict]) -> list[dict]:
     return lines
 
 
+
+def split_text_tokens(text: str) -> list[tuple[str, int, int]]:
+    return [(match.group(0), match.start(), match.end()) for match in re.finditer(r"\S+", text)]
+
+
+def tokens_for_line(line: dict) -> list[dict]:
+    tokens: list[dict] = []
+    for item in line.get("items", []):
+        text = item.get("text", "")
+        parts = split_text_tokens(text)
+        if not parts:
+            continue
+        item_box = item["box"]
+        item_x = float(item_box["x"])
+        item_y = float(item_box["y"])
+        item_width = max(1.0, float(item_box["width"]))
+        item_height = float(item_box["height"])
+        text_length = max(1, len(text))
+        for token_text, start, end in parts:
+            token_x = item_x + item_width * (start / text_length)
+            token_width = max(1.0, item_width * ((end - start) / text_length))
+            tokens.append({
+                "text": token_text,
+                "box": {"x": round(token_x), "y": round(item_y), "width": round(token_width), "height": round(item_height)},
+            })
+    return sorted(tokens, key=lambda token: float(token["box"]["x"]))
+
+
+def token_sequence_match_box(evidence: str, line: dict) -> dict | None:
+    normalized_evidence = normalize_match_text(evidence)
+    if not normalized_evidence:
+        return None
+    tokens = tokens_for_line(line)
+    if not tokens:
+        return None
+    spans = []
+    cursor = 0
+    normalized_text = ""
+    for token in tokens:
+        normalized_token = normalize_match_text(token["text"])
+        if not normalized_token:
+            continue
+        start = cursor
+        normalized_text += normalized_token
+        cursor += len(normalized_token)
+        spans.append((start, cursor, token))
+    match_start = normalized_text.find(normalized_evidence)
+    if match_start < 0:
+        if normalized_evidence.find(normalized_text) >= 0 and normalized_text:
+            match_start = 0
+            match_end = len(normalized_text)
+        else:
+            return None
+    else:
+        match_end = match_start + len(normalized_evidence)
+    matched_tokens = [token for start, end, token in spans if start < match_end and end > match_start]
+    if not matched_tokens:
+        return None
+    return union_boxes(matched_tokens)
+
 def regex_for_type(detection_type: str) -> re.Pattern | None:
     patterns = {
         "PHONE": r"(01[016789])[-\s]?\d{3,4}[-\s]?\d{4}|0\d{1,2}[-\s]?\d{3,4}[-\s]?\d{4}",
@@ -178,6 +238,11 @@ def match_detection_to_ocr(detection: dict, ocr_items: list[dict], lines: list[d
         normalized_item = normalize_match_text(item["text"])
         if normalized_item and normalized_item == normalized_evidence:
             return MatchResult(item["box"], "ocr-exact", item["text"])
+
+    for line in lines:
+        token_box = token_sequence_match_box(evidence, line)
+        if token_box:
+            return MatchResult(token_box, "ocr-token", line["text"])
 
     for line in lines:
         normalized_line = normalize_match_text(line["text"])
