@@ -11,8 +11,8 @@ REDACTION_OUTLINE = (45, 212, 191, 150)
 MASK_PADDING = 5
 MASK_MIN_WIDTH = 32
 MASK_MIN_HEIGHT = 14
-MERGE_IOU_THRESHOLD = 0.15
-MERGE_GAP_PX = 16
+MERGE_IOU_THRESHOLD = 0.35
+MERGE_GAP_PX = 6
 MAX_AREA_RATIO = 0.45
 SUPPORTED_MASKING_STYLES = {"pixelate", "blur", "fill", "solid"}
 
@@ -94,12 +94,13 @@ def box_gap(first: tuple[int, int, int, int], second: tuple[int, int, int, int])
 
 
 def should_merge(first: dict, second: dict) -> bool:
-    same_identity = first["type"] == second["type"] or (
-        first["evidence"] and first["evidence"] == second["evidence"]
-    )
-    if not same_identity:
-        return False
-    return box_iou(first["box"], second["box"]) > MERGE_IOU_THRESHOLD or box_gap(first["box"], second["box"]) <= MERGE_GAP_PX
+    same_evidence = bool(first["evidence"] and first["evidence"] == second["evidence"])
+    same_type = first["type"] == second["type"]
+    if same_evidence:
+        return box_iou(first["box"], second["box"]) > 0.15 or box_gap(first["box"], second["box"]) <= MERGE_GAP_PX
+    if same_type:
+        return box_iou(first["box"], second["box"]) > MERGE_IOU_THRESHOLD or box_gap(first["box"], second["box"]) <= MERGE_GAP_PX
+    return False
 
 
 def union_box(first: tuple[int, int, int, int], second: tuple[int, int, int, int]) -> tuple[int, int, int, int]:

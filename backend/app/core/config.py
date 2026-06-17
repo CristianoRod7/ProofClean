@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     access_token_minutes: int = 1440
     upload_dir: Path = APP_DIR / "storage" / "uploads"
     masked_dir: Path = APP_DIR / "storage" / "masked"
-    masking_style: str = Field(default="solid", validation_alias=AliasChoices("MASKING_STYLE", "PROOFCLEAN_MASKING_STYLE"))
+    masking_style: str = Field(default="pixelate", validation_alias=AliasChoices("MASKING_STYLE", "PROOFCLEAN_MASKING_STYLE"))
     allowed_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
     ai_provider: str = Field(default="gemini", validation_alias=AliasChoices("AI_PROVIDER", "PROOFCLEAN_AI_PROVIDER"))
     gemini_api_key: str = Field(default="", validation_alias=AliasChoices("GEMINI_API_KEY", "PROOFCLEAN_GEMINI_API_KEY"))

@@ -15,10 +15,10 @@ import { getAnalysisById } from '../services/mockAnalysis.js';
 import { AnalysisNotFoundError, getAnalysis, maskAnalysis } from '../services/analysisApi.js';
 
 const maskStyleCopy = {
-  pixelate: { title: '모자이크 처리된 영역은 개인정보 후보입니다.', body: '겹치거나 가까운 탐지 박스를 합친 뒤 모자이크를 적용해 문서 구조는 유지하고 텍스트는 읽기 어렵게 처리했습니다.' },
+  pixelate: { title: 'OCR 기반 비식별화 비교', body: '왼쪽 원본에는 OCR로 확인된 개인정보 후보 텍스트 위치를 표시했습니다. 오른쪽 안전본에는 같은 텍스트 영역을 모자이크 처리해 내용을 읽기 어렵게 만들었습니다.' },
   blur: { title: '흐림 처리된 영역은 비식별화된 개인정보 후보입니다.', body: '겹치거나 가까운 탐지 박스를 합친 뒤 강한 블러를 적용했습니다. 문맥에 필요한 내용까지 흐려지지 않았는지 확인하세요.' },
   fill: { title: '숨김 처리된 영역은 개인정보 후보입니다.', body: '겹치거나 가까운 탐지 박스를 합친 뒤 밝은 숨김 영역으로 대체했습니다. 문맥에 필요한 내용까지 가려지지 않았는지 확인하세요.' },
-  solid: { title: '가려진 영역은 개인정보 후보입니다.', body: '겹치거나 가까운 탐지 박스를 합친 뒤 보안 박스로 가렸습니다. 문맥에 필요한 내용까지 가려지지 않았는지 확인하세요.' },
+  solid: { title: 'OCR 기반 비식별화 비교', body: '왼쪽 원본에는 OCR로 확인된 개인정보 후보 텍스트 위치를 표시하고, 오른쪽 안전본에는 같은 영역을 가림 처리했습니다.' },
 };
 
 export default function ComparePage() {
@@ -59,8 +59,8 @@ export default function ComparePage() {
   const maskableCount = analysis.findings.filter((finding) => (
     finding.hasCoordinates && (analysis.sourceType === 'sample' || finding.coordinateStatus !== 'demo')
   )).length;
-  const maskingStyle = analysis.maskingStyle || 'solid';
-  const maskingCopy = maskStyleCopy[maskingStyle] || maskStyleCopy.solid;
+  const maskingStyle = analysis.maskingStyle || 'pixelate';
+  const maskingCopy = maskStyleCopy[maskingStyle] || maskStyleCopy.pixelate;
 
   const download = () => {
     setToast('실제 파일 다운로드는 백엔드 연동 후 활성화됩니다.');

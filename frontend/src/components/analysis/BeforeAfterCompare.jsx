@@ -70,7 +70,7 @@ function filterOriginalOverlayFindings(findings = []) {
 }
 
 export default function BeforeAfterCompare({ analysis }) {
-  const maskingStyle = analysis.maskingStyle || 'solid';
+  const maskingStyle = analysis.maskingStyle || 'pixelate';
   const showSafeOverlay = ['solid', 'fill'].includes(maskingStyle);
   const originalDisplayFindings = filterOriginalOverlayFindings(analysis.findings);
 
